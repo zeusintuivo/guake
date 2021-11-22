@@ -18,8 +18,8 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
 
-import logging
 import inspect
+import logging
 import os
 
 __all__ = [
@@ -77,7 +77,8 @@ def bindtextdomain(app_name, locale_dir=None):
 
     # pylint: enable=import-outside-toplevel
 
-    logger.info(_file_()+":"+_line_()+" Local binding for app '%s', local dir: %s", app_name, locale_dir)
+    logger.info(_file_()+":"+_line_()
+                + " Local binding for app '%s', local dir: %s", app_name, locale_dir)
 
     locale.bindtextdomain(app_name, locale_dir)
     locale.textdomain(app_name)

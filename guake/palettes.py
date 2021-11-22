@@ -17,9 +17,9 @@ License along with this program; if not, write to the
 Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
+import inspect
 import json
 import logging
-import inspect
 import os
 
 # Create a custom logger
@@ -66,6 +66,7 @@ def _file_():
 # index 15:
 # index 16: Background Color
 # index 17: Foreground Color
+
 
 PALETTES = {
     "3024 Day": (
@@ -1094,7 +1095,8 @@ if os.path.isdir(themes_folder):
             try:
                 theme_to_load = json.load(theme_file)
                 PALETTES = {**PALETTES, **theme_to_load}
-                logger.debug(_file_()+":"+_line_()+" Loaded themes %s", " ".join(theme_to_load.keys()))
+                logger.debug(_file_()+":"+_line_()+" Loaded themes %s",
+                             " ".join(theme_to_load.keys()))
             except json.JSONDecodeError:
                 logger.debug(_file_()+":"+_line_()+" Unable to load theme from file %s", theme_file)
 else:

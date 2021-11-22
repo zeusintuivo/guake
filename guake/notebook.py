@@ -41,8 +41,8 @@ from gi.repository import Gtk
 from gi.repository import Wnck
 from guake.terminal import GuakeTerminal
 
-import logging
 import inspect
+import logging
 import posix
 
 # Create a custom logger
@@ -286,8 +286,8 @@ class TerminalNotebook(Gtk.Notebook):
                     total_procs += 1
             except OSError:
                 logger.debug(_file_()+":"+_line_()+" Cannot retrieve any pid from terminal %s, looks like it is already dead",
-                    index,
-                )
+                             index,
+                             )
                 return 0
         return total_procs
 
@@ -548,7 +548,8 @@ class NotebookManager(GObject.Object):
             self.emit("notebook-created", self.notebooks[workspace_index], workspace_index)
             self.notebooks[workspace_index].connect("terminal-spawned", self.terminal_spawned_cb)
             self.notebooks[workspace_index].connect("page-deleted", self.page_deleted_cb)
-            logger.info(_file_()+":"+_line_()+" created fresh notebook for workspace %d", self.current_notebook)
+            logger.info(_file_()+":"+_line_()
+                        + " created fresh notebook for workspace %d", self.current_notebook)
 
             # add a tab if there is none
             if not self.notebooks[workspace_index].has_page():

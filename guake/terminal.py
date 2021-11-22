@@ -18,8 +18,8 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
 import code
-import logging
 import inspect
+import logging
 import os
 import re
 import shlex
@@ -337,7 +337,8 @@ class GuakeTerminal(Vte.Terminal):
         try:
             if pt.exists():
                 lineno = find_lineno(text, pt, lineno, py_func)
-                logger.info(_file_()+":"+_line_()+" File exists: %r, line=%r", pt.absolute().as_posix(), lineno)
+                logger.info(_file_()+":"+_line_()+" File exists: %r, line=%r",
+                            pt.absolute().as_posix(), lineno)
                 return (pt, lineno, colno)
             logger.debug(_file_()+":"+_line_()+" No file found matching: %r", text)
             cwd = self.get_current_directory()
@@ -345,7 +346,8 @@ class GuakeTerminal(Vte.Terminal):
             logger.debug(_file_()+":"+_line_()+" checking file existance: %r", pt)
             if pt.exists():
                 lineno = find_lineno(text, pt, lineno, py_func)
-                logger.info(_file_()+":"+_line_()+" File exists: %r, line=%r", pt.absolute().as_posix(), lineno)
+                logger.info(_file_()+":"+_line_()+" File exists: %r, line=%r",
+                            pt.absolute().as_posix(), lineno)
                 return (pt, lineno, colno)
             logger.debug(_file_()+":"+_line_()+" file does not exist: %s", str(pt))
         except OSError:
@@ -432,7 +434,8 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = g.group(2)
                 else:
                     line_number = None
-                logger.info(_file_()+":"+_line_()+" Quick action executed filename=%s, line=%s", filename, line_number)
+                logger.info(_file_()+":"+_line_()
+                            + " Quick action executed filename=%s, line=%s", filename, line_number)
                 (filepath, ln, _) = self.is_file_on_local_server(filename)
                 if ln:
                     line_number = ln

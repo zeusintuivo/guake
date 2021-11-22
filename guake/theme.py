@@ -1,6 +1,6 @@
+import inspect
 import itertools
 import logging
-import inspect
 import os
 
 from pathlib import Path
@@ -121,12 +121,12 @@ def patch_gtk_theme(style_context, settings):
     selected_fg_color = rgba_to_hex(style_context.lookup_color("theme_selected_fg_color")[1])
     selected_bg_color = rgba_to_hex(style_context.lookup_color("theme_selected_bg_color")[1])
     logger.debug(_file_()+":"+_line_()+" Patching theme '%s' (prefer dark = '%r'), overriding tab 'checked' state': "
-        "foreground: %r, background: %r",
-        theme_name,
-        "yes" if variant == "dark" else "no",
-        selected_fg_color,
-        selected_bg_color,
-    )
+                 "foreground: %r, background: %r",
+                 theme_name,
+                 "yes" if variant == "dark" else "no",
+                 selected_fg_color,
+                 selected_bg_color,
+                 )
     css_data = dedent(
         """
         .custom_tab:checked {{

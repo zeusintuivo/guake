@@ -26,8 +26,8 @@ Boston, MA 02110-1301 USA
 #     print(time.time() - g_start, __file__, inspect.currentframe().f_back.f_lineno)
 
 import builtins
-import logging
 import inspect
+import logging
 import os
 import signal
 import subprocess
@@ -65,6 +65,7 @@ def _line_():
 
 def _file_():
     return str(__file__)
+
 
 # Force use X11 backend under wayland before any import of GDK through dependencies - This makes it floating and hides the icon but fixes other settings in the GUI
 os.environ["GDK_BACKEND"] = "x11"
@@ -635,7 +636,8 @@ def main():
                     logger.info(_file_()+":"+_line_()+" Startup script started with pid: %s", pid)
                 # Please ensure this is the last line !!!!
     else:
-        logger.info(_file_()+":"+_line_()+" --no-startup-script argument defined, so don't execute the startup script")
+        logger.info(_file_()+":"+_line_()
+                    + " --no-startup-script argument defined, so don't execute the startup script")
     if already_running:
         logger.info(_file_()+":"+_line_()+" Guake is already running")
     return already_running

@@ -18,9 +18,9 @@ License along with this program; if not, write to the
 Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
+import inspect
 import json
 import logging
-import inspect
 import os
 import shutil
 import subprocess
@@ -103,6 +103,7 @@ def _line_():
 def _file_():
     return str(__file__)
 
+
 instance = None
 RESPONSE_FORWARD = 0
 RESPONSE_BACKWARD = 1
@@ -136,7 +137,8 @@ class Guake(SimpleGladeApp):
         try:
             schema_source = load_schema()
         except GLib.Error:  # pylint: disable=catching-non-exception
-            logger.exception(_file_()+":"+_line_()+" Unable to load the GLib schema, try to compile it")
+            logger.exception(_file_()+":"+_line_()
+                             + " Unable to load the GLib schema, try to compile it")
             try_to_compile_glib_schemas()
             schema_source = load_schema()
         self.settings = Settings(schema_source)
@@ -146,11 +148,13 @@ class Guake(SimpleGladeApp):
             "schema-version" not in self.settings.general.keys()
             or self.settings.general.get_string("schema-version") != guake_version()
         ):
-            logger.exception(_file_()+":"+_line_()+" Schema from old guake version detected, regenerating schema")
+            logger.exception(_file_()+":"+_line_()
+                             + " Schema from old guake version detected, regenerating schema")
             try:
                 try_to_compile_glib_schemas()
             except subprocess.CalledProcessError:
-                logger.exception(_file_()+":"+_line_()+" Schema in non user-editable location, attempting to continue")
+                logger.exception(_file_()+":"+_line_()
+                                 + " Schema in non user-editable location, attempting to continue")
             schema_source = load_schema()
             self.settings = Settings(schema_source)
             self.settings.general.set_string("schema-version", guake_version())
@@ -733,7 +737,8 @@ class Guake(SimpleGladeApp):
         self.settings.styleFont.triggerOnChangedValue(self.settings.styleFont, "color")
         self.settings.styleBackground.triggerOnChangedValue(self.settings.styleBackground, "color")
 
-        logger.debug(_file_()+":"+_line_()+" Current window position: %r", self.window.get_position())
+        logger.debug(_file_()+":"+_line_()+" Current window position: %r",
+                     self.window.get_position())
         self.restore_pending_terminal_split()
         self.execute_hook("show")
 
@@ -1239,9 +1244,9 @@ class Guake(SimpleGladeApp):
         search_string = start.get_text(end)
 
         logger.debug(_file_()+":"+_line_()+" Searching for %r %s\n",
-            search_string,
-            "forward" if response_id == RESPONSE_FORWARD else "backward",
-        )
+                     search_string,
+                     "forward" if response_id == RESPONSE_FORWARD else "backward",
+                     )
 
         current_term = self.get_notebook().get_current_terminal()
         logger.debug(_file_()+":"+_line_()+" type: %r", type(current_term))
@@ -1312,8 +1317,8 @@ class Guake(SimpleGladeApp):
             except OSError as oserr:
                 if oserr.errno == 8:
                     logger.error(_file_()+":"+_line_()+" Hook execution failed! Check shebang at first line of %s!",
-                        hook,
-                    )
+                                 hook,
+                                 )
                     logger.debug(_file_()+":"+_line_()+" "+traceback.format_exc())
                 else:
                     logger.error(_file_()+":"+_line_()+" "+str(oserr))
@@ -1321,7 +1326,8 @@ class Guake(SimpleGladeApp):
                 logger.error(_file_()+":"+_line_()+" hook execution failed! %s", e)
                 logger.debug(_file_()+":"+_line_()+" "+traceback.format_exc())
             else:
-                logger.debug(_file_()+":"+_line_()+" hook on event %s has been executed", event_name)
+                logger.debug(_file_()+":"+_line_()
+                             + " hook on event %s has been executed", event_name)
 
     @save_tabs_when_changed
     def on_page_reorder(self, notebook, child, page_num):

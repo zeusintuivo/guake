@@ -17,8 +17,8 @@ License along with this program; if not, write to the
 Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
-import logging
 import inspect
+import logging
 import os
 
 import gi
@@ -346,7 +346,8 @@ class GSettingHandler:
             for term in terminals:
                 term.set_bold_is_bright(settings.get_boolean(key))
         except:  # pylint: disable=bare-except
-            logger.error(_file_()+":"+_line_()+" set_bold_is_bright not supported by your version of VTE")
+            logger.error(_file_()+":"+_line_()
+                         + " set_bold_is_bright not supported by your version of VTE")
 
     def palette_font_and_background_color_toggled(self, settings, key, user_data):
         """If the gconf var use_palette_font_and_background_color be changed, this method

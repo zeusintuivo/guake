@@ -2,8 +2,8 @@ import json
 import os
 
 import gi
-import logging
 import inspect
+import logging
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -81,7 +81,8 @@ class CustomCommands:
                 data_file = f.read()
                 return json.loads(data_file)
         except Exception as e:
-            logger.exception(_file_()+":"+_line_()+" Invalid custom command file %s. Exception: %s", file_name, str(e))
+            logger.exception(_file_()+":"+_line_()
+                             + " Invalid custom command file %s. Exception: %s", file_name, str(e))
 
     def build_menu(self):
         if not self.should_load():
@@ -95,8 +96,10 @@ class CustomCommands:
             try:
                 self._parse_custom_commands(obj, menu)
             except AttributeError:
-                logger.error(_file_()+":"+_line_()+" Loading session json file: %s", self.get_file_path())
-                logger.error(_file_()+":"+_line_()+" _parse_custom_commands parsing type: %s", type(obj))
+                logger.error(_file_()+":"+_line_()
+                             + " Loading session json file: %s", self.get_file_path())
+                logger.error(_file_()+":"+_line_()
+                             + " _parse_custom_commands parsing type: %s", type(obj))
                 logger.error(_file_()+":"+_line_()+" _parse_custom_commands parsing json: %s", obj)
                 # AttributeError: 'str' object has no attribute 'get', ignore and move on
                 pass
@@ -104,7 +107,8 @@ class CustomCommands:
         return menu
 
     def _parse_custom_commands(self, json_object, menu):
-        logger.info(_file_()+":"+_line_()+" _parse_custom_commands parsing type: %s", type(json_object))
+        logger.info(_file_()+":"+_line_()
+                    + " _parse_custom_commands parsing type: %s", type(json_object))
         logger.info(_file_()+":"+_line_()+" _parse_custom_commands parsing json: %s", json_object)
         if json_object.get("type") == "menu":
             newmenu = Gtk.Menu()

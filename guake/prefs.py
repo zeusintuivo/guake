@@ -17,8 +17,8 @@ License along with this program; if not, write to the
 Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
-import logging
 import inspect
+import logging
 import os
 import re
 import shutil
@@ -85,6 +85,7 @@ def _line_():
 
 def _file_():
     return str(__file__)
+
 
 # A regular expression to match possible python interpreters when
 # filling interpreters combo in preferences (including bpython and ipython)

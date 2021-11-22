@@ -20,8 +20,8 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
 import enum
-import logging
 import inspect
+import logging
 import os
 import subprocess
 import time
@@ -303,7 +303,8 @@ class RectCalculator:
             # Note: move_resize is only on GTK3
             window.resize(window_rect.width, window_rect.height)
             window.move(window_rect.x, window_rect.y)
-            logger.debug(_file_()+":"+_line_()+" Updated window position: %r", window.get_position())
+            logger.debug(_file_()+":"+_line_()
+                         + " Updated window position: %r", window.get_position())
 
         return window_rect
 
