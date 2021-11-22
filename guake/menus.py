@@ -7,7 +7,7 @@ from guake.customcommands import CustomCommands
 
 import inspect
 import logging
-
+import os
 # Create a custom logger
 logger = logging.getLogger(__name__)
 

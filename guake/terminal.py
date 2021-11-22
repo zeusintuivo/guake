@@ -455,7 +455,7 @@ class GuakeTerminal(Vte.Terminal):
             line_number = ""
         else:
             line_number = str(line_number)
-        logger.debug(_file_()+":"+_line_()+" Current working directory %s ", projectcwd)
+
         logger.debug(_file_()+":"+_line_()+" Opening file %s at line %s", filepath, line_number)
         resolved_cmdline = cmdline % {"file_path": filepath, "line_number": line_number}
         logger.debug(_file_()+":"+_line_()+" Command line: %s", resolved_cmdline)
