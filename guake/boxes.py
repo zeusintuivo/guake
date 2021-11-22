@@ -611,7 +611,7 @@ class DualTerminalBox(Gtk.Paned, TerminalHolder):
             try:
                 next(box.iter_terminals()).grab_focus()
             except StopIteration:
-                log.error("Both panes are empty")
+                logger.error(_file_()+":"+_line_()+" Both panes are empty")
         else:
             box.get_terminal().grab_focus()
 

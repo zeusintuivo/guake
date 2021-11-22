@@ -84,3 +84,5 @@ releasenotes/notes/reno.cache
 guake/paths.py
 guake/paths.py.dev
 RELEASENOTES.rst
+log
+

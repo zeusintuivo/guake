@@ -18,6 +18,8 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
 import logging
+import inspect
+import os
 
 from collections import defaultdict
 
@@ -33,8 +35,31 @@ from guake.common import pixmapfile
 from guake.split_utils import FocusMover
 from guake.split_utils import SplitMover
 
-log = logging.getLogger(__name__)
+# Create a custom logger
+logger = logging.getLogger(__name__)
 
+# Create handlers
+c_handler = logging.StreamHandler()
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/")+'guake.log')
+c_handler.setLevel(logging.WARNING)
+f_handler.setLevel(logging.ERROR)
+
+# Create formatters and add it to handlers
+c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+c_handler.setFormatter(c_format)
+f_handler.setFormatter(f_format)
+
+# Add handlers to the logger
+logger.addHandler(c_handler)
+logger.addHandler(f_handler)
+
+def _line_():
+    """Returns the current line number in our program."""
+    return str(inspect.currentframe().f_back.f_lineno)
+
+def _file_():
+    return str(__file__)
 
 class Keybindings:
 
@@ -208,7 +233,7 @@ class Keybindings:
 
         self.globalhotkeys[key] = value
         if key == "show-hide":
-            log.debug("reload_global: %r", value)
+            logger.debug(_file_()+":"+_line_()+" reload_global: %r", value)
             if not self.guake.hotkeys.bind(value, self.guake.show_hide):
                 keyval, mask = Gtk.accelerator_parse(value)
                 label = Gtk.accelerator_get_label(keyval, mask)
@@ -225,7 +250,7 @@ class Keybindings:
                 )
         elif key == "show-focus":
             if not self.guake.hotkeys.bind(value, self.guake.show_focus):
-                log.warning("can't bind show-focus key")
+                logger.warning(_file_()+":"+_line_()+" can't bind show-focus key")
                 return
 
     def activate(self, window, event):

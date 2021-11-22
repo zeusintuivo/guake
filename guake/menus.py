@@ -6,9 +6,33 @@ from gi.repository import Gtk
 from guake.customcommands import CustomCommands
 
 import logging
+import inspect
 
-log = logging.getLogger(__name__)
+# Create a custom logger
+logger = logging.getLogger(__name__)
 
+# Create handlers
+c_handler = logging.StreamHandler()
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/")+'guake.log')
+c_handler.setLevel(logging.WARNING)
+f_handler.setLevel(logging.ERROR)
+
+# Create formatters and add it to handlers
+c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+c_handler.setFormatter(c_format)
+f_handler.setFormatter(f_format)
+
+# Add handlers to the logger
+logger.addHandler(c_handler)
+logger.addHandler(f_handler)
+
+def _line_():
+    """Returns the current line number in our program."""
+    return str(inspect.currentframe().f_back.f_lineno)
+
+def _file_():
+    return str(__file__)
 
 def mk_tab_context_menu(callback_object):
     """Create the context menu for a notebook tab"""
@@ -192,7 +216,7 @@ def get_current_selection(terminal, window):
 
 def get_filename_under_cursor(terminal, selection):
     filename, _1, _2 = terminal.is_file_on_local_server(selection)
-    log.info("Current filename under cursor: %s", filename)
+    logger.info(_file_()+":"+_line_()+" Current filename under cursor: %s", filename)
     if filename:
         return filename
     return None
@@ -200,7 +224,7 @@ def get_filename_under_cursor(terminal, selection):
 
 def get_link_under_cursor(terminal):
     link = terminal.found_link
-    log.info("Current link under cursor: %s", link)
+    logger.info(_file_()+":"+_line_()+" Current link under cursor: %s", link)
     if link:
         return link
     return None
