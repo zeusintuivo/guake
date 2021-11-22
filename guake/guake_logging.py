@@ -18,10 +18,10 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
 
-import logging
 import inspect
-import os
+import logging
 import logging.config
+import os
 
 try:
     from colorlog import ColoredFormatter

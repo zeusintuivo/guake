@@ -5,8 +5,8 @@ from gi.repository import Gtk
 
 from guake.customcommands import CustomCommands
 
-import logging
 import inspect
+import logging
 
 # Create a custom logger
 logger = logging.getLogger(__name__)
