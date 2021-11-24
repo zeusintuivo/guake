@@ -522,7 +522,7 @@ class GuakeTerminal(Vte.Terminal):
             resolved_cmdline = "cd  " + projectcwd + " && " + resolved_cmdline + " "
             # resolved_cmdline += " &"
             # logger.debug(_file_()+":"+_line_()+" Openning new tab QUICKOPEN to execute")
-            # resolved_cmdline = "guake -n guake -e \"\"\"" + resolved_cmdline + 
+            # resolved_cmdline = "guake -n guake -e \"\"\"" + resolved_cmdline +
             # "\"\"\" guake -r 'QUICKOPEN' & "
             logger.debug(_file_() + ":" + _line_() + " Command line new: %s", resolved_cmdline)
             subprocess.call(resolved_cmdline, shell=True)
