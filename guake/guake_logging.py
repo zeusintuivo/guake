@@ -34,13 +34,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/")+'guake.log')
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
-c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -48,9 +48,11 @@ f_handler.setFormatter(f_format)
 logger.addHandler(c_handler)
 logger.addHandler(f_handler)
 
+
 def _line_():
     """Returns the current line number in our program."""
     return str(inspect.currentframe().f_back.f_lineno)
+
 
 def _file_():
     return str(__file__)
@@ -63,8 +65,8 @@ def setupLogging(debug_mode):
         base_logging_level = logging.INFO
 
     if ColoredFormatter:
-        level_str = logger.getLevelName(base_logging_level)
-        logger.config.dictConfig(
+        level_str = logging.getLevelName(base_logging_level)
+        logging.config.dictConfig(
             {
                 "version": 1,
                 "disable_existing_loggers": False,
@@ -100,4 +102,4 @@ def setupLogging(debug_mode):
     else:
         logging.basicConfig(level=base_logging_level, format="%(message)s")
     logger.setLevel(base_logging_level)
-    logger.debug(_file_()+":"+_line_()+" Logging configuration complete")
+    logger.debug("%s:%s  Logging configuration complete")

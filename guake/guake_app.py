@@ -82,13 +82,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/")+'guake.log')
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
-c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -96,9 +96,11 @@ f_handler.setFormatter(f_format)
 logger.addHandler(c_handler)
 logger.addHandler(f_handler)
 
+
 def _line_():
     """Returns the current line number in our program."""
     return str(inspect.currentframe().f_back.f_lineno)
+
 
 def _file_():
     return str(__file__)
@@ -123,12 +125,11 @@ GDK_WINDOW_STATE_ABOVE = 32
 
 
 class Guake(SimpleGladeApp):
-
-    """Guake main class. Handles specially the main window."""
+    """Guake main class. Handles specialy the main window."""
 
     def __init__(self):
         def load_schema():
-            logger.info(_file_()+":"+_line_()+" Loading Gnome schema from: %s", SCHEMA_DIR)
+            logger.info("%s:%s  Loading Gnome schema from: %s", _file_(), _line_(), SCHEMA_DIR)
 
             return Gio.SettingsSchemaSource.new_from_directory(
                 SCHEMA_DIR, Gio.SettingsSchemaSource.get_default(), False
@@ -137,8 +138,9 @@ class Guake(SimpleGladeApp):
         try:
             schema_source = load_schema()
         except GLib.Error:  # pylint: disable=catching-non-exception
-            logger.exception(_file_()+":"+_line_()
-                             + " Unable to load the GLib schema, try to compile it")
+            logger.exception(
+                "%s:%s  Unable to load the GLib schema, try to compile it", _file_(), _line_()
+            )
             try_to_compile_glib_schemas()
             schema_source = load_schema()
         self.settings = Settings(schema_source)
@@ -148,18 +150,24 @@ class Guake(SimpleGladeApp):
             "schema-version" not in self.settings.general.keys()
             or self.settings.general.get_string("schema-version") != guake_version()
         ):
-            logger.exception(_file_()+":"+_line_()
-                             + " Schema from old guake version detected, regenerating schema")
+            logger.exception(
+                "%s:%s Schema from old guake version detected, regenerating schema",
+                _file_(),
+                _line_(),
+            )
             try:
                 try_to_compile_glib_schemas()
             except subprocess.CalledProcessError:
-                logger.exception(_file_()+":"+_line_()
-                                 + " Schema in non user-editable location, attempting to continue")
+                logger.exception(
+                    "%s:%s Schema in non user-editable location, attempting to continue",
+                    _file_(),
+                    _line_(),
+                )
             schema_source = load_schema()
             self.settings = Settings(schema_source)
             self.settings.general.set_string("schema-version", guake_version())
 
-        logger.info(_file_()+":"+_line_()+" Language previously loaded from: %s", LOCALE_DIR)
+        logger.info("%s:%s  Language previously loaded from: %s", _file_(), _line_(), LOCALE_DIR)
 
         super().__init__(gladefile("guake.glade"))
 
@@ -167,9 +175,9 @@ class Guake(SimpleGladeApp):
         patch_gtk_theme(self.get_widget("window-root").get_style_context(), self.settings)
         self.add_callbacks(self)
 
-        logger.info(_file_()+":"+_line_()+" Guake Terminal %s", guake_version())
-        logger.info(_file_()+":"+_line_()+" VTE %s", vte_version())
-        logger.info(_file_()+":"+_line_()+" Gtk %s", gtk_version())
+        logger.info("%s:%s  Guake Terminal %s", _file_(), _line_(), guake_version())
+        logger.info("%s:%s  VTE %s", _file_(), _line_(), vte_version())
+        logger.info("%s:%s  Gtk %s", _file_(), _line_(), gtk_version())
 
         self.hidden = True
         self.forceHide = False
@@ -309,7 +317,7 @@ class Guake(SimpleGladeApp):
                 filename,
             )
 
-        logger.info(_file_()+":"+_line_()+" Guake initialized")
+        logger.info("%s:%s  Guake initialized", _file_(), _line_())
 
     def get_notebook(self):
         return self.notebook_manager.get_current_notebook()
@@ -335,7 +343,7 @@ class Guake(SimpleGladeApp):
                 self.hide()
                 self.show()
         else:
-            logger.warning(_file_()+":"+_line_()+" System doesn't support transparency")
+            logger.warning("%s:%s  System doesn't support transparency", _file_(), _line_())
             self.window.transparency = False
             self.window.set_visual(screen.get_system_visual())
 
@@ -441,13 +449,13 @@ class Guake(SimpleGladeApp):
     def set_bgcolor(self, bgcolor, current_terminal_only=False):
         if isinstance(bgcolor, str):
             c = Gdk.RGBA(0, 0, 0, 0)
-            logger.debug(_file_()+":"+_line_()+" Building Gdk Color from: %r", bgcolor)
+            logger.debug("%s:%s  Building Gdk Color from: %r", _file_(), _line_(), bgcolor)
             c.parse("#" + bgcolor)
             bgcolor = c
         if not isinstance(bgcolor, Gdk.RGBA):
             raise TypeError("color should be Gdk.RGBA, is: {!r}".format(bgcolor))
         bgcolor = self._apply_transparency_to_color(bgcolor)
-        logger.debug(_file_()+":"+_line_()+" setting background color to: %r", bgcolor)
+        logger.debug("%s:%s  setting background color to: %r", _file_(), _line_(), bgcolor)
 
         if current_terminal_only:
             self.get_notebook().get_current_terminal().set_color_background_custom(bgcolor)
@@ -459,12 +467,12 @@ class Guake(SimpleGladeApp):
     def set_fgcolor(self, fgcolor, current_terminal_only=False):
         if isinstance(fgcolor, str):
             c = Gdk.RGBA(0, 0, 0, 0)
-            logger.debug(_file_()+":"+_line_()+" Building Gdk Color from: %r", fgcolor)
+            logger.debug("%s:%s  Building Gdk Color from: %r", _file_(), _line_(), fgcolor)
             c.parse("#" + fgcolor)
             fgcolor = c
         if not isinstance(fgcolor, Gdk.RGBA):
             raise TypeError("color should be Gdk.RGBA, is: {!r}".format(fgcolor))
-        logger.debug(_file_()+":"+_line_()+" setting background color to: %r", fgcolor)
+        logger.debug("%s:%s  setting background color to: %r", _file_(), _line_(), fgcolor)
 
         if current_terminal_only:
             self.get_notebook().get_current_terminal().set_color_foreground_custom(fgcolor)
@@ -476,9 +484,9 @@ class Guake(SimpleGladeApp):
     def change_palette_name(self, palette_name):
         if isinstance(palette_name, str):
             if palette_name not in PALETTES:
-                logger.info(_file_()+":"+_line_()+" Palette name %s not found", palette_name)
+                logger.info("%s:%s  Palette name %s not found", _file_(), _line_(), palette_name)
                 return
-            logger.debug(_file_()+":"+_line_()+" Settings palette name to %s", palette_name)
+            logger.debug("%s:%s  Settings palette name to %s", _file_(), _line_(), palette_name)
             self.settings.styleFont.set_string("palette", PALETTES[palette_name])
             self.settings.styleFont.set_string("palette-name", palette_name)
             self.set_colors_from_settings()
@@ -531,7 +539,7 @@ class Guake(SimpleGladeApp):
         visible = window.get_property("visible")
         self.losefocus_time = get_server_time(self.window)
         if visible and value:
-            logger.info(_file_()+":"+_line_()+" Hiding on focus lose")
+            logger.info("%s:%s  Hiding on focus lose", _file_(), _line_())
             self.hide()
 
     def show_menu(self, status_icon, button, activate_time):
@@ -567,11 +575,11 @@ class Guake(SimpleGladeApp):
     def window_event(self, window, event):
         window_state = event.new_window_state
         self.fullscreen_manager.set_window_state(window_state)
-        logger.debug(_file_()+":"+_line_()+" Received window state event: %s", window_state)
+        logger.debug("%s:%s  Received window state event: %s", _file_(), _line_(), window_state)
 
     def show_hide(self, *args):
         """Toggles the main window visibility"""
-        logger.debug(_file_()+":"+_line_()+" Show_hide called")
+        logger.debug("%s:%s  Show_hide called", _file_(), _line_())
         if self.forceHide:
             self.forceHide = False
             return
@@ -583,7 +591,7 @@ class Guake(SimpleGladeApp):
             return
 
         if not self.window.get_property("visible"):
-            logger.info(_file_()+":"+_line_()+" Showing the terminal")
+            logger.info("%s:%s  Showing the terminal", _file_(), _line_())
             self.show()
             self.window.get_window().focus(0)
             self.set_terminal_focus()
@@ -592,11 +600,11 @@ class Guake(SimpleGladeApp):
         should_refocus = self.settings.general.get_boolean("window-refocus")
         has_focus = self.window.get_window().get_state() & Gdk.WindowState.FOCUSED
         if should_refocus and not has_focus:
-            logger.info(_file_()+":"+_line_()+" Refocussing the terminal")
+            logger.info("%s:%s  Refocussing the terminal", _file_(), _line_())
             self.window.get_window().focus(0)
             self.set_terminal_focus()
         else:
-            logger.info(_file_()+":"+_line_()+" Hiding the terminal")
+            logger.info("%s:%s  Hiding the terminal", _file_(), _line_())
             self.hide()
 
     def show_focus(self, *args):
@@ -619,7 +627,7 @@ class Guake(SimpleGladeApp):
                     and self.window.get_property("visible")
                     and not self.window.get_window().get_state() & Gdk.WindowState.FOCUSED
                 ):
-                    logger.debug(_file_()+":"+_line_()+" DBG: Restoring the focus to the terminal")
+                    logger.debug("%s:%s  DBG: Restoring the focus to the terminal", _file_(), _line_())
                     self.window.get_window().focus(event_time)
                     self.set_terminal_focus()
                     self.losefocus_time = 0
@@ -634,20 +642,20 @@ class Guake(SimpleGladeApp):
             return False
         self.prev_showhide_time = event_time
 
-        logger.debug(_file_()+":"+_line_()+" ")
-        logger.debug(_file_()+":"+_line_()+" =" * 80)
-        logger.debug(_file_()+":"+_line_()+" Window display")
+        logger.debug("%s:%s  ", _file_(), _line_())
+        logger.debug("%s:%s %s", _file_(), _line_(), ("=" * 80))
+        logger.debug("%s:%s  Window display", _file_(), _line_())
         if self.window:
             cur_state = int(self.window.get_state())
             is_sticky = bool(cur_state & GDK_WINDOW_STATE_STICKY)
             is_withdrawn = bool(cur_state & GDK_WINDOW_STATE_WITHDRAWN)
             is_above = bool(cur_state & GDK_WINDOW_STATE_ABOVE)
             is_iconified = self.is_iconified()
-            logger.debug(_file_()+":"+_line_()+" gtk.gdk.WindowState = %s", cur_state)
-            logger.debug(_file_()+":"+_line_()+" GDK_WINDOW_STATE_STICKY? %s", is_sticky)
-            logger.debug(_file_()+":"+_line_()+" GDK_WINDOW_STATE_WITHDRAWN? %s", is_withdrawn)
-            logger.debug(_file_()+":"+_line_()+" GDK_WINDOW_STATE_ABOVE? %s", is_above)
-            logger.debug(_file_()+":"+_line_()+" GDK_WINDOW_STATE_ICONIFIED? %s", is_iconified)
+            logger.debug("%s:%s  gtk.gdk.WindowState = %s", _file_(), _line_(), cur_state)
+            logger.debug("%s:%s  GDK_WINDOW_STATE_STICKY? %s", _file_(), _line_(), is_sticky)
+            logger.debug("%s:%s  GDK_WINDOW_STATE_WITHDRAWN? %s", _file_(), _line_(), is_withdrawn)
+            logger.debug("%s:%s  GDK_WINDOW_STATE_ABOVE? %s", _file_(), _line_(), is_above)
+            logger.debug("%s:%s  GDK_WINDOW_STATE_ICONIFIED? %s", _file_(), _line_(), is_iconified)
             return True
         return False
 
@@ -688,7 +696,7 @@ class Guake(SimpleGladeApp):
         self.settings.general.triggerOnChangedValue(self.settings.general, "use-scrollbar")
 
         # move the window even when in fullscreen-mode
-        logger.debug(_file_()+":"+_line_()+" Moving window to: %r", window_rect)
+        logger.debug("%s:%s  Moving window to: %r", _file_(), _line_(), window_rect)
         self.window.move(window_rect.x, window_rect.y)
 
         # this works around an issue in fluxbox
@@ -699,25 +707,27 @@ class Guake(SimpleGladeApp):
 
         # TODO PORT this
         # When minized, the window manager seems to refuse to resume
-        # logger.debug(_file_()+":"+_line_()+" self.window: %s. Dir=%s", type(self.window), dir(self.window))
+        # logger.debug(
+        #   "%s:%s self.window: %s. Dir=%s", _file_(), _line_(),
+        #   type(self.window), dir(self.window))
         # is_iconified = self.is_iconified()
         # if is_iconified:
-        #     logger.debug(_file_()+":"+_line_()+" Is iconified. Ubuntu Trick => "
+        #     logger.debug("%s:%s Is iconified. Ubuntu Trick => "
         #               "removing skip_taskbar_hint and skip_pager_hint "
-        #               "so deiconify can work!")
+        #               "so deiconify can work!", _file_(), _line_())
         #     self.get_widget('window-root').set_skip_taskbar_hint(False)
         #     self.get_widget('window-root').set_skip_pager_hint(False)
         #     self.get_widget('window-root').set_urgency_hint(False)
-        #     logger.debug(_file_()+":"+_line_()+" get_skip_taskbar_hint: {}".format(
+        #     logger.debug("%s:%s get_skip_taskbar_hint: {}", _file_(), _line_() ,format(
         #         self.get_widget('window-root').get_skip_taskbar_hint()))
-        #     logger.debug(_file_()+":"+_line_()+" get_skip_pager_hint: {}".format(
+        #     logger.debug("%s:%s get_skip_pager_hint: %s", _file_(), _line_() ,format(
         #         self.get_widget('window-root').get_skip_pager_hint()))
-        #     logger.debug(_file_()+":"+_line_()+" get_urgency_hint: {}".format(
+        #     logger.debug("%s:%s get_urgency_hint: %s", _file_(), _line_() ,format(
         #         self.get_widget('window-root').get_urgency_hint()))
         #     glib.timeout_add_seconds(1, lambda: self.timeout_restore(time))
         #
 
-        logger.debug(_file_()+":"+_line_()+" order to present and deiconify")
+        logger.debug("%s:%s  order to present and deiconify", _file_(), _line_())
         self.window.present()
         self.window.deiconify()
         self.window.show()
@@ -725,7 +735,7 @@ class Guake(SimpleGladeApp):
         self.window.set_type_hint(Gdk.WindowTypeHint.DOCK)
         self.window.set_type_hint(Gdk.WindowTypeHint.NORMAL)
 
-        # logger.debug(_file_()+":"+_line_()+" Restoring skip_taskbar_hint and skip_pager_hint")
+        # logger.debug("%s:%s Restoring skip_taskbar_hint and skip_pager_hint", _file_(), _line_())
         # if is_iconified:
         #     self.get_widget('window-root').set_skip_taskbar_hint(False)
         #     self.get_widget('window-root').set_skip_pager_hint(False)
@@ -737,8 +747,9 @@ class Guake(SimpleGladeApp):
         self.settings.styleFont.triggerOnChangedValue(self.settings.styleFont, "color")
         self.settings.styleBackground.triggerOnChangedValue(self.settings.styleBackground, "color")
 
-        logger.debug(_file_()+":"+_line_()+" Current window position: %r",
-                     self.window.get_position())
+        logger.debug(
+            "%s:%s  Current window position: %r", _file_(), _line_(), self.window.get_position()
+        )
         self.restore_pending_terminal_split()
         self.execute_hook("show")
 
@@ -747,7 +758,7 @@ class Guake(SimpleGladeApp):
         Hides the main window of the terminal and sets the visible
         flag to False.
         """
-        logger.debug(_file_()+":"+_line_()+" hide from remote")
+        logger.debug("%s:%s  hide from remote", _file_(), _line_())
         self.forceHide = True
         self.hide()
 
@@ -755,7 +766,7 @@ class Guake(SimpleGladeApp):
         """Show the main window of the terminal and sets the visible
         flag to False.
         """
-        logger.debug(_file_()+":"+_line_()+" show from remote")
+        logger.debug("%s:%s  show from remote", _file_(), _line_())
         self.forceHide = True
         self.show()
 
@@ -776,9 +787,9 @@ class Guake(SimpleGladeApp):
         if not self.hidden:
             # when displayed, GTK might refuse to move the window (X or Y position). Just hide and
             # redisplay it so the final position is correct
-            logger.debug(_file_()+":"+_line_()+" FORCING HIDE")
+            logger.debug("%s:%s  FORCING HIDE", _file_(), _line_())
             self.hide()
-            logger.debug(_file_()+":"+_line_()+" FORCING SHOW")
+            logger.debug("%s:%s  FORCING SHOW", _file_(), _line_())
             self.show()
 
     # -- configuration --
@@ -914,12 +925,12 @@ class Guake(SimpleGladeApp):
         prompt_tab_cfg = self.settings.general.get_int("prompt-on-close-tab")
         # "Prompt on tab close" config overrides "prompt on quit" config
         if prompt_cfg or (prompt_tab_cfg == 1 and procs > 0) or (prompt_tab_cfg == 2):
-            logger.debug(_file_()+":"+_line_()+" Remaining procs=%r", procs)
+            logger.debug("%s:%s  Remaining procs=%r", _file_(), _line_(), procs)
             if PromptQuitDialog(self.window, procs, tabs, notebooks).quit():
-                logger.info(_file_()+":"+_line_()+" Quitting Guake")
+                logger.info("%s:%s  Quitting Guake", _file_(), _line_())
                 Gtk.main_quit()
         else:
-            logger.info(_file_()+":"+_line_()+" Quitting Guake")
+            logger.info("%s:%s  Quitting Guake", _file_(), _line_())
             Gtk.main_quit()
 
     def accel_reset_terminal(self, *args):
@@ -1207,7 +1218,7 @@ class Guake(SimpleGladeApp):
         self.get_notebook().new_page_with_focus(directory, position=position)
 
     def find_tab(self, directory=None):
-        logger.debug(_file_()+":"+_line_()+" find")
+        logger.debug("%s:%s  find", _file_(), _line_())
         # TODO SEARCH
         HidePrevention(self.window).prevent()
         search_text = Gtk.TextView()
@@ -1243,14 +1254,17 @@ class Guake(SimpleGladeApp):
         start, end = dialog.buffer.get_bounds()
         search_string = start.get_text(end)
 
-        logger.debug(_file_()+":"+_line_()+" Searching for %r %s\n",
-                     search_string,
-                     "forward" if response_id == RESPONSE_FORWARD else "backward",
-                     )
+        logger.debug(
+            "%s:%s  Searching for %r %s\n",
+            _file_(),
+            _line_(),
+            search_string,
+            ("forward" if response_id == RESPONSE_FORWARD else "backward"),
+        )
 
         current_term = self.get_notebook().get_current_terminal()
-        logger.debug(_file_()+":"+_line_()+" type: %r", type(current_term))
-        logger.debug(_file_()+":"+_line_()+" dir: %r", dir(current_term))
+        logger.debug("%s:%s  type: %r", _file_(), _line_(), type(current_term))
+        logger.debug("%s:%s  dir: %r", _file_(), _line_(), dir(current_term))
         current_term.search_set_gregex()
         current_term.search_get_gregex()
 
@@ -1316,18 +1330,22 @@ class Guake(SimpleGladeApp):
                     pass
             except OSError as oserr:
                 if oserr.errno == 8:
-                    logger.error(_file_()+":"+_line_()+" Hook execution failed! Check shebang at first line of %s!",
-                                 hook,
-                                 )
-                    logger.debug(_file_()+":"+_line_()+" "+traceback.format_exc())
+                    logger.error(
+                        "%s:%s  Hook execution failed! Check shebang at first line of %s!",
+                        _file_(),
+                        _line_(),
+                        hook,
+                    )
+                    logger.debug("%s:%s  %s", _file_(), _line_(), traceback.format_exc())
                 else:
-                    logger.error(_file_()+":"+_line_()+" "+str(oserr))
+                    logger.error("%s:%s  %s", _file_(), _line_(), str(oserr))
             except Exception as e:
-                logger.error(_file_()+":"+_line_()+" hook execution failed! %s", e)
-                logger.debug(_file_()+":"+_line_()+" "+traceback.format_exc())
+                logger.error("%s:%s  hook execution failed! %s", _file_(), _line_(), e)
+                logger.debug("%s:%s  %s", _file_(), _line_(), traceback.format_exc())
             else:
-                logger.debug(_file_()+":"+_line_()
-                             + " hook on event %s has been executed", event_name)
+                logger.debug(
+                    "%s:%s  hook on event %s has been executed", _file_(), _line_(), event_name
+                )
 
     @save_tabs_when_changed
     def on_page_reorder(self, notebook, child, page_num):
@@ -1372,20 +1390,21 @@ class Guake(SimpleGladeApp):
         session_file = self.get_xdg_config_directory() / filename
         with session_file.open("w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=4)
-        logger.info(_file_()+":"+_line_()+" Guake tabs saved to %s", session_file)
+        logger.info("%s:%s  Guake tabs saved to %s", _file_(), _line_(), session_file)
 
     def restore_tabs(self, filename="session.json", suppress_notify=False):
         session_file = self.get_xdg_config_directory() / filename
         if not session_file.exists():
-            logger.info(_file_()+":"+_line_()+" Cannot find session.json file")
+            logger.info("%s:%s  Cannot find session.json file", _file_(), _line_())
             return
         with session_file.open(encoding="utf-8") as f:
             try:
                 config = json.load(f)
             except Exception:
-                logger.warning(_file_()+":"+_line_()+" %s is broken", session_file)
+                logger.warning("%s:%s  %s is broken", _file_(), _line_(), session_file)
                 shutil.copy(
-                    session_file, self.get_xdg_config_directory() / "{0}.bak".format(filename),
+                    session_file, 
+					self.get_xdg_config_directory() / "{0}.bak".format(filename),
                 )
                 img_filename = pixmapfile("guake-notification.png")
                 notifier.showMessage(
@@ -1460,11 +1479,14 @@ class Guake(SimpleGladeApp):
                     for i in range(current_pages):
                         nb.delete_page(0)
         except KeyError:
-            logger.warning(_file_()+":"+_line_()+" %s schema is broken", session_file)
+            logger.warning("%s:%s  %s schema is broken", _file_(), _line_(), session_file)
             shutil.copy(
-                session_file, self.get_xdg_config_directory() / "{}.bak".format(filename),
+                session_file, 
+				self.get_xdg_config_directory() / "{}.bak".format(filename),
             )
-            with (self.get_xdg_config_directory() / "{}.log.err.".format(filename)).open("w") as f:
+            with (self.get_xdg_config_directory() / "{}.log.err.".format(filename)).open(
+                "w", encoding="utf-8"
+			) as f:
                 traceback.print_exc(file=f)
             img_filename = pixmapfile("guake-notification.png")
             notifier.showMessage(
@@ -1486,7 +1508,7 @@ class Guake(SimpleGladeApp):
             filename = pixmapfile("guake-notification.png")
             notifier.showMessage(_("Guake Terminal"), _("Your tabs has been restored!"), filename)
 
-        logger.info(_file_()+":"+_line_()+" Guake tabs restored from %s", session_file)
+        logger.info("%s:%s Guake tabs restored from %s", _file_(), _line_(), session_file)
 
     def load_background_image(self, filename):
         self.background_image_manager.load_from_file(filename)

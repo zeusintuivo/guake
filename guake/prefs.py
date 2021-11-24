@@ -65,13 +65,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/")+'guake.log')
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
-c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -79,9 +79,11 @@ f_handler.setFormatter(f_format)
 logger.addHandler(c_handler)
 logger.addHandler(f_handler)
 
+
 def _line_():
     """Returns the current line number in our program."""
     return str(inspect.currentframe().f_back.f_lineno)
+
 
 def _file_():
     return str(__file__)
@@ -872,7 +874,7 @@ class PrefsDialog(SimpleGladeApp):
         """
         combo = self.get_widget("palette_name")
         found = False
-        logger.debug(_file_()+":"+_line_()+" wanting palette: %r", palette_name)
+        logger.debug("%s:%s  wanting palette: %r", _file_(), _line_(), palette_name)
         for i in combo.get_model():
             if i[0] == palette_name:
                 combo.set_active_iter(i.iter)
@@ -951,7 +953,7 @@ class PrefsDialog(SimpleGladeApp):
 
     def _load_hooks_settings(self):
         """load hooks settings"""
-        logger.debug(_file_()+":"+_line_()+" xecuting _load_hooks_settings")
+        logger.debug("%s:%s  xecuting _load_hooks_settings", _file_(), _line_())
         hook_show_widget = self.get_widget("hook_show")
         hook_show_setting = self.settings.hooks.get_string("show")
         if None not in (hook_show_widget, hook_show_setting):
