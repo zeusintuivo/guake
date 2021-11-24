@@ -627,7 +627,8 @@ class Guake(SimpleGladeApp):
                     and self.window.get_property("visible")
                     and not self.window.get_window().get_state() & Gdk.WindowState.FOCUSED
                 ):
-                    logger.debug("%s:%s  DBG: Restoring the focus to the terminal", _file_(), _line_())
+                    logger.debug("%s:%s  DBG: Restoring the focus to the terminal",
+                                 _file_(), _line_())
                     self.window.get_window().focus(event_time)
                     self.set_terminal_focus()
                     self.losefocus_time = 0
@@ -1403,8 +1404,8 @@ class Guake(SimpleGladeApp):
             except Exception:
                 logger.warning("%s:%s  %s is broken", _file_(), _line_(), session_file)
                 shutil.copy(
-                    session_file, 
-					self.get_xdg_config_directory() / "{0}.bak".format(filename),
+                    session_file,
+                    self.get_xdg_config_directory() / "{0}.bak".format(filename),
                 )
                 img_filename = pixmapfile("guake-notification.png")
                 notifier.showMessage(
@@ -1481,12 +1482,12 @@ class Guake(SimpleGladeApp):
         except KeyError:
             logger.warning("%s:%s  %s schema is broken", _file_(), _line_(), session_file)
             shutil.copy(
-                session_file, 
-				self.get_xdg_config_directory() / "{}.bak".format(filename),
+                session_file,
+                self.get_xdg_config_directory() / "{}.bak".format(filename),
             )
             with (self.get_xdg_config_directory() / "{}.log.err.".format(filename)).open(
                 "w", encoding="utf-8"
-			) as f:
+            ) as f:
                 traceback.print_exc(file=f)
             img_filename = pixmapfile("guake-notification.png")
             notifier.showMessage(

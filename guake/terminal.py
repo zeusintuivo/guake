@@ -149,7 +149,6 @@ class GuakeTerminal(Vte.Terminal):
 
         self.setup_drag_and_drop()
 
-
     def setup_drag_and_drop(self):
         self.targets = Gtk.TargetList()
         self.targets.add_uri_targets(DropTargets.URIS)

@@ -636,4 +636,3 @@ class NotebookManager(GObject.Object):
         for k in self.notebooks:
             r_fg_c += self.notebooks[k].get_running_fg_processes_count()
         return r_fg_c
-
