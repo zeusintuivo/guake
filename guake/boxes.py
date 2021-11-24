@@ -208,7 +208,9 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
             self.child = terminal_holder
             self.add(self.child)
         else:
-            raise RuntimeError(f"Error adding (RootTerminalBox.add({type(terminal_holder)}))")
+            raise RuntimeError(
+                "Error adding (RootTerminalBox.add({}))".format(type(terminal_holder))
+            )
 
     def get_child(self):
         return self.child
@@ -419,6 +421,7 @@ class TerminalBox(Gtk.Box, TerminalHolder):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
         self.terminal = None
+        self.scroll = None
 
     def set_terminal(self, terminal):
         """Packs the terminal widget."""
@@ -441,7 +444,7 @@ class TerminalBox(Gtk.Box, TerminalHolder):
     def add_scroll_bar(self):
         """Packs the scrollbar."""
         adj = self.terminal.get_vadjustment()
-        self.scroll = Gtk.VScrollbar(adj)
+        self.scroll = Gtk.VScrollbar(adjustment=adj)
         self.scroll.show()
         self.pack_start(self.scroll, False, False, 0)
 
@@ -661,8 +664,8 @@ class TabLabelEventBox(Gtk.EventBox):
     def __init__(self, notebook, text, settings):
         super().__init__()
         self.notebook = notebook
-        self.box = Gtk.Box(Gtk.Orientation.HORIZONTAL, 0, visible=True)
-        self.label = Gtk.Label(text, visible=True)
+        self.box = Gtk.Box(homogeneous=Gtk.Orientation.HORIZONTAL, spacing=0, visible=True)
+        self.label = Gtk.Label(label=text, visible=True)
         self.close_button = Gtk.Button(
             image=Gtk.Image.new_from_icon_name("window-close", Gtk.IconSize.MENU),
             relief=Gtk.ReliefStyle.NONE,

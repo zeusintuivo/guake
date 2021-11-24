@@ -153,7 +153,7 @@ class HidePrevention:
     def __init__(self, window):
         """Create a new HidePrevention object like `HidePrevention(window)`"""
         if not isinstance(window, Gtk.Window):
-            raise ValueError(f"window must be of type Gtk.Window, not of type {type(window)}")
+            raise ValueError("window must be of type Gtk.Window, not of type %s" % type(window))
         self.window = window
 
     def may_hide(self):
@@ -380,7 +380,7 @@ class BackgroundImageManager:
             return
 
         if not os.path.exists(filename):
-            raise FileNotFoundError(f"Background file not found: {filename}")
+            raise FileNotFoundError("Background file not found: %s" % (filename))
 
         if self.filename:
             # Cached rendered surface
@@ -402,7 +402,7 @@ class BackgroundImageManager:
         return surface
 
     def render_target(self, width, height, mode, scale_mode=cairo.FILTER_BILINEAR):
-        """Paint bacground image to the specific size target surface with different layout mode"""
+        """Paint background image to the specific size target surface with different layout mode"""
         if not self.bg_surface:
             return None
 

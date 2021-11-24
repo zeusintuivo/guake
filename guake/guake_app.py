@@ -78,6 +78,7 @@ from guake.utils import TabNameUtils
 from guake.utils import get_server_time
 from guake.utils import save_tabs_when_changed
 
+
 # Create a custom logger
 logger = logging.getLogger(__name__)
 
@@ -455,7 +456,7 @@ class Guake(SimpleGladeApp):
             c.parse("#" + bgcolor)
             bgcolor = c
         if not isinstance(bgcolor, Gdk.RGBA):
-            raise TypeError(f"color should be Gdk.RGBA, is: {bgcolor}")
+            raise TypeError("color should be Gdk.RGBA, is: {!r}".format(bgcolor))
         bgcolor = self._apply_transparency_to_color(bgcolor)
         logger.debug("%s:%s  setting background color to: %r", _file_(), _line_(), bgcolor)
 
@@ -473,7 +474,7 @@ class Guake(SimpleGladeApp):
             c.parse("#" + fgcolor)
             fgcolor = c
         if not isinstance(fgcolor, Gdk.RGBA):
-            raise TypeError(f"color should be Gdk.RGBA, is: {fgcolor}")
+            raise TypeError("color should be Gdk.RGBA, is: {!r}".format(fgcolor))
         logger.debug("%s:%s  setting background color to: %r", _file_(), _line_(), fgcolor)
 
         if current_terminal_only:
@@ -1350,7 +1351,9 @@ class Guake(SimpleGladeApp):
             if search_query:
                 # TODO search provider should be selectable (someone might
                 # prefer bing.com, the internet is a strange place ¯\_(ツ)_/¯ )
-                search_url = f"https://www.google.com/search?q={search_query}&safe=off"
+                search_url = "https://www.duckduckgo.com/{!s}".format(
+                    search_query,
+                )
                 Gtk.show_uri(self.window.get_screen(), search_url, get_server_time(self.window))
         return True
 
@@ -1362,7 +1365,7 @@ class Guake(SimpleGladeApp):
 
     def execute_hook(self, event_name):
         """Execute shell commands related to current event_name"""
-        hook = self.settings.hooks.get_string(f"{event_name}")
+        hook = self.settings.hooks.get_string("{!s}".format(event_name))
         if hook is not None and hook != "":
             hook = hook.split()
             try:
@@ -1444,7 +1447,7 @@ class Guake(SimpleGladeApp):
                 logger.warning("%s:%s  %s is broken", _file_(), _line_(), session_file)
                 shutil.copy(
                     session_file,
-                    self.get_xdg_config_directory() / f"{filename}.bak",
+                    self.get_xdg_config_directory() / "{0}.bak".format(filename),
                 )
                 img_filename = pixmapfile("guake-notification.png")
                 notifier.showMessage(
@@ -1522,9 +1525,9 @@ class Guake(SimpleGladeApp):
             logger.warning("%s:%s  %s schema is broken", _file_(), _line_(), session_file)
             shutil.copy(
                 session_file,
-                self.get_xdg_config_directory() / f"{filename}.bak",
+                self.get_xdg_config_directory() / "{}.bak".format(filename),
             )
-            with (self.get_xdg_config_directory() / f"{filename}.log.err").open(
+            with (self.get_xdg_config_directory() / "{}.log.err.".format(filename)).open(
                 "w", encoding="utf-8"
             ) as f:
                 traceback.print_exc(file=f)

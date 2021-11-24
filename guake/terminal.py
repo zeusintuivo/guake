@@ -307,7 +307,7 @@ class GuakeTerminal(Vte.Terminal):
         directory = os.path.expanduser("~")
         if self.pid is not None:
             try:
-                cwd = os.readlink(f"/proc/{self.pid}/cwd")
+                cwd = os.readlink("/proc/{}/cwd".format(self.pid))
             except Exception:
                 return directory
             if os.path.exists(cwd):
@@ -363,7 +363,7 @@ class GuakeTerminal(Vte.Terminal):
                 return
             with pt.open() as f:
                 for i, line in enumerate(f.readlines()):
-                    if line.startswith(f"def {py_func}"):
+                    if line.startswith("def {}".format(py_func)):
                         return i + 1
                         break
 
@@ -447,29 +447,30 @@ class GuakeTerminal(Vte.Terminal):
 
     def quick_open(self):
         self.copy_clipboard()
+        projectcwd = self.get_current_directory()
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         text = clipboard.wait_for_text()
         if not text:
             return
         (fp, lo, co) = self.is_file_on_local_server(text)
-        self._execute_quick_open(fp, lo)
+        self._execute_quick_open(fp, lo, projectcwd)
 
     def _on_ctrl_click_matcher(self, matched_string):
         value, tag = matched_string
         found_matcher = False
-        project_cwd = self.get_current_directory()
-        logger.debug("%s:%s  project_cwd: %s", _file_(), _line_(), project_cwd)
+        projectcwd = self.get_current_directory()
+        logger.debug("%s:%s  project_cwd: %s", _file_(), _line_(), projectcwd)
         logger.debug("%s:%s  matched string: %s", _file_(), _line_(), matched_string)
         # First searching in additional matchers
         use_quick_open = self.guake.settings.general.get_boolean("quick-open-enable")
         if use_quick_open:
-            found_matcher = self._find_quick_matcher(value)
+            found_matcher = self._find_quick_matcher(value, projectcwd)
         if not found_matcher:
             self.found_link = self.handleTerminalMatch(matched_string)
             if self.found_link:
                 self.browse_link_under_cursor()
 
-    def _find_quick_matcher(self, value):
+    def _find_quick_matcher(self, value, projectcwd):
         for _useless, _otheruseless, extractor in QUICK_OPEN_MATCHERS:
             g = re.compile(extractor).match(value)
             if g and g.groups():
@@ -492,11 +493,11 @@ class GuakeTerminal(Vte.Terminal):
                     continue
                 if line_number is None:
                     line_number = "1"
-                self._execute_quick_open(filepath, line_number)
+                self._execute_quick_open(filepath, line_number, projectcwd)
                 return True
         return False
 
-    def _execute_quick_open(self, filepath, line_number):
+    def _execute_quick_open(self, filepath, line_number, projectcwd):
         if not filepath:
             return
         cmdline = self.guake.settings.general.get_string("quick-open-command-line")
@@ -517,8 +518,13 @@ class GuakeTerminal(Vte.Terminal):
                 resolved_cmdline += "\n"
             self.feed_child(resolved_cmdline)
         else:
-            resolved_cmdline += " &"
-            logger.debug("%s:%s  Executing it independently", _file_(), _line_())
+            logger.debug(_file_() + ":" + _line_() + " Executing it independently")
+            resolved_cmdline = "cd  " + projectcwd + " && " + resolved_cmdline + " "
+            # resolved_cmdline += " &"
+            # logger.debug(_file_()+":"+_line_()+" Openning new tab QUICKOPEN to execute")
+            # resolved_cmdline = "guake -n guake -e \"\"\"" + resolved_cmdline + 
+            # "\"\"\" guake -r 'QUICKOPEN' & "
+            logger.debug(_file_() + ":" + _line_() + " Command line new: %s", resolved_cmdline)
             subprocess.call(resolved_cmdline, shell=True)
 
     def handleTerminalMatch(self, matched_string):
@@ -530,13 +536,13 @@ class GuakeTerminal(Vte.Terminal):
                 # ready to be used.
                 pass
             elif TERMINAL_MATCH_TAGS[tag] == "http":
-                value = f"http://{value}"
+                value = "http://%s" % value
             elif TERMINAL_MATCH_TAGS[tag] == "https":
-                value = f"https://{value}"
+                value = "https://%s" % value
             elif TERMINAL_MATCH_TAGS[tag] == "ftp":
-                value = f"ftp://{value}"
+                value = "ftp://%s" % value
             elif TERMINAL_MATCH_TAGS[tag] == "email":
-                value = f"mailto:{value}"
+                value = "mailto:%s" % value
 
         if value:
             return value
@@ -627,6 +633,8 @@ class GuakeTerminal(Vte.Terminal):
 
         logger.debug("%s:%s  Spawn command: %s", _file_(), _line_(), " ".join(argv))
 
+        # GLib.SpawnFlags(Vte.SPAWN_NO_PARENT_ENVV),
+        # GLib.SpawnFlags.DO_NOT_REAP_CHILD,
         pid = self.spawn_sync(
             Vte.PtyFlags.DEFAULT,
             directory,
@@ -674,7 +682,7 @@ class GuakeTerminal(Vte.Terminal):
 
     def set_color_foreground_custom(self, fgcolor, *args, **kwargs):
         """Sets custom foreground color for this terminal"""
-        print(f"set_color_foreground_custom: {self.uuid}")
+        print("set_color_foreground_custom: {}".format(self.uuid))
         self.custom_fgcolor = fgcolor
         super().set_color_foreground(self.custom_fgcolor, *args, **kwargs)
 
