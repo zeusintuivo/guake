@@ -30,13 +30,15 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(
+    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -150,9 +152,10 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
         self.search_frame.set_margin_end(12)
         self.search_frame.get_style_context().add_class("background")
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(
-            b"#search-frame border {" b"    padding: 5px 5px 5px 5px;" b"    border: none;" b"}"
-        )
+        css_provider.load_from_data(b"#search-frame border {"
+                                    b"    padding: 5px 5px 5px 5px;"
+                                    b"    border: none;"
+                                    b"}")
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
             css_provider,
@@ -162,7 +165,8 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
         # Add to revealer
         self.search_revealer.add(self.search_frame)
         self.search_revealer.set_transition_duration(500)
-        self.search_revealer.set_transition_type(Gtk.RevealerTransitionType.CROSSFADE)
+        self.search_revealer.set_transition_type(
+            Gtk.RevealerTransitionType.CROSSFADE)
         self.search_revealer.set_valign(Gtk.Align.END)
         self.search_revealer.set_halign(Gtk.Align.END)
 
@@ -170,11 +174,14 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
         self.add_overlay(self.search_revealer)
 
         # Events
-        self.search_entry.connect("key-press-event", self.on_search_entry_keypress)
+        self.search_entry.connect("key-press-event",
+                                  self.on_search_entry_keypress)
         self.search_entry.connect("changed", self.set_search)
         self.search_entry.connect("activate", self.do_search)
-        self.search_entry.connect("focus-in-event", self.on_search_entry_focus_in)
-        self.search_entry.connect("focus-out-event", self.on_search_entry_focus_out)
+        self.search_entry.connect("focus-in-event",
+                                  self.on_search_entry_focus_in)
+        self.search_entry.connect("focus-out-event",
+                                  self.on_search_entry_focus_out)
         self.search_next_btn.connect("clicked", self.on_search_next_clicked)
         self.search_prev_btn.connect("clicked", self.on_search_prev_clicked)
         self.search_close_btn.connect("clicked", self.close_search_box)
@@ -187,9 +194,9 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
 
         self.search_revealer.hide()
         self.search_revealer_show_cb_id = self.search_revealer.connect(
-            "show", search_revealer_show_cb
-        )
-        self.search_frame.connect("unmap", lambda x: self.search_revealer.hide())
+            "show", search_revealer_show_cb)
+        self.search_frame.connect("unmap",
+                                  lambda x: self.search_revealer.hide())
 
     def get_terminals(self):
         return self.get_child().get_terminals()
@@ -208,8 +215,8 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
             self.child = terminal_holder
             self.add(self.child)
         else:
-            raise RuntimeError(
-                "Error adding (RootTerminalBox.add({}))".format(type(terminal_holder)))
+            raise RuntimeError("Error adding (RootTerminalBox.add({}))".format(
+                type(terminal_holder)))
 
     def get_child(self):
         return self.child
@@ -234,20 +241,22 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
             panes.append({"type": None, "directory": None})
             return
         if isinstance(box, DualTerminalBox):
-            btype = "dual" + ("_h" if box.orient is DualTerminalBox.ORIENT_V else "_v")
+            btype = "dual" + ("_h" if box.orient is DualTerminalBox.ORIENT_V
+                              else "_v")
             panes.append({"type": btype, "directory": None})
             self.save_box_layout(box.get_child1(), panes)
             self.save_box_layout(box.get_child2(), panes)
         elif isinstance(box, TerminalBox):
             btype = "term"
             directory = box.terminal.get_current_directory()
-            panes.append(
-                {
-                    "type": btype,
-                    "directory": directory,
-                    "custom_colors": box.terminal.get_custom_colors_dict(),
-                }
-            )
+            panes.append({
+                "type":
+                btype,
+                "directory":
+                directory,
+                "custom_colors":
+                box.terminal.get_custom_colors_dict(),
+            })
 
     def restore_box_layout(self, box, panes: list):
         """Restore box layout by `panes`"""
@@ -266,13 +275,12 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
                     #
                     # Otherwise we will stuck in the infinite loop, since new DualTerminalBox
                     # cannot get any allocation when Guake is invisible
-                    if (
-                        not self.guake.window.get_property("visible")
-                        or self.get_notebook()
-                        is not self.guake.notebook_manager.get_current_notebook()
-                    ):
+                    if (not self.guake.window.get_property("visible")
+                            or self.get_notebook() is not self.guake.
+                            notebook_manager.get_current_notebook()):
                         panes.insert(0, cur)
-                        self.guake._failed_restore_page_split.append((self, box, panes))
+                        self.guake._failed_restore_page_split.append(
+                            (self, box, panes))
                         return
 
                 # UI didn't update, wait for it
@@ -325,20 +333,22 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
 
     def block_notebook_on_button_press_id(self):
         GObject.signal_handler_block(
-            self.get_notebook(), self.get_notebook().notebook_on_button_press_id
-        )
+            self.get_notebook(),
+            self.get_notebook().notebook_on_button_press_id)
 
     def unblock_notebook_on_button_press_id(self):
         GObject.signal_handler_unblock(
-            self.get_notebook(), self.get_notebook().notebook_on_button_press_id
-        )
+            self.get_notebook(),
+            self.get_notebook().notebook_on_button_press_id)
 
     def show_search_box(self):
         if not self.search_revealer.get_reveal_child():
-            GObject.signal_handler_block(self.search_revealer, self.search_revealer_show_cb_id)
+            GObject.signal_handler_block(self.search_revealer,
+                                         self.search_revealer_show_cb_id)
             self.search_revealer.set_visible(True)
             self.search_revealer.set_reveal_child(True)
-            GObject.signal_handler_unblock(self.search_revealer, self.search_revealer_show_cb_id)
+            GObject.signal_handler_unblock(self.search_revealer,
+                                           self.search_revealer_show_cb_id)
             # XXX: Mestery line to avoid Gtk-CRITICAL stuff
             # (guake:22694): Gtk-CRITICAL **: 18:04:57.345:
             # gtk_widget_event: assertion 'WIDGET_REALIZED_FOR_EVENT (widget, event)' failed
@@ -401,8 +411,7 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
             # Set search regex on term
             self.searchstring = text
             self.searchre = Vte.Regex.new_for_search(
-                text, -1, Vte.REGEX_FLAGS_DEFAULT | PCRE2_MULTILINE
-            )
+                text, -1, Vte.REGEX_FLAGS_DEFAULT | PCRE2_MULTILINE)
             term.search_set_regex(self.searchre, 0)
         self.do_search(None)
 
@@ -414,9 +423,7 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
 
 
 class TerminalBox(Gtk.Box, TerminalHolder):
-
     """A box to group the terminal and a scrollbar."""
-
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
         self.terminal = None
@@ -428,14 +435,12 @@ class TerminalBox(Gtk.Box, TerminalHolder):
             raise RuntimeError("TerminalBox: terminal already set")
         self.terminal = terminal
         self.terminal.handler_ids.append(
-            self.terminal.connect("grab-focus", self.on_terminal_focus)
-        )
+            self.terminal.connect("grab-focus", self.on_terminal_focus))
         self.terminal.handler_ids.append(
-            self.terminal.connect("button-press-event", self.on_button_press, None)
-        )
+            self.terminal.connect("button-press-event", self.on_button_press,
+                                  None))
         self.terminal.handler_ids.append(
-            self.terminal.connect("child-exited", self.on_terminal_exited)
-        )
+            self.terminal.connect("child-exited", self.on_terminal_exited))
         self.pack_start(self.terminal, True, True, 0)
         self.terminal.show()
         self.add_scroll_bar()
@@ -448,17 +453,14 @@ class TerminalBox(Gtk.Box, TerminalHolder):
         self.pack_start(self.scroll, False, False, 0)
 
         self.terminal.handler_ids.append(
-            self.terminal.connect("scroll-event", self.__scroll_event_cb)
-        )
+            self.terminal.connect("scroll-event", self.__scroll_event_cb))
 
     def __scroll_event_cb(self, widget, event):
         # Adjust scrolling speed when adding "shift" or "shift + ctrl"
         adj = self.scroll.get_adjustment()
         page_size = adj.get_page_size()
-        if (
-            event.get_state() & Gdk.ModifierType.SHIFT_MASK
-            and event.get_state() & Gdk.ModifierType.CONTROL_MASK
-        ):
+        if (event.get_state() & Gdk.ModifierType.SHIFT_MASK
+                and event.get_state() & Gdk.ModifierType.CONTROL_MASK):
             # Ctrl + Shift + Mouse Scroll (4 pages)
             adj.set_page_increment(page_size * 40)
         elif event.get_state() & Gdk.ModifierType.SHIFT_MASK:
@@ -545,10 +547,9 @@ class TerminalBox(Gtk.Box, TerminalHolder):
     def on_button_press(self, target, event, user_data):
         if event.button == 3:
             # First send to background process if handled, do nothing else
-            if (
-                not event.get_state() & Gdk.ModifierType.SHIFT_MASK
-                and Vte.Terminal.do_button_press_event(self.terminal, event)
-            ):
+            if (not event.get_state() & Gdk.ModifierType.SHIFT_MASK
+                    and Vte.Terminal.do_button_press_event(
+                        self.terminal, event)):
                 return True
 
             menu = mk_terminal_context_menu(
@@ -602,7 +603,8 @@ class DualTerminalBox(Gtk.Paned, TerminalHolder):
             print("wtf, what have you added to me???")
 
     def get_terminals(self):
-        return self.get_child1().get_terminals() + self.get_child2().get_terminals()
+        return self.get_child1().get_terminals() + self.get_child2(
+        ).get_terminals()
 
     def iter_terminals(self):
         for t in self.get_child1().iter_terminals():
@@ -663,16 +665,18 @@ class TabLabelEventBox(Gtk.EventBox):
     def __init__(self, notebook, text, settings):
         super().__init__()
         self.notebook = notebook
-        self.box = Gtk.Box(homogeneous=Gtk.Orientation.HORIZONTAL, spacing=0, visible=True)
+        self.box = Gtk.Box(homogeneous=Gtk.Orientation.HORIZONTAL,
+                           spacing=0,
+                           visible=True)
         self.label = Gtk.Label(label=text, visible=True)
         self.close_button = Gtk.Button(
-            image=Gtk.Image.new_from_icon_name("window-close", Gtk.IconSize.MENU),
+            image=Gtk.Image.new_from_icon_name("window-close",
+                                               Gtk.IconSize.MENU),
             relief=Gtk.ReliefStyle.NONE,
         )
         self.close_button.connect("clicked", self.on_close)
-        settings.general.bind(
-            "tab-close-buttons", self.close_button, "visible", Gio.SettingsBindFlags.GET
-        )
+        settings.general.bind("tab-close-buttons", self.close_button,
+                              "visible", Gio.SettingsBindFlags.GET)
         self.box.pack_start(self.label, True, True, 0)
         self.box.pack_end(self.close_button, False, False, 0)
         self.add(self.box)
@@ -698,10 +702,12 @@ class TabLabelEventBox(Gtk.EventBox):
                 menu.popup_at_pointer(event)
             except AttributeError:
                 # Gtk 3.18 fallback ("'Menu' object has no attribute 'popup_at_pointer'")
-                menu.popup(None, None, None, None, event.button, event.get_time())
+                menu.popup(None, None, None, None, event.button,
+                           event.get_time())
             return True
         if event.button == 2:
-            prompt_cfg = self.notebook.guake.settings.general.get_int("prompt-on-close-tab")
+            prompt_cfg = self.notebook.guake.settings.general.get_int(
+                "prompt-on-close-tab")
             self.notebook.delete_page_by_label(self, prompt=prompt_cfg)
             return True
         if event.button == 1 and event.type == Gdk.EventType._2BUTTON_PRESS:
@@ -716,10 +722,12 @@ class TabLabelEventBox(Gtk.EventBox):
     @save_tabs_when_changed
     def on_rename(self, user_data):
         HidePrevention(self.get_toplevel()).prevent()
-        dialog = RenameDialog(self.notebook.guake.window, self.label.get_text())
+        dialog = RenameDialog(self.notebook.guake.window,
+                              self.label.get_text())
         r = dialog.run()
         if r == Gtk.ResponseType.ACCEPT:
-            new_text = TabNameUtils.shorten(dialog.get_text(), self.notebook.guake.settings)
+            new_text = TabNameUtils.shorten(dialog.get_text(),
+                                            self.notebook.guake.settings)
             page_num = self.notebook.find_tab_index_by_label(self)
             self.notebook.rename_page(page_num, new_text, True)
         dialog.destroy()
@@ -730,15 +738,18 @@ class TabLabelEventBox(Gtk.EventBox):
     @save_tabs_when_changed
     def on_reset_custom_colors(self, user_data):
         HidePrevention(self.get_toplevel()).prevent()
-        if PromptResetColorsDialog(self.notebook.guake.window).reset_tab_custom_colors():
+        if PromptResetColorsDialog(
+                self.notebook.guake.window).reset_tab_custom_colors():
             page_num = self.notebook.find_tab_index_by_label(self)
             for t in self.notebook.get_nth_page(page_num).iter_terminals():
                 t.reset_custom_colors()
-            self.notebook.guake.set_colors_from_settings_on_page(page_num=page_num)
+            self.notebook.guake.set_colors_from_settings_on_page(
+                page_num=page_num)
         HidePrevention(self.get_toplevel()).allow()
 
         self.grab_focus_on_last_focused_terminal()
 
     def on_close(self, user_data):
-        prompt_cfg = self.notebook.guake.settings.general.get_int("prompt-on-close-tab")
+        prompt_cfg = self.notebook.guake.settings.general.get_int(
+            "prompt-on-close-tab")
         self.notebook.delete_page_by_label(self, prompt=prompt_cfg)

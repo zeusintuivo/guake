@@ -23,7 +23,8 @@ def populate_display(display):
     print("Display: {}".format(display.get_name()))
     print()
     # pylint: disable=R1719
-    print("RGBA visual: {}".format(True if screen.get_rgba_visual() else False))
+    print(
+        "RGBA visual: {}".format(True if screen.get_rgba_visual() else False))
     print()
     print("Composited: {}".format(screen.is_composited()))
     print()
@@ -31,7 +32,9 @@ def populate_display(display):
     n_monitors = display.get_n_monitors()
     for i in range(n_monitors):
         monitor = display.get_monitor(i)
-        v = " ".join(j for j in (monitor.get_manufacturer(), monitor.get_model()) if j)
+        v = " ".join(j
+                     for j in (monitor.get_manufacturer(), monitor.get_model())
+                     if j)
         print("* Monitor: {} - {}".format(i, v))
 
         # Geometry
@@ -61,7 +64,8 @@ def populate_display(display):
         print("    * Refresh rate:\t{}".format(v))
 
         # Subpixel layout
-        print("    * Subpixel layout:\t{}".format(monitor.get_subpixel_layout().value_nick))
+        print("    * Subpixel layout:\t{}".format(
+            monitor.get_subpixel_layout().value_nick))
 
 
 def get_version():

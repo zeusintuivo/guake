@@ -38,9 +38,7 @@ class RenameDialog(Gtk.Dialog):
 
 
 class PromptQuitDialog(Gtk.MessageDialog):
-
     """Prompts the user whether to quit/close a tab."""
-
     def __init__(self, parent, procs, tabs, notebooks):
         """Prompts the user whether to quit or not if there are procs running.
         """
@@ -76,7 +74,8 @@ class PromptQuitDialog(Gtk.MessageDialog):
             proc_str = _("There are {0} processes still running").format(procs)
 
         self.set_markup(primary_msg)
-        self.format_secondary_markup("<b>{0}{1}{2}.</b>".format(proc_str, tab_str, notebooks_str))
+        self.format_secondary_markup("<b>{0}{1}{2}.</b>".format(
+            proc_str, tab_str, notebooks_str))
 
     def quit(self):
         """Run the "are you sure" dialog for quitting Guake"""
@@ -98,9 +97,7 @@ class PromptQuitDialog(Gtk.MessageDialog):
 
 
 class PromptResetColorsDialog(Gtk.MessageDialog):
-
     """Prompts the user whether to reset tab colors."""
-
     def __init__(self, parent):
         super().__init__(
             parent,

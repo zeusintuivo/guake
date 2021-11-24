@@ -52,13 +52,15 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(
+    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -96,10 +98,10 @@ def get_server_time(widget):
 # Decorator for save-tabs-when-changed
 def save_tabs_when_changed(func):
     """Decorator for save-tabs-when-changed"""
-
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
-        logger.debug("%s:%s  mom, I've been called: %s %s", _file_(), _line_(), func.__name__, func)
+        logger.debug("%s:%s  mom, I've been called: %s %s", _file_(), _line_(),
+                     func.__name__, func)
 
         # Find me the Guake!
         clsname = args[0].__class__.__name__
@@ -133,7 +135,8 @@ def restore_preferences(filename):
     # XXX: Hardcode?
     with open(filename, "rb") as f:
         prefs = f.read()
-    with subprocess.Popen(["dconf", "load", "/apps/guake/"], stdin=subprocess.PIPE) as p:
+    with subprocess.Popen(["dconf", "load", "/apps/guake/"],
+                          stdin=subprocess.PIPE) as p:
         p.communicate(input=prefs)
 
 
@@ -153,7 +156,9 @@ class HidePrevention:
     def __init__(self, window):
         """Create a new HidePrevention object like `HidePrevention(window)`"""
         if not isinstance(window, Gtk.Window):
-            raise ValueError("window must be of type Gtk.Window, not of type %s" % type(window))
+            raise ValueError(
+                "window must be of type Gtk.Window, not of type %s" %
+                type(window))
         self.window = window
 
     def may_hide(self):
@@ -221,11 +226,8 @@ class FullscreenManager:
 
     def toggle_fullscreen_hide_tabbar(self):
         if self.is_fullscreen():
-            if (
-                self.settings.general.get_boolean("fullscreen-hide-tabbar")
-                and self.guake
-                and self.guake.notebook_manager
-            ):
+            if (self.settings.general.get_boolean("fullscreen-hide-tabbar")
+                    and self.guake and self.guake.notebook_manager):
                 self.guake.notebook_manager.set_notebooks_tabbar_visible(False)
         else:
             if self.guake and self.guake.notebook_manager:
@@ -245,48 +247,62 @@ class RectCalculator:
         width_percents = settings.general.get_int("window-width")
         halignment = settings.general.get_int("window-halignment")
         valignment = settings.general.get_int("window-valignment")
-        vdisplacement = settings.general.get_int("window-vertical-displacement")
-        hdisplacement = settings.general.get_int("window-horizontal-displacement")
+        vdisplacement = settings.general.get_int(
+            "window-vertical-displacement")
+        hdisplacement = settings.general.get_int(
+            "window-horizontal-displacement")
 
         logger.debug("%s:%s  set_final_window_rect", _file_(), _line_())
-        logger.debug("%s:%s    height_percents = %s", _file_(), _line_(), height_percents)
-        logger.debug("%s:%s    width_percents = %s", _file_(), _line_(), width_percents)
-        logger.debug("%s:%s    halignment = %s", _file_(), _line_(), halignment)
-        logger.debug("%s:%s    valignment = %s", _file_(), _line_(), valignment)
-        logger.debug("%s:%s    hdisplacement = %s", _file_(), _line_(), hdisplacement)
-        logger.debug("%s:%s    vdisplacement = %s", _file_(), _line_(), vdisplacement)
+        logger.debug("%s:%s    height_percents = %s", _file_(), _line_(),
+                     height_percents)
+        logger.debug("%s:%s    width_percents = %s", _file_(), _line_(),
+                     width_percents)
+        logger.debug("%s:%s    halignment = %s", _file_(), _line_(),
+                     halignment)
+        logger.debug("%s:%s    valignment = %s", _file_(), _line_(),
+                     valignment)
+        logger.debug("%s:%s    hdisplacement = %s", _file_(), _line_(),
+                     hdisplacement)
+        logger.debug("%s:%s    vdisplacement = %s", _file_(), _line_(),
+                     vdisplacement)
 
         # get the rectangle just from the destination monitor
         screen = window.get_screen()
         monitor = cls.get_final_window_monitor(settings, window)
         window_rect = screen.get_monitor_geometry(monitor)
         logger.debug("%s:%s  Current monitor geometry", _file_(), _line_())
-        logger.debug("%s:%s    window_rect.x: %s", _file_(), _line_(), window_rect.x)
-        logger.debug("%s:%s    window_rect.y: %s", _file_(), _line_(), window_rect.y)
-        logger.debug("%s:%s    window_rect.height: %s", _file_(), _line_(), window_rect.height)
-        logger.debug("%s:%s    window_rect.width: %s", _file_(), _line_(), window_rect.width)
+        logger.debug("%s:%s    window_rect.x: %s", _file_(), _line_(),
+                     window_rect.x)
+        logger.debug("%s:%s    window_rect.y: %s", _file_(), _line_(),
+                     window_rect.y)
+        logger.debug("%s:%s    window_rect.height: %s", _file_(), _line_(),
+                     window_rect.height)
+        logger.debug("%s:%s    window_rect.width: %s", _file_(), _line_(),
+                     window_rect.width)
 
         total_height = window_rect.height
         total_width = window_rect.width
 
         if halignment == ALIGN_CENTER:
             logger.debug("%s:%s  aligning to center!", _file_(), _line_())
-            window_rect.width = int(float(total_width) * float(width_percents) / 100.0)
+            window_rect.width = int(
+                float(total_width) * float(width_percents) / 100.0)
             window_rect.x += (total_width - window_rect.width) / 2
         elif halignment == ALIGN_LEFT:
             logger.debug("%s:%s  aligning to left!", _file_(), _line_())
             window_rect.width = int(
-                float(total_width - hdisplacement) * float(width_percents) / 100.0
-            )
+                float(total_width - hdisplacement) * float(width_percents) /
+                100.0)
             window_rect.x += hdisplacement
         elif halignment == ALIGN_RIGHT:
             logger.debug("%s:%s  aligning to right!", _file_(), _line_())
             window_rect.width = int(
-                float(total_width - hdisplacement) * float(width_percents) / 100.0
-            )
+                float(total_width - hdisplacement) * float(width_percents) /
+                100.0)
             window_rect.x += total_width - window_rect.width - hdisplacement
 
-        window_rect.height = int(float(total_height) * float(height_percents) / 100.0)
+        window_rect.height = int(
+            float(total_height) * float(height_percents) / 100.0)
         if valignment == ALIGN_TOP:
             window_rect.y += vdisplacement
         elif valignment == ALIGN_BOTTOM:
@@ -297,18 +313,22 @@ class RectCalculator:
             window.move(window_rect.x, window_rect.y)
             window.maximize()
         elif not FullscreenManager(settings, window).is_fullscreen():
-            logger.debug("%s:%s  RESIZING MAIN WINDOW WITH VALUES:", _file_(), _line_())
+            logger.debug("%s:%s  RESIZING MAIN WINDOW WITH VALUES:", _file_(),
+                         _line_())
             window.unmaximize()
-            logger.debug("%s:%s    window_rect.x: %s", _file_(), _line_(), window_rect.x)
-            logger.debug("%s:%s    window_rect.y: %s", _file_(), _line_(), window_rect.y)
-            logger.debug("%s:%s    window_rect.height: %s", _file_(), _line_(), window_rect.height)
-            logger.debug("%s:%s    window_rect.width: %s", _file_(), _line_(), window_rect.width)
+            logger.debug("%s:%s    window_rect.x: %s", _file_(), _line_(),
+                         window_rect.x)
+            logger.debug("%s:%s    window_rect.y: %s", _file_(), _line_(),
+                         window_rect.y)
+            logger.debug("%s:%s    window_rect.height: %s", _file_(), _line_(),
+                         window_rect.height)
+            logger.debug("%s:%s    window_rect.width: %s", _file_(), _line_(),
+                         window_rect.width)
             # Note: move_resize is only on GTK3
             window.resize(window_rect.width, window_rect.height)
             window.move(window_rect.x, window_rect.y)
-            logger.debug(
-                "%s:%s  Updated window position: %r", _file_(), _line_(), window.get_position()
-            )
+            logger.debug("%s:%s  Updated window position: %r", _file_(),
+                         _line_(), window.get_position())
 
         return window_rect
 
@@ -352,7 +372,10 @@ class ImageLayoutMode(enum.IntEnum):
 
 
 class BackgroundImageManager:
-    def __init__(self, window, filename=None, layout_mode=ImageLayoutMode.SCALE):
+    def __init__(self,
+                 window,
+                 filename=None,
+                 layout_mode=ImageLayoutMode.SCALE):
         self.window = window
         self.filename = ""
         self.bg_surface = self.load_from_file(filename) if filename else None
@@ -380,7 +403,8 @@ class BackgroundImageManager:
             return
 
         if not os.path.exists(filename):
-            raise FileNotFoundError("Background file not found: %s" % (filename))
+            raise FileNotFoundError("Background file not found: %s" %
+                                    (filename))
 
         if self.filename:
             # Cached rendered surface
@@ -390,7 +414,8 @@ class BackgroundImageManager:
         self.filename = filename
         img = Gtk.Image.new_from_file(filename)
         pixbuf = img.get_pixbuf()
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, pixbuf.get_width(), pixbuf.get_height())
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, pixbuf.get_width(),
+                                     pixbuf.get_height())
         cr = cairo.Context(surface)
         Gdk.cairo_set_source_pixbuf(cr, pixbuf, 0, 0)
         cr.set_operator(cairo.OPERATOR_SOURCE)
@@ -401,7 +426,11 @@ class BackgroundImageManager:
         self.window.queue_draw()
         return surface
 
-    def render_target(self, width, height, mode, scale_mode=cairo.FILTER_BILINEAR):
+    def render_target(self,
+                      width,
+                      height,
+                      mode,
+                      scale_mode=cairo.FILTER_BILINEAR):
         """Paint background image to the specific size target surface with different layout mode"""
         if not self.bg_surface:
             return None
@@ -449,9 +478,9 @@ class BackgroundImageManager:
 
         # Step 1. Get target surface
         #         (paint background image into widget size surface by layout mode)
-        surface = self.render_target(
-            widget.get_allocated_width(), widget.get_allocated_height(), self.layout_mode
-        )
+        surface = self.render_target(widget.get_allocated_width(),
+                                     widget.get_allocated_height(),
+                                     self.layout_mode)
 
         cr.save()
         # Step 2. Paint target surface to context (in our case, the RootTerminalBox)
@@ -469,8 +498,8 @@ class BackgroundImageManager:
         #
         child = widget.get_child()
         child_surface = cr.get_target().create_similar(
-            cairo.CONTENT_COLOR_ALPHA, child.get_allocated_width(), child.get_allocated_height()
-        )
+            cairo.CONTENT_COLOR_ALPHA, child.get_allocated_width(),
+            child.get_allocated_height())
         child_cr = cairo.Context(child_surface)
 
         # Re-paint child draw into child context (which using child_surface as target)

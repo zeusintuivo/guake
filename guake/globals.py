@@ -37,13 +37,15 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(
+    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -178,7 +180,11 @@ QUICK_OPEN_MATCHERS = [
         r"^\s*.*\:\slínea\s[0-9]+",
         r"^\s*(.*)\:\slínea\s([0-9]+)",
     ),
-    ("Python pytest report", r"^\s.*\:\:[a-zA-Z0-9\_]+\s", r"^\s*(.*\:\:[a-zA-Z0-9\_]+)\s",),
+    (
+        "Python pytest report",
+        r"^\s.*\:\:[a-zA-Z0-9\_]+\s",
+        r"^\s*(.*\:\:[a-zA-Z0-9\_]+)\s",
+    ),
     (
         "line starts by 'ERROR in Filename:line' pattern (GCC/make). File path should exists.",
         r"\s.\S[^\s\s].[a-zA-Z0-9\/\_\-\.\ ]+\.?[a-zA-Z0-9]+\:[0-9]+",
