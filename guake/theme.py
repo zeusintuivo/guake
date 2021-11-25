@@ -20,15 +20,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -60,20 +58,24 @@ def get_resource_dirs(resource):
     """
     dirs = [
         os.path.join(dir, resource)
-        for dir in itertools.chain(GLib.get_system_data_dirs(),
-                                   GUAKE_THEME_DIR, GLib.get_user_data_dir())
+        for dir in itertools.chain(
+            GLib.get_system_data_dirs(), GUAKE_THEME_DIR, GLib.get_user_data_dir()
+        )
     ]
-    dirs += [os.path.join(os.path.expanduser("~"), ".{}".format(resource))]
+    dirs += [os.path.join(os.path.expanduser("~"), f".{resource}")]
 
     return [Path(dir) for dir in dirs if os.path.isdir(dir)]
 
 
 def list_all_themes():
-    return sorted({
-        x.name
-        for theme_dir in get_resource_dirs("themes")
-        for x in theme_dir.iterdir() if x.is_dir()
-    })
+    return sorted(
+        {
+            x.name
+            for theme_dir in get_resource_dirs("themes")
+            for x in theme_dir.iterdir()
+            if x.is_dir()
+        }
+    )
 
 
 def select_gtk_theme(settings):
@@ -85,15 +87,12 @@ def select_gtk_theme(settings):
         return
 
     gtk_theme_name = settings.general.get_string("gtk-theme-name")
-    logger.debug("%s:%s  Wanted GTK theme: %r", _file_(), _line_(),
-                 gtk_theme_name)
+    logger.debug("%s:%s  Wanted GTK theme: %r", _file_(), _line_(), gtk_theme_name)
     gtk_settings.set_property("gtk-theme-name", gtk_theme_name)
 
     prefer_dark_theme = settings.general.get_boolean("gtk-prefer-dark-theme")
-    logger.debug("%s:%s  Prefer dark theme: %r", _file_(), _line_(),
-                 prefer_dark_theme)
-    gtk_settings.set_property("gtk-application-prefer-dark-theme",
-                              prefer_dark_theme)
+    logger.debug("%s:%s  Prefer dark theme: %r", _file_(), _line_(), prefer_dark_theme)
+    gtk_settings.set_property("gtk-application-prefer-dark-theme", prefer_dark_theme)
 
 
 def get_gtk_theme(settings):
@@ -106,9 +105,7 @@ def patch_gtk_theme(style_context, settings):
     theme_name, variant = get_gtk_theme(settings)
 
     def rgba_to_hex(color):
-        return "#{0:02x}{1:02x}{2:02x}".format(int(color.red * 255),
-                                               int(color.green * 255),
-                                               int(color.blue * 255))
+        return f"#{''.join(f'{int(i*255):02x}' for i in (color.red, color.green, color.blue))}"
 
     # for n in [
     #     "inverted_bg_color",
@@ -122,10 +119,8 @@ def patch_gtk_theme(style_context, settings):
     #     ]:
     #     s = style_context.lookup_color(n)
     #     print(n, s, rgba_to_hex(s[1]))
-    selected_fg_color = rgba_to_hex(
-        style_context.lookup_color("theme_selected_fg_color")[1])
-    selected_bg_color = rgba_to_hex(
-        style_context.lookup_color("theme_selected_bg_color")[1])
+    selected_fg_color = rgba_to_hex(style_context.lookup_color("theme_selected_fg_color")[1])
+    selected_bg_color = rgba_to_hex(style_context.lookup_color("theme_selected_bg_color")[1])
     logger.debug(
         "%s:%s Patching theme '%s' (prefer dark = '%r'), overriding tab 'checked' state': "
         "foreground: %r, background: %r",
@@ -136,13 +131,14 @@ def patch_gtk_theme(style_context, settings):
         selected_fg_color,
         selected_bg_color,
     )
-    css_data = dedent("""
+    css_data = dedent(
+        f"""
         .custom_tab:checked {{
             color: {selected_fg_color};
             background: {selected_bg_color};
         }}
-        """.format(selected_bg_color=selected_bg_color,
-                   selected_fg_color=selected_fg_color)).encode()
+        """
+    ).encode()
     style_provider = Gtk.CssProvider()
     style_provider.load_from_data(css_data)
     Gtk.StyleContext.add_provider_for_screen(

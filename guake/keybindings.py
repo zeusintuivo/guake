@@ -40,15 +40,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -68,6 +66,7 @@ def _file_():
 
 class Keybindings:
     """Handles changes in keyboard shortcuts."""
+
     def __init__(self, guake):
         """Constructor of Keyboard, only receives the guake instance
         to be used in internal methods.
@@ -81,14 +80,13 @@ class Keybindings:
         self.globalhotkeys = {}
         globalkeys = ["show-hide", "show-focus"]
         for key in globalkeys:
-            guake.settings.keybindingsGlobal.onChangedValue(
-                key, self.reload_global)
+            guake.settings.keybindingsGlobal.onChangedValue(key, self.reload_global)
             guake.settings.keybindingsGlobal.triggerOnChangedValue(
-                guake.settings.keybindingsGlobal, key, None)
+                guake.settings.keybindingsGlobal, key, None
+            )
 
         def x(*args):
-            prompt_cfg = self.guake.settings.general.get_int(
-                "prompt-on-close-tab")
+            prompt_cfg = self.guake.settings.general.get_int("prompt-on-close-tab")
             self.guake.get_notebook().delete_page_current(prompt=prompt_cfg)
 
         # Setup local keys
@@ -128,78 +126,101 @@ class Keybindings:
             ("reset-terminal", self.guake.accel_reset_terminal),
             (
                 "split-tab-vertical",
-                lambda *args: self.guake.get_notebook().get_current_terminal().
-                get_parent().split_v() or True,
+                lambda *args: self.guake.get_notebook()
+                .get_current_terminal()
+                .get_parent()
+                .split_v()
+                or True,
             ),
             (
                 "split-tab-horizontal",
-                lambda *args: self.guake.get_notebook().get_current_terminal().
-                get_parent().split_h() or True,
+                lambda *args: self.guake.get_notebook()
+                .get_current_terminal()
+                .get_parent()
+                .split_h()
+                or True,
             ),
             (
                 "close-terminal",
-                lambda *args: self.guake.get_notebook().get_current_terminal().
-                kill() or True,
+                lambda *args: self.guake.get_notebook().get_current_terminal().kill() or True,
             ),
             (
                 "focus-terminal-up",
-                (lambda *args: FocusMover(self.guake.window).move_up(
-                    self.guake.get_notebook().get_current_terminal()) or True),
+                (
+                    lambda *args: FocusMover(self.guake.window).move_up(
+                        self.guake.get_notebook().get_current_terminal()
+                    )
+                    or True
+                ),
             ),
             (
                 "focus-terminal-down",
-                (lambda *args: FocusMover(self.guake.window).move_down(
-                    self.guake.get_notebook().get_current_terminal()) or True),
+                (
+                    lambda *args: FocusMover(self.guake.window).move_down(
+                        self.guake.get_notebook().get_current_terminal()
+                    )
+                    or True
+                ),
             ),
             (
                 "focus-terminal-right",
-                (lambda *args: FocusMover(self.guake.window).move_right(
-                    self.guake.get_notebook().get_current_terminal()) or True),
+                (
+                    lambda *args: FocusMover(self.guake.window).move_right(
+                        self.guake.get_notebook().get_current_terminal()
+                    )
+                    or True
+                ),
             ),
             (
                 "focus-terminal-left",
-                (lambda *args: FocusMover(self.guake.window).move_left(
-                    self.guake.get_notebook().get_current_terminal()) or True),
+                (
+                    lambda *args: FocusMover(self.guake.window).move_left(
+                        self.guake.get_notebook().get_current_terminal()
+                    )
+                    or True
+                ),
             ),
             (
                 "move-terminal-split-up",
                 (
-                    lambda *args: SplitMover.
-                    move_up(  # keep make style from concat this lines
+                    lambda *args: SplitMover.move_up(  # keep make style from concat this lines
                         self.guake.get_notebook().get_current_terminal()
-                    ) or True),
+                    )
+                    or True
+                ),
             ),
             (
                 "move-terminal-split-down",
                 (
-                    lambda *args: SplitMover.
-                    move_down(  # keep make style from concat this lines
+                    lambda *args: SplitMover.move_down(  # keep make style from concat this lines
                         self.guake.get_notebook().get_current_terminal()
-                    ) or True),
+                    )
+                    or True
+                ),
             ),
             (
                 "move-terminal-split-left",
                 (
-                    lambda *args: SplitMover.
-                    move_left(  # keep make style from concat this lines
+                    lambda *args: SplitMover.move_left(  # keep make style from concat this lines
                         self.guake.get_notebook().get_current_terminal()
-                    ) or True),
+                    )
+                    or True
+                ),
             ),
             (
                 "move-terminal-split-right",
                 (
-                    lambda *args: SplitMover.
-                    move_right(  # keep make style from concat this lines
+                    lambda *args: SplitMover.move_right(  # keep make style from concat this lines
                         self.guake.get_notebook().get_current_terminal()
-                    ) or True),
+                    )
+                    or True
+                ),
             ),
             ("search-terminal", self.guake.accel_search_terminal),
-            ("toggle-hide-on-lose-focus",
-             self.guake.accel_toggle_hide_on_lose_focus),
+            ("toggle-hide-on-lose-focus", self.guake.accel_toggle_hide_on_lose_focus),
         ]
         for key, _ in self.keys:
-            guake.settings.keybindingsLocal.onChangedValue(
-                key, self.reload_accelerators)
+            guake.settings.keybindingsLocal.onChangedValue(key, self.reload_accelerators)
             self.reload_accelerators()
 
     def reload_global(self, settings, key, user_data):
@@ -221,15 +242,16 @@ class Keybindings:
                 filename = pixmapfile("guake-notification.png")
                 notifier.showMessage(
                     _("Guake Terminal"),
-                    _("A problem happened when binding <b>%s</b> key.\n"
-                      "Please use Guake Preferences dialog to choose another "
-                      "key") % label,
+                    _(
+                        "A problem happened when binding <b>%s</b> key.\n"
+                        "Please use Guake Preferences dialog to choose another "
+                        "key"
+                    )
+                    % label,
                     filename,
                 )
-        elif key == "show-focus" and not self.guake.hotkeys.bind(
-                value, self.guake.show_focus):
-            logger.warning("%s:%s  can't bind show-focus key", _file_(),
-                           _line_())
+        elif key == "show-focus" and not self.guake.hotkeys.bind(value, self.guake.show_focus):
+            logger.warning("%s:%s  can't bind show-focus key", _file_(), _line_())
             return
 
     def activate(self, window, event):
@@ -274,7 +296,8 @@ class Keybindings:
 
         for binding, action in self.keys:
             key, mask = Gtk.accelerator_parse(
-                self.guake.settings.keybindingsLocal.get_string(binding))
+                self.guake.settings.keybindingsLocal.get_string(binding)
+            )
             if key > 0:
                 self._lookup[mask][key] = action
                 self._masks |= mask

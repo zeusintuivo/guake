@@ -33,15 +33,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -67,38 +65,39 @@ def setupLogging(debug_mode):
 
     if ColoredFormatter:
         level_str = logging.getLevelName(base_logging_level)
-        logging.config.dictConfig({
-            "version": 1,
-            "disable_existing_loggers": False,
-            "loggers": {
-                "": {
-                    "handlers": ["default"],
-                    "level": level_str,
-                    "propagate": True,
-                },
-            },
-            "handlers": {
-                "default": {
-                    "level": level_str,
-                    "class": "logging.StreamHandler",
-                    "formatter": "default",
-                },
-            },
-            "formatters": {
-                "default": {
-                    "()": "colorlog.ColoredFormatter",
-                    "format":
-                    "%(log_color)s%(levelname)-8s%(reset)s %(message)s",
-                    "log_colors": {
-                        "DEBUG": "cyan",
-                        "INFO": "green",
-                        "WARNING": "yellow",
-                        "ERROR": "red",
-                        "CRITICAL": "red,bg_white",
+        logging.config.dictConfig(
+            {
+                "version": 1,
+                "disable_existing_loggers": False,
+                "loggers": {
+                    "": {
+                        "handlers": ["default"],
+                        "level": level_str,
+                        "propagate": True,
                     },
-                }
-            },
-        })
+                },
+                "handlers": {
+                    "default": {
+                        "level": level_str,
+                        "class": "logging.StreamHandler",
+                        "formatter": "default",
+                    },
+                },
+                "formatters": {
+                    "default": {
+                        "()": "colorlog.ColoredFormatter",
+                        "format": "%(log_color)s%(levelname)-8s%(reset)s %(message)s",
+                        "log_colors": {
+                            "DEBUG": "cyan",
+                            "INFO": "green",
+                            "WARNING": "yellow",
+                            "ERROR": "red",
+                            "CRITICAL": "red,bg_white",
+                        },
+                    }
+                },
+            }
+        )
     else:
         logging.basicConfig(level=base_logging_level, format="%(message)s")
     logger.setLevel(base_logging_level)

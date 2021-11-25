@@ -8,20 +8,19 @@ from guake.customcommands import CustomCommands
 import inspect
 import logging
 import os
+
 # Create a custom logger
 logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + 'guake.log')
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
-c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-f_format = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -52,8 +51,7 @@ def mk_tab_context_menu(callback_object):
     mi_rename.connect("activate", callback_object.on_rename)
     menu.add(mi_rename)
     mi_reset_custom_colors = Gtk.MenuItem(_("Reset custom colors"))
-    mi_reset_custom_colors.connect("activate",
-                                   callback_object.on_reset_custom_colors)
+    mi_reset_custom_colors.connect("activate", callback_object.on_reset_custom_colors)
     menu.add(mi_reset_custom_colors)
     mi_close = Gtk.MenuItem(_("Close"))
     mi_close.connect("activate", callback_object.on_close)
@@ -124,7 +122,7 @@ def mk_terminal_context_menu(terminal, window, settings, callback_object):
     mi = Gtk.MenuItem(_("Split ―"))
     mi.connect("activate", callback_object.on_split_horizontal)
     menu.add(mi)
-    mi = Gtk.MenuItem(_("Split ｜"))
+    mi = Gtk.MenuItem(_("Split |"))
     mi.connect("activate", callback_object.on_split_vertical)
     menu.add(mi)
     mi = Gtk.MenuItem(_("Close terminal"))
@@ -150,9 +148,7 @@ def mk_terminal_context_menu(terminal, window, settings, callback_object):
     # implementation does not support this at the moment
     if link:
         if len(link) >= FILE_SELECTION_LENGTH:
-            mi.set_label(
-                _("Open Link: {!s}...").format(link[:FILE_SELECTION_LENGTH -
-                                                    3]))
+            mi.set_label(_("Open Link: {!s}...").format(link[: FILE_SELECTION_LENGTH - 3]))
         else:
             mi.set_label(_("Open Link: {!s}").format(link))
         mi.set_sensitive(True)
@@ -165,7 +161,7 @@ def mk_terminal_context_menu(terminal, window, settings, callback_object):
     if selection:
         search_text = selection.rstrip()
         if len(search_text) > SEARCH_SELECTION_LENGTH:
-            search_text = search_text[:SEARCH_SELECTION_LENGTH - 3] + "..."
+            search_text = search_text[: SEARCH_SELECTION_LENGTH - 3] + "..."
         mi.set_label(_("Search on Web: '%s'") % search_text)
         mi.set_sensitive(True)
     else:
@@ -179,8 +175,8 @@ def mk_terminal_context_menu(terminal, window, settings, callback_object):
             filename_str = str(filename)
             if len(filename_str) > FILE_SELECTION_LENGTH:
                 mi.set_label(
-                    _("Quick Open: {!s}...").format(
-                        filename_str[:FILE_SELECTION_LENGTH - 3]))
+                    _("Quick Open: {!s}...").format(filename_str[: FILE_SELECTION_LENGTH - 3])
+                )
             else:
                 mi.set_label(_("Quick Open: {!s}").format(filename_str))
             mi.set_sensitive(True)
@@ -224,9 +220,7 @@ def get_current_selection(terminal, window):
 
 def get_filename_under_cursor(terminal, selection):
     filename, _1, _2 = terminal.is_file_on_local_server(selection)
-    logger.info(
-        _file_() + ":" + _line_() + " Current filename under cursor: %s",
-        filename)
+    logger.info("%s:%s Current filename under cursor: %s", _file_(), _line_(), filename)
     if filename:
         return filename
     return None
@@ -234,8 +228,7 @@ def get_filename_under_cursor(terminal, selection):
 
 def get_link_under_cursor(terminal):
     link = terminal.found_link
-    logger.info(_file_() + ":" + _line_() + " Current link under cursor: %s",
-                link)
+    logger.info("%s:%s Current link under cursor: %s", _file_(), _line_(), link)
     if link:
         return link
     return None

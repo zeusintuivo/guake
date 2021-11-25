@@ -37,15 +37,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -96,7 +94,7 @@ def bindtextdomain(app_name, locale_dir=None):
 
 def is_run_from_git_workdir():
     self_path = os.path.abspath(inspect.getfile(inspect.currentframe()))
-    return os.path.exists("{}.in".format(self_path))
+    return os.path.exists(f"{self_path}.in")
 
 
 NAME = "guake"

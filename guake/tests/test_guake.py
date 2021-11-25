@@ -17,8 +17,7 @@ from guake.guake_app import Guake
 
 @pytest.fixture
 def g(mocker, fs):
-    mocker.patch("guake.guake_app.Guake.get_xdg_config_directory",
-                 return_value=Path("/foobar"))
+    mocker.patch("guake.guake_app.Guake.get_xdg_config_directory", return_value=Path("/foobar"))
     mocker.patch("guake.guake_app.shutil.copy", create=True)
     mocker.patch("guake.guake_app.notifier.showMessage", create=True)
     mocker.patch("guake.guake_app.traceback.print_exc", create=True)
@@ -82,28 +81,14 @@ def test_guake_restore_tabs(g, fs):
         "schema_version": 1,
         "timestamp": 1556092197,
         "workspace": {
-            "0": [[
-                {
-                    "directory": d1.path,
-                    "label": "1",
-                    "custom_label_set": True
-                },
-                {
-                    "directory": d2.path,
-                    "label": "2",
-                    "custom_label_set": True
-                },
-                {
-                    "directory": d3.path,
-                    "label": d3.path,
-                    "custom_label_set": False
-                },
-            ]],
-            "1": [[{
-                "directory": d4.path,
-                "label": "4",
-                "custom_label_set": True
-            }]],
+            "0": [
+                [
+                    {"directory": d1.path, "label": "1", "custom_label_set": True},
+                    {"directory": d2.path, "label": "2", "custom_label_set": True},
+                    {"directory": d3.path, "label": d3.path, "custom_label_set": False},
+                ]
+            ],
+            "1": [[{"directory": d4.path, "label": "4", "custom_label_set": True}]],
         },
     }
 
@@ -160,10 +145,8 @@ def test_guake_restore_tabs_schema_broken_session_file(g, fs):
 
     fn = fs.create_file("/foobar/bar.json")
     d = fs.create_dir("/foobar/foo")
-    with open(fn.path, "w") as f:
-        f.write(
-            '{"schema_version": 1, "workspace": {"0": [[{"directory": "%s"}]]}}'
-            % (d.path))
+    with open(fn.path, "w", encoding="utf-8") as f:
+        f.write(f'{{"schema_version": 1, "workspace": {{"0": [[{{"directory": "{d.path}"}}]]}}}}')
 
     g.restore_tabs(fn.name)
     assert guake.guake_app.shutil.copy.call_count == 1

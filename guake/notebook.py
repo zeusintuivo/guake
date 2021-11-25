@@ -50,15 +50,13 @@ logger = logging.getLogger(__name__)
 
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
+f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/") + "guake.log")
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.ERROR)
 
 # Create formatters and add it to handlers
 c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
 f_handler.setFormatter(f_format)
 
@@ -113,19 +111,18 @@ class TerminalNotebook(Gtk.Notebook):
         self.add_events(Gdk.EventMask.SCROLL_MASK)
         self.connect("scroll-event", self.scroll_callback.on_scroll)
         self.notebook_on_button_press_id = self.connect(
-            "button-press-event", self.on_button_press, None)
+            "button-press-event", self.on_button_press, None
+        )
 
         # Action box
         self.new_page_button = Gtk.Button(
-            image=Gtk.Image.new_from_icon_name("tab-new-symbolic",
-                                               Gtk.IconSize.MENU),
+            image=Gtk.Image.new_from_icon_name("tab-new-symbolic", Gtk.IconSize.MENU),
             visible=True,
         )
         self.new_page_button.connect("clicked", self.on_new_tab)
 
         self.tab_selection_button = Gtk.Button(
-            image=Gtk.Image.new_from_icon_name("pan-down-symbolic",
-                                               Gtk.IconSize.MENU),
+            image=Gtk.Image.new_from_icon_name("pan-down-symbolic", Gtk.IconSize.MENU),
             visible=True,
         )
         self.popover = Gtk.Popover()
@@ -188,8 +185,11 @@ class TerminalNotebook(Gtk.Notebook):
         self.popover_listbox.set_property("margin", LISTBOX_MARGIN)
         self.popover_window.add_with_viewport(self.popover_listbox)
 
-        max_height = (self.guake.window.get_allocation().height -
-                      BOX_HEIGHT if self.guake else BOX_HEIGHT * 10)
+        max_height = (
+            self.guake.window.get_allocation().height - BOX_HEIGHT
+            if self.guake
+            else BOX_HEIGHT * 10
+        )
         height = BOX_HEIGHT * self.get_n_pages() + LISTBOX_MARGIN * 4
         self.popover_window.set_min_content_height(min(max_height, height))
         self.popover_window.set_min_content_width(325)
@@ -213,8 +213,7 @@ class TerminalNotebook(Gtk.Notebook):
                 selected_row = i
 
         # Signal
-        self.popover_listbox.connect("row-activated",
-                                     self.on_popover_tab_select)
+        self.popover_listbox.connect("row-activated", self.on_popover_tab_select)
 
         # Show popup
         self.popover.set_position(Gtk.PositionType.TOP)
@@ -271,8 +270,7 @@ class TerminalNotebook(Gtk.Notebook):
     def get_running_fg_processes_count(self):
         fg_proc_count = 0
         for page in self.iter_pages():
-            fg_proc_count += self.get_running_fg_processes_count_page(
-                self.page_num(page))
+            fg_proc_count += self.get_running_fg_processes_count_page(self.page_num(page))
         return fg_proc_count
 
     def get_running_fg_processes_count_page(self, index):
@@ -285,8 +283,7 @@ class TerminalNotebook(Gtk.Notebook):
             term_pid = terminal.pid
             try:
                 fgpid = posix.tcgetpgrp(fdpty)
-                logger.debug("%s:%s  found running pid: %s", _file_(),
-                             _line_(), fgpid)
+                logger.debug("%s:%s  found running pid: %s", _file_(), _line_(), fgpid)
                 if fgpid not in (-1, term_pid):
                     total_procs += 1
             except OSError:
@@ -317,19 +314,18 @@ class TerminalNotebook(Gtk.Notebook):
             yield self.get_nth_page(page_num)
 
     def delete_page(self, page_num, kill=True, prompt=0):
-        logger.debug("%s:%s  Deleting page index %s", _file_(), _line_(),
-                     page_num)
+        logger.debug("%s:%s  Deleting page index %s", _file_(), _line_(), page_num)
         if page_num >= self.get_n_pages() or page_num < 0:
-            logger.error("%s:%s  Can not delete page %s no such index",
-                         _file_(), _line_(), page_num)
+            logger.error(
+                "%s:%s  Can not delete page %s no such index", _file_(), _line_(), page_num
+            )
             return
         # TODO NOTEBOOK it would be nice if none of the "ui" stuff
         # (PromptQuitDialog) would be in here
         procs = self.get_running_fg_processes_count_page(page_num)
         if prompt == 2 or (prompt == 1 and procs > 0):
             # TODO NOTEBOOK remove call to guake
-            if not PromptQuitDialog(self.guake.window, procs, -1,
-                                    notebooks="").close_tab():
+            if not PromptQuitDialog(self.guake.window, procs, -1, notebooks="").close_tab():
                 return
 
         page = self.get_nth_page(page_num)
@@ -374,14 +370,16 @@ class TerminalNotebook(Gtk.Notebook):
         terminal_box.set_terminal(terminal)
         root_terminal_box = RootTerminalBox(self.guake, self)
         root_terminal_box.set_child(terminal_box)
-        page_num = self.insert_page(root_terminal_box, None,
-                                    position if position is not None else -1)
+        page_num = self.insert_page(
+            root_terminal_box, None, position if position is not None else -1
+        )
         self.set_tab_reorderable(root_terminal_box, True)
         self.show_all()  # needed to show newly added tabs and pages
         # this is needed because self.window.show_all() results in showing every
         # thing which includes the scrollbar too
         self.guake.settings.general.triggerOnChangedValue(
-            self.guake.settings.general, "use-scrollbar")
+            self.guake.settings.general, "use-scrollbar"
+        )
         # this is needed to initially set the last_terminal_focused,
         # one could also call terminal.get_parent().on_terminal_focus()
         self.terminal_attached(terminal)
@@ -389,8 +387,7 @@ class TerminalNotebook(Gtk.Notebook):
 
         if self.guake:
             # Attack background image draw callback to root terminal box
-            root_terminal_box.connect_after(
-                "draw", self.guake.background_image_manager.draw)
+            root_terminal_box.connect_after("draw", self.guake.background_image_manager.draw)
         return root_terminal_box, page_num, terminal
 
     def hide_tabbar_if_one_tab(self):
@@ -407,8 +404,7 @@ class TerminalNotebook(Gtk.Notebook):
         terminal.grab_focus()
         terminal.connect(
             "key-press-event",
-            lambda x, y: self.guake.accel_group.activate(x, y)
-            if self.guake.accel_group else False,
+            lambda x, y: self.guake.accel_group.activate(x, y) if self.guake.accel_group else False,
         )
         if not isinstance(directory, str):
             directory = os.environ["HOME"]
@@ -425,8 +421,7 @@ class TerminalNotebook(Gtk.Notebook):
                         directory = active_terminal.get_current_directory()
             except BaseException:
                 pass
-        logger.info("%s:%s  Spawning new terminal at %s", _file_(), _line_(),
-                    directory)
+        logger.info("%s:%s  Spawning new terminal at %s", _file_(), _line_(), directory)
         terminal.spawn_sync_pid(directory)
         return terminal
 
@@ -434,11 +429,7 @@ class TerminalNotebook(Gtk.Notebook):
         terminal.emit("focus", Gtk.DirectionType.TAB_FORWARD)
         self.emit("terminal-spawned", terminal, terminal.pid)
 
-    def new_page_with_focus(self,
-                            directory=None,
-                            label=None,
-                            user_set=False,
-                            position=None):
+    def new_page_with_focus(self, directory=None, label=None, user_set=False, position=None):
         box, page_num, terminal = self.new_page(directory, position=position)
         self.set_current_page(page_num)
         if not label:
@@ -508,9 +499,11 @@ class TerminalNotebook(Gtk.Notebook):
             parent=self.guake.window,
             flags=Gtk.DialogFlags.MODAL,
             buttons=Gtk.ButtonsType.OK_CANCEL,
-            message_format=_("You are going to restore *all* the tabs!\n"
-                             "which means all your terminals & pages "
-                             "will be replaced.\n\nDo you want to continue?"),
+            message_format=_(
+                "You are going to restore *all* the tabs!\n"
+                "which means all your terminals & pages "
+                "will be replaced.\n\nDo you want to continue?"
+            ),
         )
         dialog.connect("response", self.restore_tabs_dialog_response)
         dialog.show()
@@ -545,15 +538,13 @@ class NotebookManager(GObject.Object):
         self.notebook_parent = notebook_parent
         self.terminal_spawned_cb = terminal_spawned_cb
         self.page_deleted_cb = page_deleted_cb
-        if workspaces_enabled and gdk_is_x11_display(
-                Gdk.Display.get_default()):
+        if workspaces_enabled and gdk_is_x11_display(Gdk.Display.get_default()):
             # NOTE: Wnck didn't support non-X11 display backend, so we need to check if the display
             #       is X11 or not, if not, it will not able to enable workspace-specific-tab-sets
             #
             # TODO: Is there anyway to support this in non-X11 display backend?
             self.screen = Wnck.Screen.get_default()
-            self.screen.connect("active-workspace-changed",
-                                self.__workspace_changed_cb)
+            self.screen.connect("active-workspace-changed", self.__workspace_changed_cb)
 
     def __workspace_changed_cb(self, screen, previous_workspace):
         self.set_workspace(self.screen.get_active_workspace().get_number())
@@ -561,12 +552,9 @@ class NotebookManager(GObject.Object):
     def get_notebook(self, workspace_index: int):
         if not self.has_notebook_for_workspace(workspace_index):
             self.notebooks[workspace_index] = TerminalNotebook()
-            self.emit("notebook-created", self.notebooks[workspace_index],
-                      workspace_index)
-            self.notebooks[workspace_index].connect("terminal-spawned",
-                                                    self.terminal_spawned_cb)
-            self.notebooks[workspace_index].connect("page-deleted",
-                                                    self.page_deleted_cb)
+            self.emit("notebook-created", self.notebooks[workspace_index], workspace_index)
+            self.notebooks[workspace_index].connect("terminal-spawned", self.terminal_spawned_cb)
+            self.notebooks[workspace_index].connect("page-deleted", self.page_deleted_cb)
             logger.info(
                 "%s:%s  created fresh notebook for workspace %d",
                 _file_(),
@@ -589,12 +577,10 @@ class NotebookManager(GObject.Object):
     def set_workspace(self, index: int):
         self.notebook_parent.remove(self.get_current_notebook())
         self.current_notebook = index
-        logger.info("%s:%s  current workspace is %d", _file_(), _line_(),
-                    self.current_notebook)
+        logger.info("%s:%s  current workspace is %d", _file_(), _line_(), self.current_notebook)
         notebook = self.get_current_notebook()
         self.notebook_parent.add(notebook)
-        if self.window.get_property(
-                "visible") and notebook.last_terminal_focused is not None:
+        if self.window.get_property("visible") and notebook.last_terminal_focused is not None:
             notebook.last_terminal_focused.grab_focus()
 
         # Restore pending page terminal split
