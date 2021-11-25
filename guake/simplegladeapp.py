@@ -119,7 +119,8 @@ class SimpleGladeApp:
                 prefixes_name_l = widget_name.split(":")
                 prefixes = prefixes_name_l[:-1]
                 widget_api_name = prefixes_name_l[-1]
-                widget_api_name = "_".join(re.findall(tokenize.Name, widget_api_name))
+                widget_api_name = "_".join(
+                    re.findall(tokenize.Name, widget_api_name))
                 widget_name = Gtk.Buildable.set_name(widget, widget_api_name)
                 if hasattr(self, widget_api_name):
                     raise AttributeError(
@@ -130,7 +131,8 @@ class SimpleGladeApp:
                     # TODO is is a guess
                     Gtk.Buildable.set_data(widget, "prefixes", prefixes)
 
-    def custom_handler(self, glade, function_name, widget_name, str1, str2, int1, int2):
+    def custom_handler(self, glade, function_name, widget_name, str1, str2,
+                       int1, int2):
         """
         Generic handler for creating custom widgets, internally used to
         enable custom widgets (custom widgets of glade).
