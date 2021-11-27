@@ -460,8 +460,7 @@ class GuakeTerminal(Vte.Terminal):
         else:
             line_number = str(line_number)
 
-        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath,
-                     line_number)
+        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath,  line_number)
         resolved_cmdline = cmdline % {
             "file_path": filepath,
             "line_number": line_number
@@ -481,8 +480,7 @@ class GuakeTerminal(Vte.Terminal):
             # logger.debug(f"{_fl_two_()} Opening new tab QUICKOPEN to execute")
             # resolved_cmdline = "guake -n guake -e \"\"\""
             # + resolved_cmdline + "\"\"\" guake -r 'QUICKOPEN' & "
-            logger.debug("%s Command line new: %s", _fl_two_(),
-                         resolved_cmdline)
+            logger.debug("%s Command line new: %s", _fl_two_(), resolved_cmdline)
             subprocess.call(resolved_cmdline, shell=True)
 
     def handleTerminalMatch(self, matched_string):
