@@ -1,6 +1,3 @@
-import inspect
-import logging
-import os
 import time
 
 import gi
@@ -24,37 +21,11 @@ from guake.utils import HidePrevention
 from guake.utils import TabNameUtils
 from guake.utils import get_server_time
 from guake.utils import save_tabs_when_changed
-
-# Create a custom logger
-logger = logging.getLogger(__name__)
-
-# Create handlers
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
-
-# Create formatters and add it to handlers
-c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-
-def _line_():
-    """Returns the current line number in our program."""
-    return str(inspect.currentframe().f_back.f_lineno)
-
-
-def _file_():
-    return str(__file__)
-
+# from guake.logging_decorator import logging_decorator
+# from guake.logging_decorator import _file_
+from guake.logging_decorator import _fl_two_
+# from guake.logging_decorator import _line_
+from guake.logging_decorator import logger
 
 # TODO remove calls to guake
 
@@ -642,7 +613,7 @@ class DualTerminalBox(Gtk.Paned, TerminalHolder):
             try:
                 next(box.iter_terminals()).grab_focus()
             except StopIteration:
-                logger.error("%s:%s  Both panes are empty", _file_(), _line_())
+                logger.error("%s Both panes are empty", _fl_two_())
         else:
             box.get_terminal().grab_focus()
 

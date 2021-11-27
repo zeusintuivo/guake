@@ -18,8 +18,6 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
 import code
-import inspect
-import logging
 import os
 import re
 import shlex
@@ -52,36 +50,11 @@ from guake.globals import QUICK_OPEN_MATCHERS
 from guake.globals import TERMINAL_MATCH_EXPRS
 from guake.globals import TERMINAL_MATCH_TAGS
 
-# Create a custom logger
-logger = logging.getLogger(__name__)
-
-# Create handlers
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
-
-# Create formatters and add it to handlers
-c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-
-def _line_():
-    """Returns the current line number in our program."""
-    return str(inspect.currentframe().f_back.f_lineno)
-
-
-def _file_():
-    return str(__file__)
-
+# from guake.logging_decorator import logging_decorator
+# from guake.logging_decorator import _file_
+from guake.logging_decorator import _fl_two_
+# from guake.logging_decorator import _line_
+from guake.logging_decorator import logger
 
 libutempter = None
 try:
@@ -128,6 +101,7 @@ class GuakeTerminal(Vte.Terminal):
     """Just a vte.Terminal with some properties already set."""
     def __init__(self, guake):
         super().__init__()
+        self.targets = Gtk.TargetList()
         self.guake = guake
         self.configure_terminal()
         self.add_matches()
@@ -232,10 +206,8 @@ class GuakeTerminal(Vte.Terminal):
                         "bold-is-bright"))
             except:  # pylint: disable=bare-except
                 logger.error(
-                    "%s:%s set_bold_is_bright not supported by your version of VTE",
-                    _file_(),
-                    _line_(),
-                )
+                    "%s set_bold_is_bright not supported by your version of VTE",
+                    _fl_two_())
 
         # TODO PORT is this still the case with the newer vte version?
         # -- Ubuntu has a patch to libvte which disables mouse scrolling in apps
@@ -262,7 +234,7 @@ class GuakeTerminal(Vte.Terminal):
                     0)
                 self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
 
-            for _useless, match, _otheruseless in QUICK_OPEN_MATCHERS:
+            for _useless, match, _other_useless in QUICK_OPEN_MATCHERS:
                 tag = self.match_add_regex(
                     Vte.Regex.new_for_match(match, len(match),
                                             VTE_REGEX_FLAGS), 0)
@@ -280,23 +252,25 @@ class GuakeTerminal(Vte.Terminal):
                         GLib.Regex.new(expr, compile_flag, 0), 0)
                     self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
 
-                for _useless, match, _otheruseless in QUICK_OPEN_MATCHERS:
+                for _useless, match, _other_useless in QUICK_OPEN_MATCHERS:
                     tag = self.match_add_gregex(
                         GLib.Regex.new(match, compile_flag, 0), 0)
                     self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
             except GLib.Error as err:  # pylint: disable=catching-non-exception
-                logger.error(
-                    "%s:%s ERROR: PCRE2 does not seems to be enabled on your system. "
-                    "Quick Edit and other Ctrl+click features are disabled. "
-                    "Please update your VTE package or contact your distribution to ask "
-                    "to enable regular expression support in VTE. Exception: '%s'",
-                    _file_(),
-                    _line_(),
-                    str(err),
-                )
+                emsg = "%s ERROR: PCRE2 does not seems to be enabled on your system. " \
+                       "Quick Edit and other Ctrl+click features are disabled. " \
+                       "Please update your VTE package or contact your distribution to ask " \
+                       "to enable regular expression support in VTE. Exception: '%s'"
+                logger.error(emsg, _fl_two_(), str(err))
 
+    # @logging_decorator
     def get_current_directory(self):
+        logger.info("%s getcwd %r", _fl_two_(), os.getcwd())
         directory = os.path.expanduser("~")
+        logger.info("%s directory %r", _fl_two_(), directory)
+        logger.info("%s self.pid %r", _fl_two_(), self.pid)
+        logger.info("%s readlink %r", _fl_two_(),
+                    os.readlink(f"/proc/{self.pid}/cwd"))
         if self.pid is not None:
             try:
                 cwd = os.readlink(f"/proc/{self.pid}/cwd")
@@ -314,7 +288,7 @@ class GuakeTerminal(Vte.Terminal):
          - absolute path
          - relative path (using current working directory)
          - file:line syntax
-         - file:line:colum syntax
+         - file:line:column syntax
 
         Args:
             text (str): candidate for file search
@@ -347,55 +321,39 @@ class GuakeTerminal(Vte.Terminal):
                     text = m.group(1)
                     py_func = m.group(2).strip()
 
-        def find_lineno(text, pt, lineno, py_func):
+        def find_lineno(text_local, pt_local, lineno_local, py_func_local):
             # print("text={!r}, pt={!r}, lineno={!r}, py_func={!r}".format(text,
             #                                                              pt, lineno, py_func))
-            if lineno:
-                return lineno
-            if not py_func:
+            if lineno_local:
+                return lineno_local
+            if not py_func_local:
                 return
-            with pt.open() as f:
+            with pt_local.open() as f:
                 for i, line in enumerate(f.readlines()):
-                    if line.startswith(f"def {py_func}"):
+                    if line.startswith(f"def {py_func_local}"):
                         return i + 1
-                        break
 
         pt = Path(text)
-        logger.debug("%s:%s  checking file existance: %r", _file_(), _line_(),
-                     pt)
+        logger.debug("%s checking file existance: %r", _fl_two_(), pt)
         try:
             if pt.exists():
                 lineno = find_lineno(text, pt, lineno, py_func)
-                logger.info(
-                    "%s:%s  File exists: %r, line=%r",
-                    _file_(),
-                    _line_(),
-                    pt.absolute().as_posix(),
-                    lineno,
-                )
-                return (pt, lineno, colno)
-            logger.debug("%s:%s  No file found matching: %r", _file_(),
-                         _line_(), text)
+                logger.info("%s File exists: %r, line=%r", _fl_two_(),
+                            pt.absolute().as_posix(), lineno)
+                return pt, lineno, colno
+            logger.debug("%s No file found matching: %r", _fl_two_(), text)
             cwd = self.get_current_directory()
             pt = Path(cwd) / pt
-            logger.debug("%s:%s  checking file existance: %r", _file_(),
-                         _line_(), pt)
+            logger.debug("%s checking file existance: %r", _fl_two_(), pt)
             if pt.exists():
                 lineno = find_lineno(text, pt, lineno, py_func)
-                logger.info(
-                    "%s:%s  File exists: %r, line=%r",
-                    _file_(),
-                    _line_(),
-                    pt.absolute().as_posix(),
-                    lineno,
-                )
-                return (pt, lineno, colno)
-            logger.debug("%s:%s  file does not exist: %s", _file_(), _line_(),
-                         str(pt))
+                logger.info("%s File exists: %r, line=%r", _fl_two_(),
+                            pt.absolute().as_posix(), lineno)
+                return pt, lineno, colno
+            logger.debug("%s file does not exist: %s", _fl_two_(), str(pt))
         except OSError:
-            logger.debug("%s:%s  not a file name: %r", _file_(), _line_(),
-                         text)
-        return (None, None, None)
+            logger.debug("%s not a file name: %r", _fl_two_(), text)
+        return None, None, None
 
     def button_press(self, terminal, event):
         """Handles the button press event in the terminal widget. If
@@ -447,32 +405,31 @@ class GuakeTerminal(Vte.Terminal):
 
     def quick_open(self):
         self.copy_clipboard()
-        projectcwd = self.get_current_directory()
+        project_cwd = self.get_current_directory()
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         text = clipboard.wait_for_text()
         if not text:
             return
         (fp, lo, co) = self.is_file_on_local_server(text)
-        self._execute_quick_open(fp, lo, projectcwd)
+        self._execute_quick_open(fp, lo, project_cwd)
 
     def _on_ctrl_click_matcher(self, matched_string):
         value, tag = matched_string
         found_matcher = False
-        projectcwd = self.get_current_directory()
-        logger.debug("%s:%s  project_cwd: %s", _file_(), _line_(), projectcwd)
-        logger.debug("%s:%s  matched string: %s", _file_(), _line_(),
-                     matched_string)
+        project_cwd = self.get_current_directory()
+        logger.debug("%s project_cwd: %s", _fl_two_(), project_cwd)
+        logger.debug("%s matched string: %s", _fl_two_(), matched_string)
         # First searching in additional matchers
         use_quick_open = self.guake.settings.general.get_boolean(
             "quick-open-enable")
         if use_quick_open:
-            found_matcher = self._find_quick_matcher(value, projectcwd)
+            found_matcher = self._find_quick_matcher(value, project_cwd)
         if not found_matcher:
             self.found_link = self.handleTerminalMatch(matched_string)
             if self.found_link:
                 self.browse_link_under_cursor()
 
-    def _find_quick_matcher(self, value, projectcwd):
+    def _find_quick_matcher(self, value, project_cwd):
         for _useless, _otheruseless, extractor in QUICK_OPEN_MATCHERS:
             g = re.compile(extractor).match(value)
             if g and g.groups():
@@ -481,13 +438,7 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = g.group(2)
                 else:
                     line_number = None
-                logger.info(
-                    "%s:%s  Quick action executed filename=%s, line=%s",
-                    _file_(),
-                    _line_(),
-                    filename,
-                    line_number,
-                )
+                logger.info("%s Quick action executed filename=%s, line=%s", _fl_two_(), filename, line_number)
                 (filepath, ln, _) = self.is_file_on_local_server(filename)
                 if ln:
                     line_number = ln
@@ -495,11 +446,11 @@ class GuakeTerminal(Vte.Terminal):
                     continue
                 if line_number is None:
                     line_number = "1"
-                self._execute_quick_open(filepath, line_number, projectcwd)
+                self._execute_quick_open(filepath, line_number, project_cwd)
                 return True
         return False
 
-    def _execute_quick_open(self, filepath, line_number, projectcwd):
+    def _execute_quick_open(self, filepath, line_number, project_cwd):
         if not filepath:
             return
         cmdline = self.guake.settings.general.get_string(
@@ -509,38 +460,34 @@ class GuakeTerminal(Vte.Terminal):
         else:
             line_number = str(line_number)
 
-        logger.debug("%s:%s  Opening file %s at line %s", _file_(), _line_(),
-                     filepath, line_number)
+        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath,
+                     line_number)
         resolved_cmdline = cmdline % {
             "file_path": filepath,
             "line_number": line_number
         }
-        logger.debug("%s:%s  Command line: %s", _file_(), _line_(),
-                     resolved_cmdline)
+        logger.debug("%s Command line: %s", _fl_two_(), resolved_cmdline)
         quick_open_in_current_terminal = self.guake.settings.general.get_boolean(
             "quick-open-in-current-terminal")
         if quick_open_in_current_terminal:
-            logger.debug("%s:%s Executing it in current tab", _file_(),
-                         _line_())
+            logger.debug("%s Executing it in current tab", _fl_two_())
             if resolved_cmdline[-1] != "\n":
                 resolved_cmdline += "\n"
             self.feed_child(resolved_cmdline)
         else:
-            logger.debug("%s:%s Executing it independently", _file_(),
-                         _line_())
-            resolved_cmdline = "cd  " + projectcwd + " && " + resolved_cmdline + " "
+            logger.debug("%s Executing it independently", _fl_two_())
+            resolved_cmdline = "cd  " + project_cwd + " && " + resolved_cmdline + " "
             # resolved_cmdline += " &"
-            # logger.debug(_file_()+":"+_line_()+" Openning new tab QUICKOPEN to execute")
+            # logger.debug(f"{_fl_two_()} Opening new tab QUICKOPEN to execute")
             # resolved_cmdline = "guake -n guake -e \"\"\""
             # + resolved_cmdline + "\"\"\" guake -r 'QUICKOPEN' & "
-            logger.debug("%s:%s Command line new: %s", _file_(), _line_(),
+            logger.debug("%s Command line new: %s", _fl_two_(),
                          resolved_cmdline)
             subprocess.call(resolved_cmdline, shell=True)
 
     def handleTerminalMatch(self, matched_string):
         value, tag = matched_string
-        logger.debug("%s:%s  found tag: %r, item: %r", _file_(), _line_(), tag,
-                     value)
+        logger.debug("%s found tag: %r, item: %r", _fl_two_(), tag, value)
         if tag in TERMINAL_MATCH_TAGS:
             if TERMINAL_MATCH_TAGS[tag] == "schema":
                 # value here should not be changed, it is right and
@@ -565,8 +512,7 @@ class GuakeTerminal(Vte.Terminal):
         # TODO move the call to xdg-open to guake.utils
         if not self.found_link:
             return
-        logger.debug("%s:%s  Opening link: %s", _file_(), _line_(),
-                     self.found_link)
+        logger.debug("%s Opening link: %s", _fl_two_(), self.found_link)
         cmd = ["xdg-open", self.found_link]
         with subprocess.Popen(cmd, shell=False):
             pass
@@ -645,8 +591,7 @@ class GuakeTerminal(Vte.Terminal):
         if login_shell:
             argv.append("--login")
 
-        logger.debug("%s:%s  Spawn command: %s", _file_(), _line_(),
-                     " ".join(argv))
+        logger.debug("%s Spawn command: %s", _fl_two_(), " ".join(argv))
 
         pid = self.spawn_sync(
             Vte.PtyFlags.DEFAULT,

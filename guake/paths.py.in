@@ -19,37 +19,14 @@ Boston, MA 02110-1301 USA
 """
 
 import guake
-import logging
-import inspect
 import os
 import subprocess
 import sys
-
-# Create a custom logger
-logger = logging.getLogger(__name__)
-
-# Create handlers
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake/")+'guake.log')
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
-
-# Create formatters and add it to handlers
-c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-def _line_():
-    """Returns the current line number in our program."""
-    return str(inspect.currentframe().f_back.f_lineno)
-
-def _file_():
-    return str(__file__)
+# from guake.logging_decorator import logging_decorator
+# from guake.logging_decorator import _file_
+from guake.logging_decorator import _fl_two_
+# from guake.logging_decorator import _line_
+from guake.logging_decorator import logger
 
 def get_default_package_root():
     packagedir = guake.__path__[0]
@@ -59,7 +36,8 @@ def get_default_package_root():
 
 def get_data_files_dir():
     d = os.path.dirname(sys.modules["guake"].__file__)
-    p = os.path.basename(os.path.abspath(os.path.join(os.path.dirname(d), "..")))
+    p = os.path.basename(
+        os.path.abspath(os.path.join(os.path.dirname(d), "..")))
     if p in ["site-packages", "dist-packages"]:
         # current "guake" package has been installed in a prefix structure (/usr, /usr/local or
         # ~/.local/)
@@ -72,37 +50,37 @@ def get_data_files_dir():
 
 def get_default_data_dir():
     d = os.path.join(get_data_files_dir(), "data")
-    logger.debug("%s:%s Using guake data directory: %s", _file_(), _line_(), d)
+    logger.debug("%s Using guake data directory: %s", _fl_two_(), d)
     return d
 
 
 def get_default_locale_dir():
     d = os.path.join(get_data_files_dir(), "po")
-    logger.debug("%s:%s Using guake image directory: %s", _file_(), _line_(), d)
+    logger.debug("%s Using guake image directory: %s", _fl_two_(),d)
     return d
 
 
 def get_default_image_dir():
     d = os.path.join(get_default_data_dir(), 'pixmaps')
-    logger.debug("%s:%s Using guake image directory: %s", _file_(), _line_(), d)
+    logger.debug("%s Using guake image directory: %s", _fl_two_(),d)
     return d
 
 
 def get_default_glade_dir():
     d = get_default_data_dir()
-    logger.debug("%s:%s Using guake glade directory: %s", _file_(), _line_(), d)
+    logger.debug("%s Using guake glade directory: %s", _fl_two_(),d)
     return d
 
 
 def get_default_schema_dir():
     d = get_default_data_dir()
-    logger.debug("%s:%s Using guake scheme directory: %s", _file_(), _line_(), d)
+    logger.debug("%s Using guake scheme directory: %s", _fl_two_(),d)
     return d
 
 
 def get_default_theme_dir():
     d = os.path.join(get_default_data_dir(), 'theme')
-    logger.debug("%s:%s Using guake theme directory: %s", _file_(), _line_(), d)
+    logger.debug("%s Using guake theme directory: %s", _fl_two_(),d)
     return d
 
 
@@ -116,5 +94,5 @@ AUTOSTART_FOLDER = {{ AUTOSTART_FOLDER }}
 
 
 def try_to_compile_glib_schemas():
-    logger.info("%s:%s Compiling schema: %s", _file_(), _line_(), SCHEMA_DIR)
+    logger.info("%s Compiling schema: %s", _fl_two_(), SCHEMA_DIR)
     subprocess.check_call(["glib-compile-schemas", "--strict", SCHEMA_DIR])

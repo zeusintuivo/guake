@@ -1,0 +1,35 @@
+{
+  "name": "guake",
+  "version": "3.9.0",
+  "description": "============== Guake 3 README ==============",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Guake/guake.git"
+  },
+  "author": "zeus@intuivo.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Guake/guake/issues"
+  },
+  "homepage": "https://github.com/Guake/guake#readme",
+  "keywords": [
+    "terminal",
+    "floating"
+  ],
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release": {
+    "plugins": "<some value here>"
+  }
+
+}

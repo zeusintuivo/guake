@@ -34,36 +34,11 @@ from guake import notifier
 from guake.common import pixmapfile
 from guake.split_utils import FocusMover
 from guake.split_utils import SplitMover
-
-# Create a custom logger
-logger = logging.getLogger(__name__)
-
-# Create handlers
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
-
-# Create formatters and add it to handlers
-c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-
-def _line_():
-    """Returns the current line number in our program."""
-    return str(inspect.currentframe().f_back.f_lineno)
-
-
-def _file_():
-    return str(__file__)
+# from guake.logging_decorator import logging_decorator
+# from guake.logging_decorator import _file_
+from guake.logging_decorator import _fl_two_
+# from guake.logging_decorator import _line_
+from guake.logging_decorator import logger
 
 
 class Keybindings:
@@ -114,16 +89,16 @@ class Keybindings:
             ("search-on-web", self.guake.search_on_web),
             ("move-tab-left", self.guake.accel_move_tab_left),
             ("move-tab-right", self.guake.accel_move_tab_right),
-            ("switch-tab1", self.guake.gen_accel_switch_tabN(1)),
-            ("switch-tab2", self.guake.gen_accel_switch_tabN(2)),
-            ("switch-tab3", self.guake.gen_accel_switch_tabN(3)),
-            ("switch-tab4", self.guake.gen_accel_switch_tabN(4)),
-            ("switch-tab5", self.guake.gen_accel_switch_tabN(5)),
-            ("switch-tab6", self.guake.gen_accel_switch_tabN(6)),
-            ("switch-tab7", self.guake.gen_accel_switch_tabN(7)),
-            ("switch-tab8", self.guake.gen_accel_switch_tabN(8)),
-            ("switch-tab9", self.guake.gen_accel_switch_tabN(9)),
-            ("switch-tab10", self.guake.gen_accel_switch_tabN(10)),
+            ("switch-tab1", self.guake.gen_accel_switch_tabN(0)),
+            ("switch-tab2", self.guake.gen_accel_switch_tabN(1)),
+            ("switch-tab3", self.guake.gen_accel_switch_tabN(2)),
+            ("switch-tab4", self.guake.gen_accel_switch_tabN(3)),
+            ("switch-tab5", self.guake.gen_accel_switch_tabN(4)),
+            ("switch-tab6", self.guake.gen_accel_switch_tabN(5)),
+            ("switch-tab7", self.guake.gen_accel_switch_tabN(6)),
+            ("switch-tab8", self.guake.gen_accel_switch_tabN(7)),
+            ("switch-tab9", self.guake.gen_accel_switch_tabN(8)),
+            ("switch-tab10", self.guake.gen_accel_switch_tabN(9)),
             ("switch-tab-last", self.guake.accel_switch_tab_last),
             ("reset-terminal", self.guake.accel_reset_terminal),
             (
@@ -214,7 +189,7 @@ class Keybindings:
 
         self.globalhotkeys[key] = value
         if key == "show-hide":
-            logger.debug("%s:%s  reload_global: %r", _file_(), _line_(), value)
+            logger.debug("%s reload_global: %r", _fl_two_(), value)
             if not self.guake.hotkeys.bind(value, self.guake.show_hide):
                 keyval, mask = Gtk.accelerator_parse(value)
                 label = Gtk.accelerator_get_label(keyval, mask)
@@ -228,8 +203,7 @@ class Keybindings:
                 )
         elif key == "show-focus" and not self.guake.hotkeys.bind(
                 value, self.guake.show_focus):
-            logger.warning("%s:%s  can't bind show-focus key", _file_(),
-                           _line_())
+            logger.warning("%s can't bind show-focus key", _fl_two_())
             return
 
     def activate(self, window, event):

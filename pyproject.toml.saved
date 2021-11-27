@@ -3,37 +3,6 @@ line-length = 120
 target-version = ['py36']
 include = '\.pyi?$'
 
-[tool.poetry]
-name = "guake"
-version = "3.9.0"
-description = "The Floating Terminal"
-authors = ["zeusintuivo <zeus@intuivo.com>"]
-license = "MIT"
-
-[tool.poetry.dependencies]
-python = "^3.7"
-
-[tool.poetry.dev-dependencies]
-[tool.poetry.dependencies.pylint]
-optional = true
-version = "*"
-
-[tool.poetry.extras]
-lint = ["pylint"]
-
-[build-system]
-requires=[
-     "poetry-core>=1.0.0",
-     "colorama",
-     "entrypoints",
-    "flake8>=3.8.0,<3.9.0",
-     "pygments",
-     "toml",
-     "urllib3",
-]
-build-backend = "poetry.core.masonry.api"
-
-
 [tool.flakehell]
 # optionally inherit from remote config (or local if you want)
 base = "https://raw.githubusercontent.com/life4/flakehell/master/pyproject.toml"
@@ -56,3 +25,14 @@ flake8-bandit = ["-*", "+S1??"]
 "flake8-*" = ["+*"]
 # explicitly disable plugin
 flake8-docstrings = ["-*"]
+
+[tool.poetry]
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dependencies.pylint]
+optional = true
+version = "*"
+
+[tool.poetry.extras]
+lint = ["pylint"]

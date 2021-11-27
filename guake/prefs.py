@@ -17,8 +17,6 @@ License along with this program; if not, write to the
 Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
-import inspect
-import logging
 import os
 import re
 import shutil
@@ -57,39 +55,13 @@ from guake.simplegladeapp import SimpleGladeApp
 from guake.terminal import GuakeTerminal
 from guake.theme import list_all_themes
 from guake.theme import select_gtk_theme
+# from guake.logging_decorator import logging_decorator
+# from guake.logging_decorator import _file_
+from guake.logging_decorator import _fl_two_
+# from guake.logging_decorator import _line_
+from guake.logging_decorator import logger
 
 # pylint: disable=unsubscriptable-object
-
-# Create a custom logger
-logger = logging.getLogger(__name__)
-
-# Create handlers
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
-
-# Create formatters and add it to handlers
-c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-
-def _line_():
-    """Returns the current line number in our program."""
-    return str(inspect.currentframe().f_back.f_lineno)
-
-
-def _file_():
-    return str(__file__)
-
 
 # A regular expression to match possible python interpreters when
 # filling interpreters combo in preferences (including bpython and ipython)
@@ -1043,8 +1015,7 @@ class PrefsDialog(SimpleGladeApp):
         """
         combo = self.get_widget("palette_name")
         found = False
-        logger.debug("%s:%s  wanting palette: %r", _file_(), _line_(),
-                     palette_name)
+        logger.debug("%s wanting palette: %r", _fl_two_, palette_name)
         for i in combo.get_model():
             if i[0] == palette_name:
                 combo.set_active_iter(i.iter)
@@ -1123,8 +1094,7 @@ class PrefsDialog(SimpleGladeApp):
 
     def _load_hooks_settings(self):
         """load hooks settings"""
-        logger.debug("%s:%s  xecuting _load_hooks_settings", _file_(),
-                     _line_())
+        logger.debug("%s executing _load_hooks_settings", _fl_two_())
         hook_show_widget = self.get_widget("hook_show")
         hook_show_setting = self.settings.hooks.get_string("show")
         if None not in (hook_show_widget, hook_show_setting):

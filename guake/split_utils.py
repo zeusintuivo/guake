@@ -105,10 +105,8 @@ class SplitMover:
         box = terminal.get_parent()
         while not isinstance(box, RootTerminalBox):
             box = box.get_parent()
-            if (
-                isinstance(box, DualTerminalBox)
-                and box.get_orientation() == Gtk.Orientation.VERTICAL
-            ):
+            if (isinstance(box, DualTerminalBox)
+                    and box.get_orientation() == Gtk.Orientation.VERTICAL):
                 _, __, p = cls.list_allocation(box)
                 if p - SplitMover.STEP > SplitMover.THRESHOLD:
                     box.set_position(p - SplitMover.STEP)
@@ -121,10 +119,8 @@ class SplitMover:
         box = terminal.get_parent()
         while not isinstance(box, RootTerminalBox):
             box = box.get_parent()
-            if (
-                isinstance(box, DualTerminalBox)
-                and box.get_orientation() == Gtk.Orientation.VERTICAL
-            ):
+            if (isinstance(box, DualTerminalBox)
+                    and box.get_orientation() == Gtk.Orientation.VERTICAL):
                 _, y, p = cls.list_allocation(box)
                 if p + SplitMover.STEP < y - SplitMover.THRESHOLD:
                     box.set_position(p + SplitMover.STEP)
@@ -137,10 +133,8 @@ class SplitMover:
         box = terminal.get_parent()
         while not isinstance(box, RootTerminalBox):
             box = box.get_parent()
-            if (
-                isinstance(box, DualTerminalBox)
-                and box.get_orientation() == Gtk.Orientation.HORIZONTAL
-            ):
+            if (isinstance(box, DualTerminalBox)
+                    and box.get_orientation() == Gtk.Orientation.HORIZONTAL):
                 x, _, p = cls.list_allocation(box)
                 if p + SplitMover.STEP < x - SplitMover.THRESHOLD:
                     box.set_position(p + SplitMover.STEP)
@@ -153,10 +147,8 @@ class SplitMover:
         box = terminal.get_parent()
         while not isinstance(box, RootTerminalBox):
             box = box.get_parent()
-            if (
-                isinstance(box, DualTerminalBox)
-                and box.get_orientation() == Gtk.Orientation.HORIZONTAL
-            ):
+            if (isinstance(box, DualTerminalBox)
+                    and box.get_orientation() == Gtk.Orientation.HORIZONTAL):
                 _, __, p = cls.list_allocation(box)
                 if p - SplitMover.STEP > SplitMover.THRESHOLD:
                     box.set_position(p - SplitMover.STEP)

@@ -31,9 +31,7 @@ from guake.simplegladeapp import SimpleGladeApp
 
 
 class AboutDialog(SimpleGladeApp):
-
     """The About Guake dialog class"""
-
     def __init__(self):
         super().__init__(gladefile("about.glade"), root="aboutdialog")
         dialog = self.get_widget("aboutdialog")

@@ -13,6 +13,6 @@ ignore =
     E722,
     W503, # line break before binary operator
     E231, # missing whitespace after ','
-max-line-length = 100
+max-line-length = 120
 exclude = env,.direnv,docs
-max-complexity = 25
+max-complexity = 100

@@ -33,13 +33,14 @@ class Settings:
         Settings.enhanceSetting()
 
         self.guake = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake", False), None, None
-        )
+            Gio.SettingsSchemaSource.lookup(schema_source, "guake", False),
+            None, None)
         self.guake.initEnhancements()
         self.guake.connect("changed", self.guake.triggerOnChangedValue)
 
         self.general = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.general", False),
+            Gio.SettingsSchemaSource.lookup(schema_source, "guake.general",
+                                            False),
             None,
             None,
         )
@@ -47,39 +48,48 @@ class Settings:
         self.general.connect("changed", self.general.triggerOnChangedValue)
 
         self.keybindings = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.keybindings", False),
+            Gio.SettingsSchemaSource.lookup(schema_source, "guake.keybindings",
+                                            False),
             None,
             None,
         )
         self.keybindings.initEnhancements()
-        self.keybindings.connect("changed", self.keybindings.triggerOnChangedValue)
+        self.keybindings.connect("changed",
+                                 self.keybindings.triggerOnChangedValue)
 
         self.keybindingsGlobal = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.keybindings.global", False),
+            Gio.SettingsSchemaSource.lookup(schema_source,
+                                            "guake.keybindings.global", False),
             None,
             None,
         )
         self.keybindingsGlobal.initEnhancements()
-        self.keybindingsGlobal.connect("changed", self.keybindingsGlobal.triggerOnChangedValue)
+        self.keybindingsGlobal.connect(
+            "changed", self.keybindingsGlobal.triggerOnChangedValue)
 
         self.keybindingsLocal = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.keybindings.local", False),
+            Gio.SettingsSchemaSource.lookup(schema_source,
+                                            "guake.keybindings.local", False),
             None,
             None,
         )
         self.keybindingsLocal.initEnhancements()
-        self.keybindingsLocal.connect("changed", self.keybindingsLocal.triggerOnChangedValue)
+        self.keybindingsLocal.connect(
+            "changed", self.keybindingsLocal.triggerOnChangedValue)
 
         self.styleBackground = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.style.background", False),
+            Gio.SettingsSchemaSource.lookup(schema_source,
+                                            "guake.style.background", False),
             None,
             None,
         )
         self.styleBackground.initEnhancements()
-        self.styleBackground.connect("changed", self.styleBackground.triggerOnChangedValue)
+        self.styleBackground.connect(
+            "changed", self.styleBackground.triggerOnChangedValue)
 
         self.styleFont = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.style.font", False),
+            Gio.SettingsSchemaSource.lookup(schema_source, "guake.style.font",
+                                            False),
             None,
             None,
         )
@@ -87,7 +97,8 @@ class Settings:
         self.styleFont.connect("changed", self.styleFont.triggerOnChangedValue)
 
         self.style = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.style", False),
+            Gio.SettingsSchemaSource.lookup(schema_source, "guake.style",
+                                            False),
             None,
             None,
         )
@@ -95,7 +106,8 @@ class Settings:
         self.style.connect("changed", self.style.triggerOnChangedValue)
 
         self.hooks = Gio.Settings.new_full(
-            Gio.SettingsSchemaSource.lookup(schema_source, "guake.hooks", False),
+            Gio.SettingsSchemaSource.lookup(schema_source, "guake.hooks",
+                                            False),
             None,
             None,
         )

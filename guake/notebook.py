@@ -44,36 +44,11 @@ from guake.terminal import GuakeTerminal
 import inspect
 import logging
 import posix
-
-# Create a custom logger
-logger = logging.getLogger(__name__)
-
-# Create handlers
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
-
-# Create formatters and add it to handlers
-c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-
-def _line_():
-    """Returns the current line number in our program."""
-    return str(inspect.currentframe().f_back.f_lineno)
-
-
-def _file_():
-    return str(__file__)
+# from guake.logging_decorator import logging_decorator
+# from guake.logging_decorator import _file_
+from guake.logging_decorator import _fl_two_
+# from guake.logging_decorator import _line_
+from guake.logging_decorator import logger
 
 
 class TerminalNotebook(Gtk.Notebook):
@@ -285,17 +260,13 @@ class TerminalNotebook(Gtk.Notebook):
             term_pid = terminal.pid
             try:
                 fgpid = posix.tcgetpgrp(fdpty)
-                logger.debug("%s:%s  found running pid: %s", _file_(),
-                             _line_(), fgpid)
+                logger.debug("%s found running pid: %s", _fl_two_(), fgpid)
                 if fgpid not in (-1, term_pid):
                     total_procs += 1
             except OSError:
                 logger.debug(
-                    "%s:%s Cannot retrieve any pid from terminal %s, looks like it is already dead",
-                    _file_(),
-                    _line_(),
-                    index,
-                )
+                    "%s Cannot get any pid from terminal %s, looks dead",
+                    _fl_two_(), index)
                 return 0
         return total_procs
 
@@ -317,11 +288,10 @@ class TerminalNotebook(Gtk.Notebook):
             yield self.get_nth_page(page_num)
 
     def delete_page(self, page_num, kill=True, prompt=0):
-        logger.debug("%s:%s  Deleting page index %s", _file_(), _line_(),
-                     page_num)
+        logger.debug("%s Deleting page index %s", _fl_two_(), page_num)
         if page_num >= self.get_n_pages() or page_num < 0:
-            logger.error("%s:%s  Can not delete page %s no such index",
-                         _file_(), _line_(), page_num)
+            logger.error("%s Can not delete page %s no such index", _fl_two_(),
+                         page_num)
             return
         # TODO NOTEBOOK it would be nice if none of the "ui" stuff
         # (PromptQuitDialog) would be in here
@@ -425,8 +395,7 @@ class TerminalNotebook(Gtk.Notebook):
                         directory = active_terminal.get_current_directory()
             except BaseException:
                 pass
-        logger.info("%s:%s  Spawning new terminal at %s", _file_(), _line_(),
-                    directory)
+        logger.info("%s Spawning new terminal at %s", _fl_two_(), directory)
         terminal.spawn_sync_pid(directory)
         return terminal
 
@@ -567,12 +536,8 @@ class NotebookManager(GObject.Object):
                                                     self.terminal_spawned_cb)
             self.notebooks[workspace_index].connect("page-deleted",
                                                     self.page_deleted_cb)
-            logger.info(
-                "%s:%s  created fresh notebook for workspace %d",
-                _file_(),
-                _line_(),
-                self.current_notebook,
-            )
+            logger.info("%s created fresh notebook for workspace %d",
+                        _fl_two_(), self.current_notebook)
 
             # add a tab if there is none
             if not self.notebooks[workspace_index].has_page():
@@ -589,7 +554,7 @@ class NotebookManager(GObject.Object):
     def set_workspace(self, index: int):
         self.notebook_parent.remove(self.get_current_notebook())
         self.current_notebook = index
-        logger.info("%s:%s  current workspace is %d", _file_(), _line_(),
+        logger.info("%s current workspace is %d", _fl_two_(),
                     self.current_notebook)
         notebook = self.get_current_notebook()
         self.notebook_parent.add(notebook)

@@ -20,8 +20,6 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301 USA
 """
 import enum
-import inspect
-import logging
 import os
 import subprocess
 import time
@@ -47,35 +45,11 @@ try:
 except ImportError:
     GdkX11 = False
 
-# Create a custom logger
-logger = logging.getLogger(__name__)
-
-# Create handlers
-c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake/") + "guake.log")
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
-
-# Create formatters and add it to handlers
-c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
-
-# Add handlers to the logger
-logger.addHandler(c_handler)
-logger.addHandler(f_handler)
-
-
-def _line_():
-    """Returns the current line number in our program."""
-    return str(inspect.currentframe().f_back.f_lineno)
-
-
-def _file_():
-    return str(__file__)
+# from guake.logging_decorator import logging_decorator
+# from guake.logging_decorator import _file_
+from guake.logging_decorator import _fl_two_
+# from guake.logging_decorator import _line_
+from guake.logging_decorator import logger
 
 
 def gdk_is_x11_display(instance):
@@ -100,7 +74,7 @@ def save_tabs_when_changed(func):
     """Decorator for save-tabs-when-changed"""
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
-        logger.debug("%s:%s  mom, I've been called: %s %s", _file_(), _line_(),
+        logger.debug("%s mom, I've been called: %s %s", _fl_two_(),
                      func.__name__, func)
 
         # Find me the Guake!
@@ -252,50 +226,42 @@ class RectCalculator:
         hdisplacement = settings.general.get_int(
             "window-horizontal-displacement")
 
-        logger.debug("%s:%s  set_final_window_rect", _file_(), _line_())
-        logger.debug("%s:%s    height_percents = %s", _file_(), _line_(),
-                     height_percents)
-        logger.debug("%s:%s    width_percents = %s", _file_(), _line_(),
-                     width_percents)
-        logger.debug("%s:%s    halignment = %s", _file_(), _line_(),
-                     halignment)
-        logger.debug("%s:%s    valignment = %s", _file_(), _line_(),
-                     valignment)
-        logger.debug("%s:%s    hdisplacement = %s", _file_(), _line_(),
-                     hdisplacement)
-        logger.debug("%s:%s    vdisplacement = %s", _file_(), _line_(),
-                     vdisplacement)
+        logger.debug("%s set_final_window_rect", _fl_two_())
+        logger.debug("%s   height_percents = %s", _fl_two_(), height_percents)
+        logger.debug("%s   width_percents = %s", _fl_two_(), width_percents)
+        logger.debug("%s   halignment = %s", _fl_two_(), halignment)
+        logger.debug("%s   valignment = %s", _fl_two_(), valignment)
+        logger.debug("%s   hdisplacement = %s", _fl_two_(), hdisplacement)
+        logger.debug("%s   vdisplacement = %s", _fl_two_(), vdisplacement)
 
         # get the rectangle just from the destination monitor
         screen = window.get_screen()
         monitor = cls.get_final_window_monitor(settings, window)
         window_rect = screen.get_monitor_geometry(monitor)
-        logger.debug("%s:%s  Current monitor geometry", _file_(), _line_())
-        logger.debug("%s:%s    window_rect.x: %s", _file_(), _line_(),
-                     window_rect.x)
-        logger.debug("%s:%s    window_rect.y: %s", _file_(), _line_(),
-                     window_rect.y)
-        logger.debug("%s:%s    window_rect.height: %s", _file_(), _line_(),
+        logger.debug("%s Current monitor geometry", _fl_two_())
+        logger.debug("%s   window_rect.x: %s", _fl_two_(), window_rect.x)
+        logger.debug("%s   window_rect.y: %s", _fl_two_(), window_rect.y)
+        logger.debug("%s   window_rect.height: %s", _fl_two_(),
                      window_rect.height)
-        logger.debug("%s:%s    window_rect.width: %s", _file_(), _line_(),
+        logger.debug("%s   window_rect.width: %s", _fl_two_(),
                      window_rect.width)
 
         total_height = window_rect.height
         total_width = window_rect.width
 
         if halignment == ALIGN_CENTER:
-            logger.debug("%s:%s  aligning to center!", _file_(), _line_())
+            logger.debug("%s aligning to center!", _fl_two_())
             window_rect.width = int(
                 float(total_width) * float(width_percents) / 100.0)
             window_rect.x += (total_width - window_rect.width) / 2
         elif halignment == ALIGN_LEFT:
-            logger.debug("%s:%s  aligning to left!", _file_(), _line_())
+            logger.debug("%s aligning to left!", _fl_two_())
             window_rect.width = int(
                 float(total_width - hdisplacement) * float(width_percents) /
                 100.0)
             window_rect.x += hdisplacement
         elif halignment == ALIGN_RIGHT:
-            logger.debug("%s:%s  aligning to right!", _file_(), _line_())
+            logger.debug("%s aligning to right!", _fl_two_())
             window_rect.width = int(
                 float(total_width - hdisplacement) * float(width_percents) /
                 100.0)
@@ -309,26 +275,23 @@ class RectCalculator:
             window_rect.y += total_height - window_rect.height - vdisplacement
 
         if width_percents == 100 and height_percents == 100:
-            logger.debug("%s:%s  MAXIMIZING MAIN WINDOW", _file_(), _line_())
+            logger.debug("%s MAXIMIZING MAIN WINDOW", _fl_two_())
             window.move(window_rect.x, window_rect.y)
             window.maximize()
         elif not FullscreenManager(settings, window).is_fullscreen():
-            logger.debug("%s:%s  RESIZING MAIN WINDOW WITH VALUES:", _file_(),
-                         _line_())
+            logger.debug("%s RESIZING MAIN WINDOW WITH VALUES:", _fl_two_())
             window.unmaximize()
-            logger.debug("%s:%s    window_rect.x: %s", _file_(), _line_(),
-                         window_rect.x)
-            logger.debug("%s:%s    window_rect.y: %s", _file_(), _line_(),
-                         window_rect.y)
-            logger.debug("%s:%s    window_rect.height: %s", _file_(), _line_(),
+            logger.debug("%s   window_rect.x: %s", _fl_two_(), window_rect.x)
+            logger.debug("%s   window_rect.y: %s", _fl_two_(), window_rect.y)
+            logger.debug("%s   window_rect.height: %s", _fl_two_(),
                          window_rect.height)
-            logger.debug("%s:%s    window_rect.width: %s", _file_(), _line_(),
+            logger.debug("%s   window_rect.width: %s", _fl_two_(),
                          window_rect.width)
             # Note: move_resize is only on GTK3
             window.resize(window_rect.width, window_rect.height)
             window.move(window_rect.x, window_rect.y)
-            logger.debug("%s:%s  Updated window position: %r", _file_(),
-                         _line_(), window.get_position())
+            logger.debug("%s Updated window position: %r", _fl_two_(),
+                         window.get_position())
 
         return window_rect
 
