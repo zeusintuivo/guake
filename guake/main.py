@@ -37,9 +37,13 @@ from locale import gettext
 builtins.__dict__["_"] = gettext
 
 from optparse import OptionParser
+
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
+# from guake.logging_decorator import logging
+# from guake.logging_decorator import ColoredLogger
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 
@@ -454,6 +458,7 @@ def main():
     from guake.dbusiface import DBUS_NAME
     from guake.dbusiface import DBUS_PATH
     from guake.dbusiface import DbusManager
+
     from guake.guake_logging import setupLogging
 
     instance = None
@@ -468,6 +473,7 @@ def main():
     except dbus.DBusException:
         # can now configure the logging
         setupLogging(options.verbose)
+        # logging.setLoggerClass(ColoredLogger)
 
         # COLORTERM is an environment variable set by some terminal emulators such as
         # gnome-terminal.

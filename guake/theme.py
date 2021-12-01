@@ -12,9 +12,11 @@ from gi.repository import Gtk
 from textwrap import dedent
 
 from guake.paths import GUAKE_THEME_DIR
+
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 
@@ -94,7 +96,7 @@ def patch_gtk_theme(style_context, settings):
         style_context.lookup_color("theme_selected_fg_color")[1])
     selected_bg_color = rgba_to_hex(
         style_context.lookup_color("theme_selected_bg_color")[1])
-    dark_yes = ("yes" if variant == "dark" else "no")
+    dark_yes = "yes" if variant == "dark" else "no"
     lgt = "%s Patching theme '%s' (prefer dark = '%r'), overriding tab 'checked' state': foreground: %r, background: %r"
     logger.debug(lgt, _fl_two_(), theme_name, dark_yes, selected_fg_color,
                  selected_bg_color)

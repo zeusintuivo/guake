@@ -21,9 +21,11 @@ from guake.utils import HidePrevention
 from guake.utils import TabNameUtils
 from guake.utils import get_server_time
 from guake.utils import save_tabs_when_changed
+
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 
@@ -430,8 +432,8 @@ class TerminalBox(Gtk.Box, TerminalHolder):
         # Adjust scrolling speed when adding "shift" or "shift + ctrl"
         adj = self.scroll.get_adjustment()
         page_size = adj.get_page_size()
-        if (event.get_state() & Gdk.ModifierType.SHIFT_MASK
-                and event.get_state() & Gdk.ModifierType.CONTROL_MASK):
+        if event.get_state() & Gdk.ModifierType.SHIFT_MASK and event.get_state(
+        ) & Gdk.ModifierType.CONTROL_MASK:
             # Ctrl + Shift + Mouse Scroll (4 pages)
             adj.set_page_increment(page_size * 40)
         elif event.get_state() & Gdk.ModifierType.SHIFT_MASK:
@@ -518,9 +520,9 @@ class TerminalBox(Gtk.Box, TerminalHolder):
     def on_button_press(self, target, event, user_data):
         if event.button == 3:
             # First send to background process if handled, do nothing else
-            if (not event.get_state() & Gdk.ModifierType.SHIFT_MASK
-                    and Vte.Terminal.do_button_press_event(
-                        self.terminal, event)):
+            if not event.get_state(
+            ) & Gdk.ModifierType.SHIFT_MASK and Vte.Terminal.do_button_press_event(
+                    self.terminal, event):
                 return True
 
             menu = mk_terminal_context_menu(

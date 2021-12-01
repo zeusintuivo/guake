@@ -37,10 +37,9 @@ logger = logging.getLogger(__name__)
 c_handler = logging.StreamHandler()
 # os.path.expandvars("$HOME/.config/guake/")
 # f_handler = logging.FileHandler(os.path.expandvars(xdg_config_home + "guake.log"))
-f_handler = logging.FileHandler(
-    os.path.expandvars("$HOME/.config/guake") + "/guake.log")
+# f_handler = logging.FileHandler(os.path.expandvars("$HOME/.config/guake") + "/guake.log")
 c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
+# f_handler.setLevel(logging.ERROR)
 
 # formatter = logging.Formatter('%(levelname)s - File %(real_pathname)s,'
 #                               ' line %(real_lineno)s, %(real_funcName)s: %(message)s')
@@ -90,8 +89,8 @@ def _file_two_():
 
 def _fl_two_():
     return f"{_file_two_()}:{_line_two_()}".replace(
-        '/usr/local/lib64/python3.10/site-packages/',
-        '/home/zeus/_/software/guake/')
+        "/usr/local/lib64/python3.10/site-packages/",
+        "/home/zeus/_/software/guake/")
 
 
 def _line_three_():
@@ -206,11 +205,10 @@ logging.setLoggerClass(ColoredLogger)
 c_format = logging.Formatter(
     "%(filename)s:%(lineno)s %(levelname)-5s %(message)s ")
 # c_format = logging.setLoggerClass(ColoredLogger)
-f_format = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)
-f_handler.setFormatter(f_format)
+# f_handler.setFormatter(f_format)
 
 # Add handlers to the logger
 logger.addHandler(c_handler)
-logger.addHandler(f_handler)
+# logger.addHandler(f_handler)

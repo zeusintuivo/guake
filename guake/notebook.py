@@ -44,9 +44,11 @@ from guake.terminal import GuakeTerminal
 import inspect
 import logging
 import posix
+
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 
@@ -163,8 +165,8 @@ class TerminalNotebook(Gtk.Notebook):
         self.popover_listbox.set_property("margin", LISTBOX_MARGIN)
         self.popover_window.add_with_viewport(self.popover_listbox)
 
-        max_height = (self.guake.window.get_allocation().height -
-                      BOX_HEIGHT if self.guake else BOX_HEIGHT * 10)
+        max_height = self.guake.window.get_allocation(
+        ).height - BOX_HEIGHT if self.guake else BOX_HEIGHT * 10
         height = BOX_HEIGHT * self.get_n_pages() + LISTBOX_MARGIN * 4
         self.popover_window.set_min_content_height(min(max_height, height))
         self.popover_window.set_min_content_width(325)

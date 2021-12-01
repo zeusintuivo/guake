@@ -79,6 +79,7 @@ from guake.utils import save_tabs_when_changed
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 
@@ -641,14 +642,11 @@ class Guake(SimpleGladeApp):
             is_withdrawn = bool(cur_state & GDK_WINDOW_STATE_WITHDRAWN)
             is_above = bool(cur_state & GDK_WINDOW_STATE_ABOVE)
             is_iconified = self.is_iconified()
-            logger.debug("%s gtk.gdk.WindowState = %s", _fl_two_(), cur_state)
-            logger.debug("%s GDK_WINDOW_STATE_STICKY? %s", _fl_two_(),
-                         is_sticky)
-            logger.debug("%s GDK_WINDOW_STATE_WITHDRAWN? %s", _fl_two_(),
-                         is_withdrawn)
-            logger.debug("%s GDK_WINDOW_STATE_ABOVE? %s", _fl_two_(), is_above)
-            logger.debug("%s GDK_WINDOW_STATE_ICONIFIED? %s", _fl_two_(),
-                         is_iconified)
+            # logger.debug("%s gtk.gdk.WindowState = %s", _fl_two_(), cur_state)
+            # logger.debug("%s GDK_WINDOW_STATE_STICKY? %s", _fl_two_(), is_sticky)
+            # logger.debug("%s GDK_WINDOW_STATE_WITHDRAWN? %s", _fl_two_(), is_withdrawn)
+            # logger.debug("%s GDK_WINDOW_STATE_ABOVE? %s", _fl_two_(), is_above)
+            # logger.debug("%s GDK_WINDOW_STATE_ICONIFIED? %s", _fl_two_(), is_iconified)
             return True
         return False
 
@@ -1255,8 +1253,7 @@ class Guake(SimpleGladeApp):
 
         start, end = dialog.buffer.get_bounds()
         search_string = start.get_text(end)
-        forward_or_backward = ("forward" if response_id == RESPONSE_FORWARD
-                               else "backward")
+        forward_or_backward = "forward" if response_id == RESPONSE_FORWARD else "backward"
         logger.debug("%s Searching for %r %s\n", _fl_two_(), search_string,
                      forward_or_backward)
 

@@ -5,9 +5,11 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 

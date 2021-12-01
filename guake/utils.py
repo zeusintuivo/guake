@@ -48,6 +48,7 @@ except ImportError:
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 
@@ -221,77 +222,64 @@ class RectCalculator:
         width_percents = settings.general.get_int("window-width")
         halignment = settings.general.get_int("window-halignment")
         valignment = settings.general.get_int("window-valignment")
-        vdisplacement = settings.general.get_int(
-            "window-vertical-displacement")
-        hdisplacement = settings.general.get_int(
-            "window-horizontal-displacement")
+        vdisplacement = settings.general.get_int("window-vertical-displacement")
+        hdisplacement = settings.general.get_int("window-horizontal-displacement")
 
-        logger.debug("%s set_final_window_rect", _fl_two_())
-        logger.debug("%s   height_percents = %s", _fl_two_(), height_percents)
-        logger.debug("%s   width_percents = %s", _fl_two_(), width_percents)
-        logger.debug("%s   halignment = %s", _fl_two_(), halignment)
-        logger.debug("%s   valignment = %s", _fl_two_(), valignment)
-        logger.debug("%s   hdisplacement = %s", _fl_two_(), hdisplacement)
-        logger.debug("%s   vdisplacement = %s", _fl_two_(), vdisplacement)
+        # logger.debug("%s set_final_window_rect", _fl_two_())
+        # logger.debug("%s   height_percents = %s", _fl_two_(), height_percents)
+        # logger.debug("%s   width_percents = %s", _fl_two_(), width_percents)
+        # logger.debug("%s   halignment = %s", _fl_two_(), halignment)
+        # logger.debug("%s   valignment = %s", _fl_two_(), valignment)
+        # logger.debug("%s   hdisplacement = %s", _fl_two_(), hdisplacement)
+        # logger.debug("%s   vdisplacement = %s", _fl_two_(), vdisplacement)
 
         # get the rectangle just from the destination monitor
         screen = window.get_screen()
         monitor = cls.get_final_window_monitor(settings, window)
         window_rect = screen.get_monitor_geometry(monitor)
-        logger.debug("%s Current monitor geometry", _fl_two_())
-        logger.debug("%s   window_rect.x: %s", _fl_two_(), window_rect.x)
-        logger.debug("%s   window_rect.y: %s", _fl_two_(), window_rect.y)
-        logger.debug("%s   window_rect.height: %s", _fl_two_(),
-                     window_rect.height)
-        logger.debug("%s   window_rect.width: %s", _fl_two_(),
-                     window_rect.width)
+        # logger.debug("%s Current monitor geometry", _fl_two_())
+        # logger.debug("%s   window_rect.x: %s", _fl_two_(), window_rect.x)
+        # logger.debug("%s   window_rect.y: %s", _fl_two_(), window_rect.y)
+        # logger.debug("%s   window_rect.height: %s", _fl_two_(), window_rect.height)
+        # logger.debug("%s   window_rect.width: %s", _fl_two_(), window_rect.width)
 
         total_height = window_rect.height
         total_width = window_rect.width
 
         if halignment == ALIGN_CENTER:
             logger.debug("%s aligning to center!", _fl_two_())
-            window_rect.width = int(
-                float(total_width) * float(width_percents) / 100.0)
+            window_rect.width = int(float(total_width) * float(width_percents) / 100.0)
             window_rect.x += (total_width - window_rect.width) / 2
         elif halignment == ALIGN_LEFT:
             logger.debug("%s aligning to left!", _fl_two_())
-            window_rect.width = int(
-                float(total_width - hdisplacement) * float(width_percents) /
-                100.0)
+            window_rect.width = int(float(total_width - hdisplacement) * float(width_percents) / 100.0)
             window_rect.x += hdisplacement
         elif halignment == ALIGN_RIGHT:
             logger.debug("%s aligning to right!", _fl_two_())
-            window_rect.width = int(
-                float(total_width - hdisplacement) * float(width_percents) /
-                100.0)
+            window_rect.width = int(float(total_width - hdisplacement) * float(width_percents) / 100.0)
             window_rect.x += total_width - window_rect.width - hdisplacement
 
-        window_rect.height = int(
-            float(total_height) * float(height_percents) / 100.0)
+        window_rect.height = int(float(total_height) * float(height_percents) / 100.0)
         if valignment == ALIGN_TOP:
             window_rect.y += vdisplacement
         elif valignment == ALIGN_BOTTOM:
             window_rect.y += total_height - window_rect.height - vdisplacement
 
         if width_percents == 100 and height_percents == 100:
-            logger.debug("%s MAXIMIZING MAIN WINDOW", _fl_two_())
+            # logger.debug("%s MAXIMIZING MAIN WINDOW", _fl_two_())
             window.move(window_rect.x, window_rect.y)
             window.maximize()
         elif not FullscreenManager(settings, window).is_fullscreen():
-            logger.debug("%s RESIZING MAIN WINDOW WITH VALUES:", _fl_two_())
+            # logger.debug("%s RESIZING MAIN WINDOW WITH VALUES:", _fl_two_())
             window.unmaximize()
-            logger.debug("%s   window_rect.x: %s", _fl_two_(), window_rect.x)
-            logger.debug("%s   window_rect.y: %s", _fl_two_(), window_rect.y)
-            logger.debug("%s   window_rect.height: %s", _fl_two_(),
-                         window_rect.height)
-            logger.debug("%s   window_rect.width: %s", _fl_two_(),
-                         window_rect.width)
+            # logger.debug("%s   window_rect.x: %s", _fl_two_(), window_rect.x)
+            # logger.debug("%s   window_rect.y: %s", _fl_two_(), window_rect.y)
+            # logger.debug("%s   window_rect.height: %s", _fl_two_(), window_rect.height)
+            # logger.debug("%s   window_rect.width: %s", _fl_two_(), window_rect.width)
             # Note: move_resize is only on GTK3
             window.resize(window_rect.width, window_rect.height)
             window.move(window_rect.x, window_rect.y)
-            logger.debug("%s Updated window position: %r", _fl_two_(),
-                         window.get_position())
+            # logger.debug("%s Updated window position: %r", _fl_two_(), window.get_position())
 
         return window_rect
 

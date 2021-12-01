@@ -2,7 +2,7 @@
 #set -E -o functrace
 #set -ex
 
-PIPENV_IGNORE_VIRTUALENVS=1 /home/linuxbrew/.linuxbrew/bin/black
+PIPENV_IGNORE_VIRTUALENVS=1 /home/linuxbrew/.linuxbrew/bin/black guake
 PIPENV_IGNORE_VIRTUALENVS=1 ~/.local/bin/pipenv run /home/linuxbrew/.linuxbrew/bin/black --check guake
 PIPENV_IGNORE_VIRTUALENVS=1 ~/.local/bin/pipenv run /home/linuxbrew/.linuxbrew/bin/flake8 guake
 PIPENV_IGNORE_VIRTUALENVS=1 ~/.local/bin/pipenv run /home/linuxbrew/.linuxbrew/bin/pylint --rcfile=.pylintrc --output-format=colorized guake

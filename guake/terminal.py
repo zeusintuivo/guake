@@ -53,6 +53,7 @@ from guake.globals import TERMINAL_MATCH_TAGS
 # from guake.logging_decorator import logging_decorator
 # from guake.logging_decorator import _file_
 from guake.logging_decorator import _fl_two_
+
 # from guake.logging_decorator import _line_
 from guake.logging_decorator import logger
 
@@ -257,20 +258,21 @@ class GuakeTerminal(Vte.Terminal):
                         GLib.Regex.new(match, compile_flag, 0), 0)
                     self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
             except GLib.Error as err:  # pylint: disable=catching-non-exception
-                emsg = "%s ERROR: PCRE2 does not seems to be enabled on your system. " \
-                       "Quick Edit and other Ctrl+click features are disabled. " \
-                       "Please update your VTE package or contact your distribution to ask " \
-                       "to enable regular expression support in VTE. Exception: '%s'"
+                emsg = (
+                    "%s ERROR: PCRE2 does not seems to be enabled on your system. "
+                    "Quick Edit and other Ctrl+click features are disabled. "
+                    "Please update your VTE package or contact your distribution to ask "
+                    "to enable regular expression support in VTE. Exception: '%s'"
+                )
                 logger.error(emsg, _fl_two_(), str(err))
 
     # @logging_decorator
     def get_current_directory(self):
-        logger.info("%s getcwd %r", _fl_two_(), os.getcwd())
+        # logger.info("%s getcwd %r", _fl_two_(), os.getcwd())
         directory = os.path.expanduser("~")
-        logger.info("%s directory %r", _fl_two_(), directory)
-        logger.info("%s self.pid %r", _fl_two_(), self.pid)
-        logger.info("%s readlink %r", _fl_two_(),
-                    os.readlink(f"/proc/{self.pid}/cwd"))
+        # logger.info("%s directory %r", _fl_two_(), directory)
+        # logger.info("%s self.pid %r", _fl_two_(), self.pid)
+        # logger.info("%s readlink %r", _fl_two_(), os.readlink(f"/proc/{self.pid}/cwd"))
         if self.pid is not None:
             try:
                 cwd = os.readlink(f"/proc/{self.pid}/cwd")
@@ -438,7 +440,8 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = g.group(2)
                 else:
                     line_number = None
-                logger.info("%s Quick action executed filename=%s, line=%s", _fl_two_(), filename, line_number)
+                logger.info("%s Quick action executed filename=%s, line=%s",
+                            _fl_two_(), filename, line_number)
                 (filepath, ln, _) = self.is_file_on_local_server(filename)
                 if ln:
                     line_number = ln
@@ -460,7 +463,8 @@ class GuakeTerminal(Vte.Terminal):
         else:
             line_number = str(line_number)
 
-        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath,  line_number)
+        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath,
+                     line_number)
         resolved_cmdline = cmdline % {
             "file_path": filepath,
             "line_number": line_number
@@ -480,7 +484,8 @@ class GuakeTerminal(Vte.Terminal):
             # logger.debug(f"{_fl_two_()} Opening new tab QUICKOPEN to execute")
             # resolved_cmdline = "guake -n guake -e \"\"\""
             # + resolved_cmdline + "\"\"\" guake -r 'QUICKOPEN' & "
-            logger.debug("%s Command line new: %s", _fl_two_(), resolved_cmdline)
+            logger.debug("%s Command line new: %s", _fl_two_(),
+                         resolved_cmdline)
             subprocess.call(resolved_cmdline, shell=True)
 
     def handleTerminalMatch(self, matched_string):
@@ -596,7 +601,9 @@ class GuakeTerminal(Vte.Terminal):
             directory,
             argv,
             self.envv,
-            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+            # ["GUAKE_TAB_UUID={}".format(self.uuid)],
+            # GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+            GLib.SpawnFlags(Vte.SPAWN_NO_PARENT_ENVV),
             None,
             None,
             None,
