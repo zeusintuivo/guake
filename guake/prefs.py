@@ -771,10 +771,8 @@ class PrefsDialog(SimpleGladeApp):
             style_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
         )
-        self.get_widget("quick_open_command_line").get_style_context(
-        ).add_class("monospace")
-        self.get_widget("quick_open_supported_patterns").get_style_context(
-        ).add_class("monospace")
+        self.get_widget("quick_open_command_line").get_style_context().add_class("monospace")
+        self.get_widget("quick_open_supported_patterns").get_style_context().add_class("monospace")
         self.settings = settings
 
         self.add_callbacks(PrefsCallbacks(self))
@@ -907,8 +905,7 @@ class PrefsDialog(SimpleGladeApp):
         """If toggle_on_close_tabs is set to 2 (Always), prompt_on_quit has no
         effect.
         """
-        self.get_widget("prompt_on_quit").set_sensitive(
-            combo.get_active() != 2)
+        self.get_widget("prompt_on_quit").set_sensitive(combo.get_active() != 2)
 
     def toggle_style_sensitivity(self, chk):
         """If the user chooses to use the gnome default font
@@ -938,8 +935,7 @@ class PrefsDialog(SimpleGladeApp):
         """If the user chooses to not show the tab bar, it means that they
         cannot see the tab bar regardless of what other tab bar options say.
         """
-        self.get_widget("fullscreen_hide_tabbar").set_sensitive(
-            chk.get_active())
+        self.get_widget("fullscreen_hide_tabbar").set_sensitive(chk.get_active())
         self.get_widget("hide_tabs_if_one_tab").set_sensitive(chk.get_active())
 
     def toggle_display_n_sensitivity(self, chk):
