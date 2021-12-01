@@ -55,8 +55,7 @@ class TerminalContextMenuCallbacks:
             query = quote_plus(query)
             if query:
                 search_url = f"https://www.google.com/search?q={query}&safe=off"
-                Gtk.show_uri(self.window.get_screen(), search_url,
-                             get_server_time(self.window))
+                Gtk.show_uri(self.window.get_screen(), search_url, get_server_time(self.window))
 
     def on_quick_open(self, *args):
         if self.terminal.get_has_selection():

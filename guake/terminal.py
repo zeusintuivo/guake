@@ -34,6 +34,8 @@ from typing import Tuple
 from urllib.parse import unquote
 from urllib.parse import urlparse
 
+from time import sleep
+
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -41,6 +43,7 @@ gi.require_version("Vte", "2.91")  # vte-0.38
 
 from gi.repository import GLib
 from gi.repository import Gdk
+from gi.repository import GdkX11
 from gi.repository import Gtk
 from gi.repository import Pango
 from gi.repository import Vte
@@ -70,18 +73,15 @@ try:
         at_exit_call(libutempter.utempter_remove_added_record)
 except Exception as e:
     libutempter = None
-    sys.stderr.write(
-        "[WARN] ===================================================================\n"
-    )
+    sys.stderr.write("[WARN] " + "=" * 80 + "\n")
     sys.stderr.write("[WARN] Unable to load the library libutempter !\n")
     sys.stderr.write(
         "[WARN] Some feature might not work:\n"
         "[WARN]  - 'exit' command might freeze the terminal instead of closing the tab\n"
-        "[WARN]  - the 'wall' command is known to work badly\n")
-    sys.stderr.write("[WARN] Error: " + str(e) + "\n")
-    sys.stderr.write(
-        "[WARN] ===================================================================²\n"
+        "[WARN]  - the 'wall' command is known to work badly\n"
     )
+    sys.stderr.write("[WARN] Error: " + str(e) + "\n")
+    sys.stderr.write("[WARN] " + "=" * 80 + "²\n")
 
 
 def halt(loc):
@@ -100,18 +100,17 @@ class DropTargets(IntEnum):
 
 class GuakeTerminal(Vte.Terminal):
     """Just a vte.Terminal with some properties already set."""
+
     def __init__(self, guake):
-        super().__init__()
+        super(GuakeTerminal, self).__init__()
+        # super().__init__()
         self.targets = Gtk.TargetList()
         self.guake = guake
         self.configure_terminal()
         self.add_matches()
         self.handler_ids = []
-        self.handler_ids.append(
-            self.connect("button-press-event", self.button_press))
-        self.connect(
-            "child-exited",
-            self.on_child_exited)  # Call on_child_exited, don't remove it
+        self.handler_ids.append(self.connect("button-press-event", self.button_press))
+        self.connect("child-exited", self.on_child_exited)  # Call on_child_exited, don't remove it
         self.connect("selection-changed", self.copy_on_select)
         self.matched_value = ""
         self.font_scale_index = 0
@@ -128,10 +127,7 @@ class GuakeTerminal(Vte.Terminal):
 
         self.setup_drag_and_drop()
         self.ENVV_EXCLUDE_LIST = ["GDK_BACKEND"]
-        self.envv = [
-            f"{i}={os.environ[i]}" for i in os.environ
-            if i not in self.ENVV_EXCLUDE_LIST
-        ]
+        self.envv = [f"{i}={os.environ[i]}" for i in os.environ if i not in self.ENVV_EXCLUDE_LIST]
         self.envv.append(f"GUAKE_TAB_UUID={self.uuid}")
 
     def setup_drag_and_drop(self):
@@ -172,16 +168,14 @@ class GuakeTerminal(Vte.Terminal):
 
     def copy_clipboard(self):
         if self.get_has_selection():
-            super().copy_clipboard()
+            super(GuakeTerminal, self).copy_clipboard()
+            # super().copy_clipboard()
         elif self.matched_value:
-            guake_clipboard = Gtk.Clipboard.get_default(
-                self.guake.window.get_display())
-            guake_clipboard.set_text(self.matched_value,
-                                     len(self.matched_value))
+            guake_clipboard = Gtk.Clipboard.get_default(self.guake.window.get_display())
+            guake_clipboard.set_text(self.matched_value, len(self.matched_value))
 
     def copy_on_select(self, event):
-        if self.guake.settings.general.get_boolean(
-                "copy-on-select") and self.get_has_selection():
+        if self.guake.settings.general.get_boolean("copy-on-select") and self.get_has_selection():
             self.copy_clipboard()
 
     def configure_terminal(self):
@@ -193,8 +187,7 @@ class GuakeTerminal(Vte.Terminal):
         self.set_audible_bell(client.get_boolean("use-audible-bell"))
         self.set_sensitive(True)
 
-        cursor_blink_mode = self.guake.settings.style.get_int(
-            "cursor-blink-mode")
+        cursor_blink_mode = self.guake.settings.style.get_int("cursor-blink-mode")
         self.set_property("cursor-blink-mode", cursor_blink_mode)
 
         if (Vte.MAJOR_VERSION, Vte.MINOR_VERSION) >= (0, 50):
@@ -202,13 +195,9 @@ class GuakeTerminal(Vte.Terminal):
 
         if (Vte.MAJOR_VERSION, Vte.MINOR_VERSION) >= (0, 56):
             try:
-                self.set_bold_is_bright(
-                    self.guake.settings.styleFont.get_boolean(
-                        "bold-is-bright"))
+                self.set_bold_is_bright(self.guake.settings.styleFont.get_boolean("bold-is-bright"))
             except:  # pylint: disable=bare-except
-                logger.error(
-                    "%s set_bold_is_bright not supported by your version of VTE",
-                    _fl_two_())
+                logger.error("%s set_bold_is_bright not supported by your version of VTE", _fl_two_())
 
         # TODO PORT is this still the case with the newer vte version?
         # -- Ubuntu has a patch to libvte which disables mouse scrolling in apps
@@ -230,32 +219,23 @@ class GuakeTerminal(Vte.Terminal):
             # also ref: https://mail.gnome.org/archives/commits-list/2016-September/msg06218.html
             VTE_REGEX_FLAGS = 0x40080400
             for expr in TERMINAL_MATCH_EXPRS:
-                tag = self.match_add_regex(
-                    Vte.Regex.new_for_match(expr, len(expr), VTE_REGEX_FLAGS),
-                    0)
+                tag = self.match_add_regex(Vte.Regex.new_for_match(expr, len(expr), VTE_REGEX_FLAGS), 0)
                 self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
 
             for _useless, match, _other_useless in QUICK_OPEN_MATCHERS:
-                tag = self.match_add_regex(
-                    Vte.Regex.new_for_match(match, len(match),
-                                            VTE_REGEX_FLAGS), 0)
+                tag = self.match_add_regex(Vte.Regex.new_for_match(match, len(match), VTE_REGEX_FLAGS), 0)
                 self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
-        except (
-                GLib.Error,
-                AttributeError,
-        ):  # pylint: disable=catching-non-exception
+        except (GLib.Error, AttributeError):  # pylint: disable=catching-non-exception
             try:
                 compile_flag = 0
                 if (Vte.MAJOR_VERSION, Vte.MINOR_VERSION) >= (0, 44):
                     compile_flag = GLib.RegexCompileFlags.MULTILINE
                 for expr in TERMINAL_MATCH_EXPRS:
-                    tag = self.match_add_gregex(
-                        GLib.Regex.new(expr, compile_flag, 0), 0)
+                    tag = self.match_add_gregex(GLib.Regex.new(expr, compile_flag, 0), 0)
                     self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
 
                 for _useless, match, _other_useless in QUICK_OPEN_MATCHERS:
-                    tag = self.match_add_gregex(
-                        GLib.Regex.new(match, compile_flag, 0), 0)
+                    tag = self.match_add_gregex(GLib.Regex.new(match, compile_flag, 0), 0)
                     self.match_set_cursor_type(tag, Gdk.CursorType.HAND2)
             except GLib.Error as err:  # pylint: disable=catching-non-exception
                 emsg = (
@@ -282,8 +262,7 @@ class GuakeTerminal(Vte.Terminal):
                 directory = cwd
         return directory
 
-    def is_file_on_local_server(
-            self, text) -> Tuple[Optional[Path], Optional[int], Optional[int]]:
+    def is_file_on_local_server(self, text) -> Tuple[Optional[Path], Optional[int], Optional[int]]:
         """Test if the provided text matches a file on local server
 
         Supports:
@@ -340,8 +319,7 @@ class GuakeTerminal(Vte.Terminal):
         try:
             if pt.exists():
                 lineno = find_lineno(text, pt, lineno, py_func)
-                logger.info("%s File exists: %r, line=%r", _fl_two_(),
-                            pt.absolute().as_posix(), lineno)
+                logger.info("%s File exists: %r, line=%r", _fl_two_(), pt.absolute().as_posix(), lineno)
                 return pt, lineno, colno
             logger.debug("%s No file found matching: %r", _fl_two_(), text)
             cwd = self.get_current_directory()
@@ -349,8 +327,7 @@ class GuakeTerminal(Vte.Terminal):
             logger.debug("%s checking file existance: %r", _fl_two_(), pt)
             if pt.exists():
                 lineno = find_lineno(text, pt, lineno, py_func)
-                logger.info("%s File exists: %r, line=%r", _fl_two_(),
-                            pt.absolute().as_posix(), lineno)
+                logger.info("%s File exists: %r, line=%r", _fl_two_(), pt.absolute().as_posix(), lineno)
                 return pt, lineno, colno
             logger.debug("%s file does not exist: %s", _fl_two_(), str(pt))
         except OSError:
@@ -373,8 +350,7 @@ class GuakeTerminal(Vte.Terminal):
 
         self.found_link = None
 
-        if event.button == 1 and (event.get_state()
-                                  & Gdk.ModifierType.CONTROL_MASK):
+        if event.button == 1 and (event.get_state() & Gdk.ModifierType.CONTROL_MASK):
             if (Vte.MAJOR_VERSION, Vte.MINOR_VERSION) > (0, 50):
                 s = self.hyperlink_check_event(event)
             else:
@@ -386,15 +362,15 @@ class GuakeTerminal(Vte.Terminal):
             elif matched_string and matched_string[0]:
                 self._on_ctrl_click_matcher(matched_string)
         elif event.button == 3 and matched_string:
-            self.found_link = self.handleTerminalMatch(matched_string)
+            self.found_link = self.handle_terminal_match(matched_string)
             self.matched_value = matched_string[0]
 
     def on_child_exited(self, target, status, *user_data):
-        if None not in (libutempter, self.get_pty()):
-            libutempter.utempter_remove_record(self.get_pty().get_fd())
+        if libutempter is not None:
+            if self.get_pty() is not None:
+                libutempter.utempter_remove_record(self.get_pty().get_fd())
 
-    def on_drag_data_received(self, widget, drag_context, x, y, data, info,
-                              time):
+    def on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
         if info == DropTargets.URIS:
             uris = data.get_uris()
             for uri in uris:
@@ -422,12 +398,11 @@ class GuakeTerminal(Vte.Terminal):
         logger.debug("%s project_cwd: %s", _fl_two_(), project_cwd)
         logger.debug("%s matched string: %s", _fl_two_(), matched_string)
         # First searching in additional matchers
-        use_quick_open = self.guake.settings.general.get_boolean(
-            "quick-open-enable")
+        use_quick_open = self.guake.settings.general.get_boolean("quick-open-enable")
         if use_quick_open:
             found_matcher = self._find_quick_matcher(value, project_cwd)
         if not found_matcher:
-            self.found_link = self.handleTerminalMatch(matched_string)
+            self.found_link = self.handle_terminal_match(matched_string)
             if self.found_link:
                 self.browse_link_under_cursor()
 
@@ -440,8 +415,7 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = g.group(2)
                 else:
                     line_number = None
-                logger.info("%s Quick action executed filename=%s, line=%s",
-                            _fl_two_(), filename, line_number)
+                logger.info("%s Quick action executed filename=%s, line=%s", _fl_two_(), filename, line_number)
                 (filepath, ln, _) = self.is_file_on_local_server(filename)
                 if ln:
                     line_number = ln
@@ -456,22 +430,16 @@ class GuakeTerminal(Vte.Terminal):
     def _execute_quick_open(self, filepath, line_number, project_cwd):
         if not filepath:
             return
-        cmdline = self.guake.settings.general.get_string(
-            "quick-open-command-line")
+        cmdline = self.guake.settings.general.get_string("quick-open-command-line")
         if not line_number:
             line_number = ""
         else:
             line_number = str(line_number)
 
-        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath,
-                     line_number)
-        resolved_cmdline = cmdline % {
-            "file_path": filepath,
-            "line_number": line_number
-        }
+        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath, line_number)
+        resolved_cmdline = cmdline % {"file_path": filepath, "line_number": line_number}
         logger.debug("%s Command line: %s", _fl_two_(), resolved_cmdline)
-        quick_open_in_current_terminal = self.guake.settings.general.get_boolean(
-            "quick-open-in-current-terminal")
+        quick_open_in_current_terminal = self.guake.settings.general.get_boolean("quick-open-in-current-terminal")
         if quick_open_in_current_terminal:
             logger.debug("%s Executing it in current tab", _fl_two_())
             if resolved_cmdline[-1] != "\n":
@@ -484,11 +452,10 @@ class GuakeTerminal(Vte.Terminal):
             # logger.debug(f"{_fl_two_()} Opening new tab QUICKOPEN to execute")
             # resolved_cmdline = "guake -n guake -e \"\"\""
             # + resolved_cmdline + "\"\"\" guake -r 'QUICKOPEN' & "
-            logger.debug("%s Command line new: %s", _fl_two_(),
-                         resolved_cmdline)
+            logger.debug("%s Command line new: %s", _fl_two_(), resolved_cmdline)
             subprocess.call(resolved_cmdline, shell=True)
 
-    def handleTerminalMatch(self, matched_string):
+    def handle_terminal_match(self, matched_string):
         value, tag = matched_string
         logger.debug("%s found tag: %r, item: %r", _fl_two_(), tag, value)
         if tag in TERMINAL_MATCH_TAGS:
@@ -517,8 +484,9 @@ class GuakeTerminal(Vte.Terminal):
             return
         logger.debug("%s Opening link: %s", _fl_two_(), self.found_link)
         cmd = ["xdg-open", self.found_link]
-        with subprocess.Popen(cmd, shell=False):
-            pass
+        subprocess.Popen(cmd, shell=False)
+        # with subprocess.Popen(cmd, shell=False):
+        #    pass
 
     def set_font(self, font):
         self.font = font
@@ -528,7 +496,7 @@ class GuakeTerminal(Vte.Terminal):
         self.font_scale_index = clamp(scale_index, -6, 12)
 
         font = Pango.FontDescription(self.font.to_string())
-        scale_factor = 2**(self.font_scale_index / 6)
+        scale_factor = 2 ** (self.font_scale_index / 6)
         new_size = int(scale_factor * font.get_size())
 
         if font.get_size_is_absolute():
@@ -536,10 +504,10 @@ class GuakeTerminal(Vte.Terminal):
         else:
             font.set_size(new_size)
 
-        super().set_font(font)
+        super(GuakeTerminal, self).set_font(font)
+        # super().set_font(font)
 
-    font_scale = property(fset=set_font_scale_index,
-                          fget=lambda self: self.font_scale_index)
+    font_scale = property(fset=set_font_scale_index, fget=lambda self: self.font_scale_index)
 
     def increase_font_size(self):
         self.font_scale += 1
@@ -549,7 +517,7 @@ class GuakeTerminal(Vte.Terminal):
 
     def kill(self):
         pid = self.pid
-        threading.Thread(target=self.delete_shell, args=(pid, )).start()
+        threading.Thread(target=self.delete_shell, args=(pid,)).start()
         # start_new_thread(self.delete_shell, (pid,))
 
     def delete_shell(self, pid):
@@ -584,13 +552,13 @@ class GuakeTerminal(Vte.Terminal):
         if user_shell and os.path.exists(user_shell):
             argv.append(user_shell)
         else:
-            try:
-                argv.append(os.environ["SHELL"])
-            except KeyError:
-                argv.append("/usr/bin/bash")
+            argv.append(os.environ["SHELL"])
+            # try:
+            #     argv.append(os.environ["SHELL"])
+            # except KeyError:
+            #     argv.append("/usr/bin/bash")
 
-        login_shell = self.guake.settings.general.get_boolean(
-            "use-login-shell")
+        login_shell = self.guake.settings.general.get_boolean("use-login-shell")
         if login_shell:
             argv.append("--login")
 
@@ -600,10 +568,11 @@ class GuakeTerminal(Vte.Terminal):
             Vte.PtyFlags.DEFAULT,
             directory,
             argv,
-            self.envv,
+            [],
+            # self.envv,
             # ["GUAKE_TAB_UUID={}".format(self.uuid)],
-            # GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-            GLib.SpawnFlags(Vte.SPAWN_NO_PARENT_ENVV),
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+            # GLib.SpawnFlags(Vte.SPAWN_NO_PARENT_ENVV),
             None,
             None,
             None,
@@ -616,44 +585,49 @@ class GuakeTerminal(Vte.Terminal):
             # Return a tuple in 2.91
             # https://lazka.github.io/pgi-docs/Vte-2.91/classes/Terminal.html#Vte.Terminal.spawn_sync
             pid = pid[1]
-        if not isinstance(pid, int):
-            raise TypeError("pid must be an int")
+        assert isinstance(pid, int)
+        # if not isinstance(pid, int):
+        #    raise TypeError("pid must be an int")
 
         if libutempter is not None:
-            libutempter.utempter_add_record(self.get_pty().get_fd(),
-                                            os.uname()[1])
+            libutempter.utempter_add_record(self.get_pty().get_fd(), os.uname()[1])
         self.pid = pid
         return pid
 
     def set_color_foreground(self, font_color, *args, **kwargs):
         real_fgcolor = self.custom_fgcolor if self.custom_fgcolor else font_color
-        super().set_color_foreground(real_fgcolor, *args, **kwargs)
+        super(GuakeTerminal, self).set_color_foreground(real_fgcolor, *args, **kwargs)
+        # super().set_color_foreground(real_fgcolor, *args, **kwargs)
 
     def set_color_background(self, bgcolor, *args, **kwargs):
         real_bgcolor = self.custom_bgcolor if self.custom_bgcolor else bgcolor
-        super().set_color_background(real_bgcolor, *args, **kwargs)
+        super(GuakeTerminal, self).set_color_background(real_bgcolor, *args, **kwargs)
+        # super().set_color_background(real_bgcolor, *args, **kwargs)
 
     def set_color_bold(self, font_color, *args, **kwargs):
         real_fgcolor = self.custom_fgcolor if self.custom_fgcolor else font_color
-        super().set_color_bold(real_fgcolor, *args, **kwargs)
+        super(GuakeTerminal, self).set_color_bold(real_fgcolor, *args, **kwargs)
+        # super().set_color_bold(real_fgcolor, *args, **kwargs)
 
     def set_colors(self, font_color, bg_color, palette_list, *args, **kwargs):
         real_bgcolor = self.custom_bgcolor if self.custom_bgcolor else bg_color
         real_fgcolor = self.custom_fgcolor if self.custom_fgcolor else font_color
         real_palette = self.custom_palette if self.custom_palette else palette_list
-        super().set_colors(real_fgcolor, real_bgcolor, real_palette, *args,
-                           **kwargs)
+        super(GuakeTerminal, self).set_colors(real_fgcolor, real_bgcolor, real_palette, *args, **kwargs)
+        # super().set_colors(real_fgcolor, real_bgcolor, real_palette, *args, **kwargs)
 
     def set_color_foreground_custom(self, fgcolor, *args, **kwargs):
         """Sets custom foreground color for this terminal"""
         print(f"set_color_foreground_custom: {self.uuid}")
         self.custom_fgcolor = fgcolor
-        super().set_color_foreground(self.custom_fgcolor, *args, **kwargs)
+        super(GuakeTerminal, self).set_color_foreground(self.custom_fgcolor, *args, **kwargs)
+        # super().set_color_foreground(self.custom_fgcolor, *args, **kwargs)
 
     def set_color_background_custom(self, bgcolor, *args, **kwargs):
         """Sets custom background color for this terminal"""
         self.custom_bgcolor = bgcolor
-        super().set_color_background(self.custom_bgcolor, *args, **kwargs)
+        super(GuakeTerminal, self).set_color_background(self.custom_bgcolor, *args, **kwargs)
+        # super().set_color_background(self.custom_bgcolor, *args, **kwargs)
 
     def reset_custom_colors(self):
         self.custom_fgcolor = None
@@ -680,13 +654,9 @@ class GuakeTerminal(Vte.Terminal):
     def get_custom_colors_dict(self):
         """Returns dictionary of custom colors."""
         return {
-            "fg_color":
-            self._color_to_list(self.custom_fgcolor),
-            "bg_color":
-            self._color_to_list(self.custom_bgcolor),
-            "palette":
-            [self._color_to_list(col)
-             for col in self.custom_palette] if self.custom_palette else None,
+            "fg_color": self._color_to_list(self.custom_fgcolor),
+            "bg_color": self._color_to_list(self.custom_bgcolor),
+            "palette": [self._color_to_list(col) for col in self.custom_palette] if self.custom_palette else None,
         }
 
     def set_custom_colors_from_dict(self, colors_dict):
@@ -707,8 +677,6 @@ class GuakeTerminal(Vte.Terminal):
 
         palette = colors_dict.get("palette", None)
         if isinstance(palette, list):
-            self.custom_palette = [
-                self._color_from_list(col) for col in palette
-            ]
+            self.custom_palette = [self._color_from_list(col) for col in palette]
         else:
             self.custom_palette = None

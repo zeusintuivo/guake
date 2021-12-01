@@ -344,16 +344,17 @@ class GSettingHandler:
             terminal_uuid=user_data.get("terminal_uuid") if user_data else None
         )
 
-    def getEraseBinding(self, str):
-        if str == "auto":
+    @staticmethod
+    def get_erase_binding(str_local):
+        if str_local == "auto":
             return Vte.EraseBinding(0)
-        if str == "ascii-backspace":
+        if str_local == "ascii-backspace":
             return Vte.EraseBinding(1)
-        if str == "ascii-delete":
+        if str_local == "ascii-delete":
             return Vte.EraseBinding(2)
-        if str == "delete-sequence":
+        if str_local == "delete-sequence":
             return Vte.EraseBinding(3)
-        if str == "tty":
+        if str_local == "tty":
             return Vte.EraseBinding(4)
 
     def backspace_changed(self, settings, key, user_data):
@@ -366,7 +367,7 @@ class GSettingHandler:
         )
         terminals = (terminal,) if terminal else self.guake.notebook_manager.iter_terminals()
         for i in terminals:
-            i.set_backspace_binding(self.getEraseBinding(settings.get_string(key)))
+            i.set_backspace_binding(self.get_erase_binding(settings.get_string(key)))
 
     def delete_changed(self, settings, key, user_data):
         """If the gconf var compat_delete be changed, this method
@@ -378,7 +379,7 @@ class GSettingHandler:
         )
         terminals = (terminal,) if terminal else self.guake.notebook_manager.iter_terminals()
         for i in terminals:
-            i.set_delete_binding(self.getEraseBinding(settings.get_string(key)))
+            i.set_delete_binding(self.get_erase_binding(settings.get_string(key)))
 
     def max_tab_name_length_changed(self, settings, key, user_data):
         """If the gconf var max_tab_name_length be changed, this method will

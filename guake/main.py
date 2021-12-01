@@ -208,10 +208,10 @@ def main():
         metavar="TERMINAL_INDEX",
         action="store",
         default="",
-        help=
-        _("Select a specific terminal in a split tab. " +
-          "Only useful with split terminals (TERMINAL_INDEX is the index of the tab)"
-          ),
+        help=_(
+            "Select a specific terminal in a split tab. "
+            + "Only useful with split terminals (TERMINAL_INDEX is the index of the tab)"
+        ),
     )
 
     parser.add_option(
@@ -253,9 +253,7 @@ def main():
         dest="tab_index",
         action="store",
         default="0",
-        help=
-        _("Specify the tab to rename. Default is 0. Can be used to select tab by UUID."
-          ),
+        help=_("Specify the tab to rename. Default is 0. Can be used to select tab by UUID."),
     )
 
     parser.add_option(
@@ -263,8 +261,7 @@ def main():
         dest="bgcolor",
         action="store",
         default="",
-        help=_("Set the hexadecimal (#rrggbb) background color of "
-               "the selected tab."),
+        help=_("Set the hexadecimal (#rrggbb) background color of " "the selected tab."),
     )
 
     parser.add_option(
@@ -272,8 +269,7 @@ def main():
         dest="fgcolor",
         action="store",
         default="",
-        help=_("Set the hexadecimal (#rrggbb) foreground color of the "
-               "selected tab."),
+        help=_("Set the hexadecimal (#rrggbb) foreground color of the " "selected tab."),
     )
 
     parser.add_option(
@@ -281,8 +277,7 @@ def main():
         dest="bgcolor_current",
         action="store",
         default="",
-        help=_("Set the hexadecimal (#rrggbb) background color of "
-               "the current terminal."),
+        help=_("Set the hexadecimal (#rrggbb) background color of " "the current terminal."),
     )
 
     parser.add_option(
@@ -290,8 +285,7 @@ def main():
         dest="fgcolor_current",
         action="store",
         default="",
-        help=_("Set the hexadecimal (#rrggbb) foreground color of "
-               "the current terminal."),
+        help=_("Set the hexadecimal (#rrggbb) foreground color of " "the current terminal."),
     )
 
     parser.add_option(
@@ -324,9 +318,7 @@ def main():
         metavar="TITLE",
         action="store",
         default="",
-        help=_(
-            "Rename the specified tab by --tab-index. Reset to default if TITLE is "
-            'a single dash "-".'),
+        help=_("Rename the specified tab by --tab-index. Reset to default if TITLE is " 'a single dash "-".'),
     )
 
     parser.add_option(
@@ -336,8 +328,7 @@ def main():
         metavar="TITLE",
         action="store",
         default="",
-        help=_("Rename the current tab. Reset to default if TITLE is a "
-               'single dash "-".'),
+        help=_("Rename the current tab. Reset to default if TITLE is a " 'single dash "-".'),
     )
 
     parser.add_option(
@@ -407,8 +398,10 @@ def main():
         missing_deps = True
 
     if missing_deps:
-        print("[ERROR] missing at least one system dependencies. "
-              "You need to install additional packages for Guake to run")
+        print(
+            "[ERROR] missing at least one system dependencies. "
+            "You need to install additional packages for Guake to run"
+        )
         print(
             "[ERROR] On Debian/Ubuntu you need to install the following libraries:\n"
             "    sudo apt-get install -y --no-install-recommends \\\n"
@@ -422,7 +415,8 @@ def main():
             "        python3-dbus \\\n"
             "        python3-gi \\\n"
             "        python3-pbr \\\n"
-            "        python3-pip")
+            "        python3-pip"
+        )
         sys.exit(1)
 
     options = parser.parse_args()[0]
@@ -439,9 +433,7 @@ def main():
         sys.exit(0)
 
     if options.save_preferences and options.restore_preferences:
-        parser.error(
-            "options --save-preferences and --restore-preferences are mutually exclusive"
-        )
+        parser.error("options --save-preferences and --restore-preferences are mutually exclusive")
     if options.save_preferences:
         save_preferences(options.save_preferences)
         sys.exit(0)
@@ -558,11 +550,9 @@ def main():
 
     if options.tab_index and options.rename_tab:
         try:
-            remote_object.rename_tab_uuid(str(uuid.UUID(options.tab_index)),
-                                          options.rename_tab)
+            remote_object.rename_tab_uuid(str(uuid.UUID(options.tab_index)), options.rename_tab)
         except ValueError:
-            remote_object.rename_tab(int(options.tab_index),
-                                     options.rename_tab)
+            remote_object.rename_tab(int(options.tab_index), options.rename_tab)
         only_show_hide = options.show
 
     if options.bgcolor:
@@ -615,26 +605,21 @@ def main():
 
     if options.execute_startup_script:
         if not already_running:
-            startup_script = instance.settings.general.get_string(
-                "startup-script")
+            startup_script = instance.settings.general.get_string("startup-script")
             if startup_script:
-                logger.info("%s Calling startup script: %s", _fl_two_(),
-                            startup_script)
+                logger.info("%s Calling startup script: %s", _fl_two_(), startup_script)
                 with subprocess.Popen(
                     [startup_script],
-                        shell=True,
-                        stdin=None,
-                        stdout=None,
-                        stderr=None,
-                        close_fds=True,
+                    shell=True,
+                    stdin=None,
+                    stdout=None,
+                    stderr=None,
+                    close_fds=True,
                 ) as pid:
-                    logger.info("%s Startup script started with pid: %s",
-                                _fl_two_(), pid)
+                    logger.info("%s Startup script started with pid: %s", _fl_two_(), pid)
                 # Please ensure this is the last line !!!!
     else:
-        logger.info(
-            "%s --no-startup-script argument defined, so don't execute the startup script",
-            _fl_two_())
+        logger.info("%s --no-startup-script argument defined, so don't execute the startup script", _fl_two_())
     if already_running:
         logger.info("%s Guake is already running", _fl_two_())
     return already_running

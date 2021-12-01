@@ -87,8 +87,7 @@ class DbusManager(dbus.service.Object):
 
     @dbus.service.method(DBUS_NAME, out_signature="s")
     def get_selected_tablabel(self):
-        return self.guake.get_notebook().get_tab_text_index(
-            self.guake.get_notebook().get_current_page())
+        return self.guake.get_notebook().get_tab_text_index(self.guake.get_notebook().get_current_page())
 
     @dbus.service.method(DBUS_NAME, out_signature="i")
     def get_tab_count(self):
@@ -202,5 +201,4 @@ class DbusManager(dbus.service.Object):
 
     @dbus.service.method(DBUS_NAME, in_signature="s")
     def execute_command_current_termbox(self, command):
-        self.guake.get_notebook().get_current_terminal().execute_command(
-            command)
+        self.guake.get_notebook().get_current_terminal().execute_command(command)
