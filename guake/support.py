@@ -31,7 +31,9 @@ def populate_display(display):
     n_monitors = display.get_n_monitors()
     for i in range(n_monitors):
         monitor = display.get_monitor(i)
-        v = " ".join(j for j in (monitor.get_manufacturer(), monitor.get_model()) if j)
+        v = " ".join(j
+                     for j in (monitor.get_manufacturer(), monitor.get_model())
+                     if j)
         print(f"* Monitor: {i} - {v}")
 
         # Geometry
@@ -55,7 +57,9 @@ def populate_display(display):
         print(f"    * Refresh rate:\t{v}")
 
         # Subpixel layout
-        print(f"    * Subpixel layout:\t{monitor.get_subpixel_layout().value_nick}")
+        print(
+            f"    * Subpixel layout:\t{monitor.get_subpixel_layout().value_nick}"
+        )
 
 
 def get_version():

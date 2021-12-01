@@ -5,14 +5,12 @@ from textwrap import dedent
 
 
 def test_quick_open():
-    chunk = dedent(
-        """
+    chunk = dedent("""
         Traceback (most recent call last):
           File "./test.py", line 5, in <module>
               os.path('/bad/path')
           TypeError: 'module' object is not callable
-        """
-    )
+        """)
 
     found = _execute_quick_open(chunk)
     assert found == [("./test.py", "5")]

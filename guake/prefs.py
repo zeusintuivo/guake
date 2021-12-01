@@ -86,42 +86,99 @@ ERASE_BINDINGS = {
 
 HOTKEYS = [
     {
-        "label": _("General"),
-        "key": "general",
+        "label":
+        _("General"),
+        "key":
+        "general",
         "keys": [
-            {"key": "show-hide", "label": _("Toggle Guake visibility")},
-            {"key": "show-focus", "label": _("Show and focus Guake window")},
-            {"key": "toggle-fullscreen", "label": _("Toggle Fullscreen")},
+            {
+                "key": "show-hide",
+                "label": _("Toggle Guake visibility")
+            },
+            {
+                "key": "show-focus",
+                "label": _("Show and focus Guake window")
+            },
+            {
+                "key": "toggle-fullscreen",
+                "label": _("Toggle Fullscreen")
+            },
             {
                 "key": "toggle-hide-on-lose-focus",
                 "label": _("Toggle Hide on Lose Focus"),
             },
-            {"key": "quit", "label": _("Quit")},
-            {"key": "reset-terminal", "label": _("Reset terminal")},
-            {"key": "search-terminal", "label": _("Search terminal")},
+            {
+                "key": "quit",
+                "label": _("Quit")
+            },
+            {
+                "key": "reset-terminal",
+                "label": _("Reset terminal")
+            },
+            {
+                "key": "search-terminal",
+                "label": _("Search terminal")
+            },
         ],
     },
     {
-        "label": _("Tab management"),
-        "key": "tab",
+        "label":
+        _("Tab management"),
+        "key":
+        "tab",
         "keys": [
-            {"key": "new-tab", "label": _("New tab")},
-            {"key": "new-tab-home", "label": _("New tab in home directory")},
-            {"key": "close-tab", "label": _("Close tab")},
-            {"key": "rename-current-tab", "label": _("Rename current tab")},
+            {
+                "key": "new-tab",
+                "label": _("New tab")
+            },
+            {
+                "key": "new-tab-home",
+                "label": _("New tab in home directory")
+            },
+            {
+                "key": "close-tab",
+                "label": _("Close tab")
+            },
+            {
+                "key": "rename-current-tab",
+                "label": _("Rename current tab")
+            },
         ],
     },
     {
-        "label": _("Split management"),
-        "key": "split",
+        "label":
+        _("Split management"),
+        "key":
+        "split",
         "keys": [
-            {"key": "split-tab-vertical", "label": _("Split tab vertical")},
-            {"key": "split-tab-horizontal", "label": _("Split tab horizontal")},
-            {"key": "close-terminal", "label": _("Close terminal")},
-            {"key": "focus-terminal-up", "label": _("Focus terminal above")},
-            {"key": "focus-terminal-down", "label": _("Focus terminal below")},
-            {"key": "focus-terminal-left", "label": _("Focus terminal on the left")},
-            {"key": "focus-terminal-right", "label": _("Focus terminal on the right")},
+            {
+                "key": "split-tab-vertical",
+                "label": _("Split tab vertical")
+            },
+            {
+                "key": "split-tab-horizontal",
+                "label": _("Split tab horizontal")
+            },
+            {
+                "key": "close-terminal",
+                "label": _("Close terminal")
+            },
+            {
+                "key": "focus-terminal-up",
+                "label": _("Focus terminal above")
+            },
+            {
+                "key": "focus-terminal-down",
+                "label": _("Focus terminal below")
+            },
+            {
+                "key": "focus-terminal-left",
+                "label": _("Focus terminal on the left")
+            },
+            {
+                "key": "focus-terminal-right",
+                "label": _("Focus terminal on the right")
+            },
             {
                 "key": "move-terminal-split-up",
                 "label": _("Move the terminal split handle up"),
@@ -141,53 +198,139 @@ HOTKEYS = [
         ],
     },
     {
-        "label": _("Navigation"),
-        "key": "nav",
+        "label":
+        _("Navigation"),
+        "key":
+        "nav",
         "keys": [
-            {"key": "previous-tab", "label": _("Go to previous tab")},
-            {"key": "next-tab", "label": _("Go to next tab")},
-            {"key": "move-tab-left", "label": _("Move current tab left")},
-            {"key": "move-tab-right", "label": _("Move current tab right")},
-            {"key": "switch-tab1", "label": _("Go to first tab")},
-            {"key": "switch-tab2", "label": _("Go to second tab")},
-            {"key": "switch-tab3", "label": _("Go to third tab")},
-            {"key": "switch-tab4", "label": _("Go to fourth tab")},
-            {"key": "switch-tab5", "label": _("Go to fifth tab")},
-            {"key": "switch-tab6", "label": _("Go to sixth tab")},
-            {"key": "switch-tab7", "label": _("Go to seventh tab")},
-            {"key": "switch-tab8", "label": _("Go to eighth tab")},
-            {"key": "switch-tab9", "label": _("Go to ninth tab")},
-            {"key": "switch-tab10", "label": _("Go to tenth tab")},
-            {"key": "switch-tab-last", "label": _("Go to last tab")},
+            {
+                "key": "previous-tab",
+                "label": _("Go to previous tab")
+            },
+            {
+                "key": "next-tab",
+                "label": _("Go to next tab")
+            },
+            {
+                "key": "move-tab-left",
+                "label": _("Move current tab left")
+            },
+            {
+                "key": "move-tab-right",
+                "label": _("Move current tab right")
+            },
+            {
+                "key": "switch-tab1",
+                "label": _("Go to first tab")
+            },
+            {
+                "key": "switch-tab2",
+                "label": _("Go to second tab")
+            },
+            {
+                "key": "switch-tab3",
+                "label": _("Go to third tab")
+            },
+            {
+                "key": "switch-tab4",
+                "label": _("Go to fourth tab")
+            },
+            {
+                "key": "switch-tab5",
+                "label": _("Go to fifth tab")
+            },
+            {
+                "key": "switch-tab6",
+                "label": _("Go to sixth tab")
+            },
+            {
+                "key": "switch-tab7",
+                "label": _("Go to seventh tab")
+            },
+            {
+                "key": "switch-tab8",
+                "label": _("Go to eighth tab")
+            },
+            {
+                "key": "switch-tab9",
+                "label": _("Go to ninth tab")
+            },
+            {
+                "key": "switch-tab10",
+                "label": _("Go to tenth tab")
+            },
+            {
+                "key": "switch-tab-last",
+                "label": _("Go to last tab")
+            },
         ],
     },
     {
-        "label": _("Appearance"),
-        "key": "appearance",
+        "label":
+        _("Appearance"),
+        "key":
+        "appearance",
         "keys": [
-            {"key": "zoom-out", "label": _("Zoom out")},
-            {"key": "zoom-in", "label": _("Zoom in")},
-            {"key": "zoom-in-alt", "label": _("Zoom in (alternative)")},
-            {"key": "increase-height", "label": _("Increase height")},
-            {"key": "decrease-height", "label": _("Decrease height")},
-            {"key": "increase-transparency", "label": _("Increase transparency")},
-            {"key": "decrease-transparency", "label": _("Decrease transparency")},
-            {"key": "toggle-transparency", "label": _("Toggle transparency")},
+            {
+                "key": "zoom-out",
+                "label": _("Zoom out")
+            },
+            {
+                "key": "zoom-in",
+                "label": _("Zoom in")
+            },
+            {
+                "key": "zoom-in-alt",
+                "label": _("Zoom in (alternative)")
+            },
+            {
+                "key": "increase-height",
+                "label": _("Increase height")
+            },
+            {
+                "key": "decrease-height",
+                "label": _("Decrease height")
+            },
+            {
+                "key": "increase-transparency",
+                "label": _("Increase transparency")
+            },
+            {
+                "key": "decrease-transparency",
+                "label": _("Decrease transparency")
+            },
+            {
+                "key": "toggle-transparency",
+                "label": _("Toggle transparency")
+            },
         ],
     },
     {
-        "label": _("Clipboard"),
-        "key": "clipboard",
+        "label":
+        _("Clipboard"),
+        "key":
+        "clipboard",
         "keys": [
-            {"key": "clipboard-copy", "label": _("Copy text to clipboard")},
-            {"key": "clipboard-paste", "label": _("Paste text from clipboard")},
+            {
+                "key": "clipboard-copy",
+                "label": _("Copy text to clipboard")
+            },
+            {
+                "key": "clipboard-paste",
+                "label": _("Paste text from clipboard")
+            },
         ],
     },
     {
-        "label": _("Extra features"),
-        "key": "extra",
+        "label":
+        _("Extra features"),
+        "key":
+        "extra",
         "keys": [
-            {"key": "search-on-web", "label": _("Search selected text on web")},
+            {
+                "key": "search-on-web",
+                "label": _("Search selected text on web")
+            },
         ],
     },
 ]
@@ -219,17 +362,18 @@ def refresh_user_start(settings):
         os.makedirs(autostart_path, exist_ok=True)
         shutil.copyfile(
             os.path.join(LOGIN_DESTOP_PATH, "autostart-guake.desktop"),
-            os.path.join(os.path.expanduser(AUTOSTART_FOLDER), "guake.desktop"),
+            os.path.join(os.path.expanduser(AUTOSTART_FOLDER),
+                         "guake.desktop"),
         )
     else:
-        desktop_file = os.path.join(os.path.expanduser(AUTOSTART_FOLDER), "guake.desktop")
+        desktop_file = os.path.join(os.path.expanduser(AUTOSTART_FOLDER),
+                                    "guake.desktop")
         if os.path.exists(desktop_file):
             os.remove(desktop_file)
 
 
 class PrefsCallbacks:
     """Holds callbacks that will be used in the PrefsDialg class."""
-
     def __init__(self, prefDlg):
         self.prefDlg = prefDlg
         self.settings = prefDlg.settings
@@ -238,15 +382,18 @@ class PrefsCallbacks:
 
     def on_restore_tabs_startup_toggled(self, chk):
         """Changes the activity of restore-tabs-startup in dconf"""
-        self.settings.general.set_boolean("restore-tabs-startup", chk.get_active())
+        self.settings.general.set_boolean("restore-tabs-startup",
+                                          chk.get_active())
 
     def on_restore_tabs_notify_toggled(self, chk):
         """Changes the activity of restore-tabs-notify in dconf"""
-        self.settings.general.set_boolean("restore-tabs-notify", chk.get_active())
+        self.settings.general.set_boolean("restore-tabs-notify",
+                                          chk.get_active())
 
     def on_save_tabs_when_changed_toggled(self, chk):
         """Changes the activity of save-tabs-when-changed in dconf"""
-        self.settings.general.set_boolean("save-tabs-when-changed", chk.get_active())
+        self.settings.general.set_boolean("save-tabs-when-changed",
+                                          chk.get_active())
 
     def on_default_shell_changed(self, combo):
         """Changes the activity of default_shell in dconf"""
@@ -279,7 +426,8 @@ class PrefsCallbacks:
 
     def on_workspace_specific_tab_sets_toggled(self, chk):
         """Sets the 'workspace-specific-tab-sets' property in dconf"""
-        self.settings.general.set_boolean("workspace-specific-tab-sets", chk.get_active())
+        self.settings.general.set_boolean("workspace-specific-tab-sets",
+                                          chk.get_active())
 
     def on_prompt_on_quit_toggled(self, chk):
         """Set the `prompt on quit' property in dconf"""
@@ -287,7 +435,8 @@ class PrefsCallbacks:
 
     def on_prompt_on_close_tab_changed(self, combo):
         """Set the `prompt_on_close_tab' property in dconf"""
-        self.settings.general.set_int("prompt-on-close-tab", combo.get_active())
+        self.settings.general.set_int("prompt-on-close-tab",
+                                      combo.get_active())
 
     def on_gtk_theme_name_changed(self, combo):
         """Set the `gtk_theme_name' property in dconf"""
@@ -300,12 +449,14 @@ class PrefsCallbacks:
 
     def on_gtk_prefer_dark_theme_toggled(self, chk):
         """Set the `gtk_prefer_dark_theme' property in dconf"""
-        self.settings.general.set_boolean("gtk-prefer-dark-theme", chk.get_active())
+        self.settings.general.set_boolean("gtk-prefer-dark-theme",
+                                          chk.get_active())
         select_gtk_theme(self.settings)
 
     def on_gtk_use_system_default_theme_toggled(self, chk):
         """Set the `gtk_prefer_dark_theme' property in dconf"""
-        self.settings.general.set_boolean("gtk-use-system-default-theme", chk.get_active())
+        self.settings.general.set_boolean("gtk-use-system-default-theme",
+                                          chk.get_active())
         select_gtk_theme(self.settings)
 
     def on_window_ontop_toggled(self, chk):
@@ -322,10 +473,12 @@ class PrefsCallbacks:
 
     def on_quick_open_enable_toggled(self, chk):
         """Changes the activity of quick_open_enable in dconf"""
-        self.settings.general.set_boolean("quick-open-enable", chk.get_active())
+        self.settings.general.set_boolean("quick-open-enable",
+                                          chk.get_active())
 
     def on_quick_open_in_current_terminal_toggled(self, chk):
-        self.settings.general.set_boolean("quick-open-in-current-terminal", chk.get_active())
+        self.settings.general.set_boolean("quick-open-in-current-terminal",
+                                          chk.get_active())
 
     def on_startup_script_changed(self, edt):
         self.settings.general.set_string("startup-script", edt.get_text())
@@ -339,7 +492,8 @@ class PrefsCallbacks:
         self.settings.general.set_boolean("window-losefocus", chk.get_active())
 
     def on_quick_open_command_line_changed(self, edt):
-        self.settings.general.set_string("quick-open-command-line", edt.get_text())
+        self.settings.general.set_string("quick-open-command-line",
+                                         edt.get_text())
 
     def on_hook_show_changed(self, edt):
         self.settings.hooks.set_string("show", edt.get_text())
@@ -350,11 +504,13 @@ class PrefsCallbacks:
 
     def on_fullscreen_hide_tabbar_toggled(self, chk):
         """Changes the activity of fullscreen_hide_tabbar in dconf"""
-        self.settings.general.set_boolean("fullscreen-hide-tabbar", chk.get_active())
+        self.settings.general.set_boolean("fullscreen-hide-tabbar",
+                                          chk.get_active())
 
     def on_hide_tabs_if_one_tab_toggled(self, chk):
         """Changes the activity of hide_tabs_if_one_tab in dconf"""
-        self.settings.general.set_boolean("hide-tabs-if-one-tab", chk.get_active())
+        self.settings.general.set_boolean("hide-tabs-if-one-tab",
+                                          chk.get_active())
 
     def on_start_fullscreen_toggled(self, chk):
         """Changes the activity of start_fullscreen in dconf"""
@@ -401,7 +557,8 @@ class PrefsCallbacks:
     def on_bottom_align_toggled(self, chk):
         """set the vertical alignment setting."""
         v = chk.get_active()
-        self.settings.general.set_int("window-valignment", ALIGN_BOTTOM if v else ALIGN_TOP)
+        self.settings.general.set_int("window-valignment",
+                                      ALIGN_BOTTOM if v else ALIGN_TOP)
 
     def on_display_n_changed(self, combo):
         """Set the destination display in dconf."""
@@ -417,7 +574,8 @@ class PrefsCallbacks:
             val_int = ALWAYS_ON_PRIMARY
         else:
             val = model.get_value(i, 0)
-            val_int = int(val.split()[0])  # extracts 1 from '1' or from '1 (primary)'
+            val_int = int(
+                val.split()[0])  # extracts 1 from '1' or from '1 (primary)'
         self.settings.general.set_int("display-n", val_int)
 
     def on_window_height_value_changed(self, hscale):
@@ -438,10 +596,11 @@ class PrefsCallbacks:
             "radiobutton_align_center": ALIGN_CENTER,
         }
         if halign_button.get_active():
-            self.settings.general.set_int("window-halignment", which_align[halign_button.get_name()])
-        self.prefDlg.get_widget("window_horizontal_displacement").set_sensitive(
-            which_align[halign_button.get_name()] != ALIGN_CENTER
-        )
+            self.settings.general.set_int(
+                "window-halignment", which_align[halign_button.get_name()])
+        self.prefDlg.get_widget(
+            "window_horizontal_displacement").set_sensitive(
+                which_align[halign_button.get_name()] != ALIGN_CENTER)
 
     def on_use_audible_bell_toggled(self, chk):
         """Changes the value of use_audible_bell in dconf"""
@@ -494,7 +653,9 @@ class PrefsCallbacks:
         self.settings.styleFont.set_string("style", fbtn.get_font_name())
 
     def on_background_image_file_chooser_file_changed(self, fc):
-        self.settings.general.set_string("background-image-file", fc.get_filename() if fc.get_filename() else "")
+        self.settings.general.set_string(
+            "background-image-file",
+            fc.get_filename() if fc.get_filename() else "")
 
     def on_background_image_file_remove_clicked(self, btn):
         filechooser = self.prefDlg.get_widget("background_image_filechooser")
@@ -509,14 +670,16 @@ class PrefsCallbacks:
         """Changes the value of background_transparency in dconf"""
         value = hscale.get_value()
         self.prefDlg.set_colors_from_settings()
-        self.settings.styleBackground.set_int("transparency", MAX_TRANSPARENCY - int(value))
+        self.settings.styleBackground.set_int("transparency",
+                                              MAX_TRANSPARENCY - int(value))
 
     # compatibility tab
 
     def on_backspace_binding_changed(self, combo):
         """Changes the value of compat_backspace in dconf"""
         val = combo.get_active_text()
-        self.settings.general.set_string("compat-backspace", ERASE_BINDINGS[val])
+        self.settings.general.set_string("compat-backspace",
+                                         ERASE_BINDINGS[val])
 
     def on_delete_binding_changed(self, combo):
         """Changes the value of compat_delete in dconf"""
@@ -524,7 +687,8 @@ class PrefsCallbacks:
         self.settings.general.set_string("compat-delete", ERASE_BINDINGS[val])
 
     def on_custom_command_file_chooser_file_changed(self, filechooser):
-        self.settings.general.set_string("custom-command-file", filechooser.get_filename())
+        self.settings.general.set_string("custom-command-file",
+                                         filechooser.get_filename())
 
     def toggle_prompt_on_quit_sensitivity(self, combo):
         self.prefDlg.toggle_prompt_on_quit_sensitivity(combo)
@@ -570,11 +734,13 @@ class PrefsCallbacks:
 
     def on_window_vertical_displacement_value_changed(self, spin):
         """Changes the value of window-vertical-displacement"""
-        self.settings.general.set_int("window-vertical-displacement", int(spin.get_value()))
+        self.settings.general.set_int("window-vertical-displacement",
+                                      int(spin.get_value()))
 
     def on_window_horizontal_displacement_value_changed(self, spin):
         """Changes the value of window-horizontal-displacement"""
-        self.settings.general.set_int("window-horizontal-displacement", int(spin.get_value()))
+        self.settings.general.set_int("window-horizontal-displacement",
+                                      int(spin.get_value()))
 
     def reload_erase_combos(self, btn=None):
         self.prefDlg.reload_erase_combos(btn)
@@ -585,7 +751,6 @@ class PrefsCallbacks:
 
 class PrefsDialog(SimpleGladeApp):
     """The Guake Preferences dialog."""
-
     def __init__(self, settings):
         """Setup the preferences dialog interface, loading images,
         adding filters to file choosers and connecting some signals.
@@ -595,21 +760,21 @@ class PrefsDialog(SimpleGladeApp):
 
         super().__init__(gladefile("prefs.glade"), root="config-window")
         style_provider = Gtk.CssProvider()
-        css_data = dedent(
-            """
+        css_data = dedent("""
             .monospace{
               font-family: monospace;
             }
-            """
-        ).encode()
+            """).encode()
         style_provider.load_from_data(css_data)
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
             style_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
         )
-        self.get_widget("quick_open_command_line").get_style_context().add_class("monospace")
-        self.get_widget("quick_open_supported_patterns").get_style_context().add_class("monospace")
+        self.get_widget("quick_open_command_line").get_style_context(
+        ).add_class("monospace")
+        self.get_widget("quick_open_supported_patterns").get_style_context(
+        ).add_class("monospace")
         self.settings = settings
 
         self.add_callbacks(PrefsCallbacks(self))
@@ -742,7 +907,8 @@ class PrefsDialog(SimpleGladeApp):
         """If toggle_on_close_tabs is set to 2 (Always), prompt_on_quit has no
         effect.
         """
-        self.get_widget("prompt_on_quit").set_sensitive(combo.get_active() != 2)
+        self.get_widget("prompt_on_quit").set_sensitive(
+            combo.get_active() != 2)
 
     def toggle_style_sensitivity(self, chk):
         """If the user chooses to use the gnome default font
@@ -757,7 +923,8 @@ class PrefsDialog(SimpleGladeApp):
         theme selector.
         """
         self.get_widget("gtk_theme_name").set_sensitive(not chk.get_active())
-        self.get_widget("gtk_prefer_dark_theme").set_sensitive(not chk.get_active())
+        self.get_widget("gtk_prefer_dark_theme").set_sensitive(
+            not chk.get_active())
 
     def toggle_use_font_background_sensitivity(self, chk):
         """If the user chooses to use the gnome default font
@@ -771,7 +938,8 @@ class PrefsDialog(SimpleGladeApp):
         """If the user chooses to not show the tab bar, it means that they
         cannot see the tab bar regardless of what other tab bar options say.
         """
-        self.get_widget("fullscreen_hide_tabbar").set_sensitive(chk.get_active())
+        self.get_widget("fullscreen_hide_tabbar").set_sensitive(
+            chk.get_active())
         self.get_widget("hide_tabs_if_one_tab").set_sensitive(chk.get_active())
 
     def toggle_display_n_sensitivity(self, chk):
@@ -782,8 +950,10 @@ class PrefsDialog(SimpleGladeApp):
 
     def toggle_quick_open_command_line_sensitivity(self, chk):
         """When the user unchecks 'enable quick open', the command line should be disabled"""
-        self.get_widget("quick_open_command_line").set_sensitive(chk.get_active())
-        self.get_widget("quick_open_in_current_terminal").set_sensitive(chk.get_active())
+        self.get_widget("quick_open_command_line").set_sensitive(
+            chk.get_active())
+        self.get_widget("quick_open_in_current_terminal").set_sensitive(
+            chk.get_active())
 
     def toggle_use_vte_titles(self, chk):
         """When vte titles aren't used, there is nothing to abbreviate"""
@@ -792,9 +962,11 @@ class PrefsDialog(SimpleGladeApp):
     def update_vte_subwidgets_states(self):
         do_use_vte_titles = self.get_widget("use_vte_titles").get_active()
         self.get_widget("tab_name_display").set_sensitive(do_use_vte_titles)
-        self.get_widget("lbl_tab_name_display").set_sensitive(do_use_vte_titles)
+        self.get_widget("lbl_tab_name_display").set_sensitive(
+            do_use_vte_titles)
         self.get_widget("max_tab_name_length").set_sensitive(do_use_vte_titles)
-        self.get_widget("lbl_max_tab_name_length").set_sensitive(do_use_vte_titles)
+        self.get_widget("lbl_max_tab_name_length").set_sensitive(
+            do_use_vte_titles)
 
     def on_reset_compat_defaults_clicked(self, bnt):
         """Reset default values to compat_{backspace,delete} dconf
@@ -829,7 +1001,8 @@ class PrefsDialog(SimpleGladeApp):
 
         palette = []
         for i in range(18):
-            palette.append(hexify_color(self.get_widget(f"palette_{i}").get_color()))
+            palette.append(
+                hexify_color(self.get_widget(f"palette_{i}").get_color()))
         palette = ":".join(palette)
         self.settings.styleFont.set_string("palette", palette)
         self.settings.styleFont.set_string("palette-name", _("Custom"))
@@ -932,7 +1105,8 @@ class PrefsDialog(SimpleGladeApp):
     def _load_default_shell_settings(self):
         combo = self.get_widget("default_shell")
         # get the value for defualt shell. If unset, set to USER_SHELL_VALUE.
-        value = self.settings.general.get_string("default-shell") or USER_SHELL_VALUE
+        value = self.settings.general.get_string(
+            "default-shell") or USER_SHELL_VALUE
         for i in combo.get_model():
             if i[0] == value:
                 combo.set_active_iter(i.iter)
@@ -959,7 +1133,9 @@ class PrefsDialog(SimpleGladeApp):
             seen_first = False  # first item "always on primary" is special
             for i in combo.get_model():
                 if seen_first:
-                    i_int = int(i[0].split()[0])  # extracts 1 from '1' or from '1 (primary)'
+                    i_int = int(
+                        i[0].split()
+                        [0])  # extracts 1 from '1' or from '1 (primary)'
                     if i_int == dest_screen:
                         combo.set_active_iter(i.iter)
                 else:
@@ -996,7 +1172,8 @@ class PrefsDialog(SimpleGladeApp):
         self.get_widget("use_popup").set_active(value)
 
         # workspace-specific tab sets
-        value = self.settings.general.get_boolean("workspace-specific-tab-sets")
+        value = self.settings.general.get_boolean(
+            "workspace-specific-tab-sets")
         self.get_widget("workspace-specific-tab-sets").set_active(value)
 
         # prompt on quit
@@ -1009,7 +1186,8 @@ class PrefsDialog(SimpleGladeApp):
         self.get_widget("prompt_on_quit").set_sensitive(value != 2)
 
         # use system theme
-        value = self.settings.general.get_boolean("gtk-use-system-default-theme")
+        value = self.settings.general.get_boolean(
+            "gtk-use-system-default-theme")
         self.get_widget("gtk_use_system_default_theme").set_active(value)
 
         # gtk theme name
@@ -1079,7 +1257,8 @@ class PrefsDialog(SimpleGladeApp):
             ALIGN_CENTER: "radiobutton_align_center",
         }
         self.get_widget(which_button[value]).set_active(True)
-        self.get_widget("window_horizontal_displacement").set_sensitive(value != ALIGN_CENTER)
+        self.get_widget("window_horizontal_displacement").set_sensitive(
+            value != ALIGN_CENTER)
 
         value = self.settings.general.get_boolean("open-tab-cwd")
         self.get_widget("open_tab_cwd").set_active(value)
@@ -1125,7 +1304,8 @@ class PrefsDialog(SimpleGladeApp):
             value = "subl %(file_path)s:%(line_number)s"
         self.get_widget("quick_open_command_line").set_text(value)
 
-        value = self.settings.general.get_boolean("quick-open-in-current-terminal")
+        value = self.settings.general.get_boolean(
+            "quick-open-in-current-terminal")
         self.get_widget("quick_open_in_current_terminal").set_active(value)
 
         value = self.settings.general.get_string("startup-script")
@@ -1181,7 +1361,8 @@ class PrefsDialog(SimpleGladeApp):
         # background image file
         filename = self.settings.general.get_string("background-image-file")
         if os.path.exists(filename):
-            self.get_widget("background_image_filechooser").set_filename(filename)
+            self.get_widget("background_image_filechooser").set_filename(
+                filename)
 
         # background image layout mode
         value = self.settings.general.get_int("background-image-layout-mode")
@@ -1204,7 +1385,8 @@ class PrefsDialog(SimpleGladeApp):
         self.set_cursor_blink_mode(value)
 
         value = self.settings.styleBackground.get_int("transparency")
-        self.get_widget("background_transparency").set_value(MAX_TRANSPARENCY - value)
+        self.get_widget("background_transparency").set_value(MAX_TRANSPARENCY -
+                                                             value)
 
         value = self.settings.general.get_int("window-valignment")
         self.get_widget("top_align").set_active(value)
@@ -1213,7 +1395,8 @@ class PrefsDialog(SimpleGladeApp):
         self.reload_erase_combos()
 
         # custom command context-menu configuration file
-        custom_command_file = self.settings.general.get_string("custom-command-file")
+        custom_command_file = self.settings.general.get_string(
+            "custom-command-file")
         if custom_command_file:
             custom_command_file_name = os.path.expanduser(custom_command_file)
         else:
@@ -1221,13 +1404,16 @@ class PrefsDialog(SimpleGladeApp):
         custom_cmd_filter = Gtk.FileFilter()
         custom_cmd_filter.set_name(_("JSON files"))
         custom_cmd_filter.add_pattern("*.json")
-        self.get_widget("custom_command_file_chooser").add_filter(custom_cmd_filter)
+        self.get_widget("custom_command_file_chooser").add_filter(
+            custom_cmd_filter)
         all_files_filter = Gtk.FileFilter()
         all_files_filter.set_name(_("All files"))
         all_files_filter.add_pattern("*")
-        self.get_widget("custom_command_file_chooser").add_filter(all_files_filter)
+        self.get_widget("custom_command_file_chooser").add_filter(
+            all_files_filter)
         if custom_command_file_name:
-            self.get_widget("custom_command_file_chooser").set_filename(custom_command_file_name)
+            self.get_widget("custom_command_file_chooser").set_filename(
+                custom_command_file_name)
 
         # hooks
         self._load_hooks_settings()
@@ -1245,7 +1431,8 @@ class PrefsDialog(SimpleGladeApp):
             with open(SHELLS_FILE, encoding="utf-8") as f:
                 for i in f.readlines():
                     possible = i.strip()
-                    if possible and not possible.startswith("#") and os.path.exists(possible):
+                    if possible and not possible.startswith(
+                            "#") and os.path.exists(possible):
                         cb.append_text(possible)
 
         for i in get_binaries_from_path(PYTHONS):
@@ -1262,16 +1449,20 @@ class PrefsDialog(SimpleGladeApp):
         the TreeStore used by the preferences window treeview.
         """
         for group in HOTKEYS:
-            parent = self.store.append(None, [None, group["label"], None, None])
+            parent = self.store.append(None,
+                                       [None, group["label"], None, None])
             for item in group["keys"]:
                 if item["key"] in ("show-hide", "show-focus"):
-                    accel = self.settings.keybindingsGlobal.get_string(item["key"])
+                    accel = self.settings.keybindingsGlobal.get_string(
+                        item["key"])
                 else:
-                    accel = self.settings.keybindingsLocal.get_string(item["key"])
+                    accel = self.settings.keybindingsLocal.get_string(
+                        item["key"])
                 gsettings_path = item["key"]
                 keycode, mask = Gtk.accelerator_parse(accel)
                 keylabel = Gtk.accelerator_get_label(keycode, mask)
-                self.store.append(parent, [gsettings_path, item["label"], keylabel, accel])
+                self.store.append(
+                    parent, [gsettings_path, item["label"], keylabel, accel])
         self.get_widget("treeview-keys").expand_all()
 
     def populate_display_n(self):
@@ -1318,32 +1509,32 @@ class PrefsDialog(SimpleGladeApp):
             keyentry = model.get_value(subiter, HOTKET_MODEL_INDEX_ACCEL)
             if keyentry and keyentry == accelerator:
                 self.hotkey_alread_used = True
-                msg = _('The shortcut "%s" is already in use.') % html_escape(accelerator)
-                ShowableError(self.window, _("Error setting keybinding."), msg, -1)
-                raise Exception("This is ok, we just use it to break the foreach loop!")
+                msg = _('The shortcut "%s" is already in use.') % html_escape(
+                    accelerator)
+                ShowableError(self.window, _("Error setting keybinding."), msg,
+                              -1)
+                raise Exception(
+                    "This is ok, we just use it to break the foreach loop!")
 
         self.store.foreach(each_key)
         if self.hotkey_alread_used:
             return False
 
         # avoiding problems with common keys
-        if (mods == 0 and key != 0) and (
-            (ord("a") <= key <= ord("z")) or (ord("A") <= key <= ord("Z")) or (ord("0") <= key <= ord("9"))
-        ):
+        if (mods == 0 and key != 0) and ((ord("a") <= key <= ord("z")) or
+                                         (ord("A") <= key <= ord("Z")) or
+                                         (ord("0") <= key <= ord("9"))):
             dialog = Gtk.MessageDialog(
                 self.get_widget("config-window"),
                 Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
                 Gtk.MessageType.WARNING,
                 Gtk.ButtonsType.OK,
-                _(
-                    'The shortcut "%s" cannot be used '
-                    "because it will become impossible to "
-                    "type using this key.\n\n"
-                    "Please try with a key such as "
-                    "Control, Alt or Shift at the same "
-                    "time.\n"
-                )
-                % html_escape(chr(key)),
+                _('The shortcut "%s" cannot be used '
+                  "because it will become impossible to "
+                  "type using this key.\n\n"
+                  "Please try with a key such as "
+                  "Control, Alt or Shift at the same "
+                  "time.\n") % html_escape(chr(key)),
             )
             dialog.run()
             dialog.destroy()

@@ -21,7 +21,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-xdg_config_home: str = os.environ.get("XDG_CONFIG_HOME", os.path.expandvars("$HOME/.config"))
+xdg_config_home: str = os.environ.get("XDG_CONFIG_HOME",
+                                      os.path.expandvars("$HOME/.config"))
 
 
 def get_xdg_config_directory():
@@ -88,8 +89,8 @@ def _file_two_():
 
 def _fl_two_():
     return f"{_file_two_()}:{_line_two_()}".replace(
-        "/usr/local/lib64/python3.10/site-packages/", "/home/zeus/_/software/guake/"
-    )
+        "/usr/local/lib64/python3.10/site-packages/",
+        "/home/zeus/_/software/guake/")
 
 
 def _line_three_():
@@ -112,7 +113,8 @@ def _line_four_():
 
 
 def _file_four_():
-    return str(inspect.currentframe().f_back.f_back.f_back.f_back.f_code.co_filename)
+    return str(
+        inspect.currentframe().f_back.f_back.f_back.f_back.f_code.co_filename)
     # return str(__file__)
 
 
@@ -132,13 +134,20 @@ BOLD_SEQ = "\033[1m"
 
 def formatter_message(message, use_color=True):
     if use_color:
-        message = message.replace("$RESET", RESET_SEQ).replace("$BOLD", BOLD_SEQ)
+        message = message.replace("$RESET",
+                                  RESET_SEQ).replace("$BOLD", BOLD_SEQ)
     else:
         message = message.replace("$RESET", "").replace("$BOLD", "")
     return message
 
 
-COLORS = {"WARNING": YELLOW, "INFO": WHITE, "DEBUG": BLUE, "CRITICAL": YELLOW, "ERROR": RED}
+COLORS = {
+    "WARNING": YELLOW,
+    "INFO": WHITE,
+    "DEBUG": BLUE,
+    "CRITICAL": YELLOW,
+    "ERROR": RED
+}
 
 
 class ColoredFormatter(logging.Formatter):
@@ -149,7 +158,8 @@ class ColoredFormatter(logging.Formatter):
     def format(self, record):
         level_name = record.levelname
         if self.use_color and level_name in COLORS:
-            level_name_color = COLOR_SEQ % (30 + COLORS[level_name]) + level_name + RESET_SEQ
+            level_name_color = COLOR_SEQ % (
+                30 + COLORS[level_name]) + level_name + RESET_SEQ
             record.levelname = level_name_color
         # file_name = record.filename
         # if file_name:
@@ -192,7 +202,8 @@ class ColoredLogger(logging.Logger):
 # Create formatters and add it to handlers
 logging.setLoggerClass(ColoredLogger)
 # c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-c_format = logging.Formatter("%(filename)s:%(lineno)s %(levelname)-5s %(message)s ")
+c_format = logging.Formatter(
+    "%(filename)s:%(lineno)s %(levelname)-5s %(message)s ")
 # c_format = logging.setLoggerClass(ColoredLogger)
 # f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 c_handler.setFormatter(c_format)

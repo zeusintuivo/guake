@@ -73,10 +73,10 @@ def get_server_time(widget):
 # Decorator for save-tabs-when-changed
 def save_tabs_when_changed(func):
     """Decorator for save-tabs-when-changed"""
-
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
-        logger.debug("%s mom, I've been called: %s %s", _fl_two_(), func.__name__, func)
+        logger.debug("%s mom, I've been called: %s %s", _fl_two_(),
+                     func.__name__, func)
 
         # Find me the Guake!
         clsname = args[0].__class__.__name__
@@ -110,7 +110,8 @@ def restore_preferences(filename):
     # XXX: Hardcode?
     with open(filename, "rb") as f:
         prefs = f.read()
-    with subprocess.Popen(["dconf", "load", "/apps/guake/"], stdin=subprocess.PIPE) as p:
+    with subprocess.Popen(["dconf", "load", "/apps/guake/"],
+                          stdin=subprocess.PIPE) as p:
         p.communicate(input=prefs)
 
 
@@ -130,7 +131,9 @@ class HidePrevention:
     def __init__(self, window):
         """Create a new HidePrevention object like `HidePrevention(window)`"""
         if not isinstance(window, Gtk.Window):
-            raise ValueError(f"window must be of type Gtk.Window, not of type {type(window)}")
+            raise ValueError(
+                f"window must be of type Gtk.Window, not of type {type(window)}"
+            )
         self.window = window
 
     def may_hide(self):
@@ -198,11 +201,8 @@ class FullscreenManager:
 
     def toggle_fullscreen_hide_tabbar(self):
         if self.is_fullscreen():
-            if (
-                self.settings.general.get_boolean("fullscreen-hide-tabbar")
-                and self.guake
-                and self.guake.notebook_manager
-            ):
+            if (self.settings.general.get_boolean("fullscreen-hide-tabbar")
+                    and self.guake and self.guake.notebook_manager):
                 self.guake.notebook_manager.set_notebooks_tabbar_visible(False)
         else:
             if self.guake and self.guake.notebook_manager:
@@ -222,8 +222,10 @@ class RectCalculator:
         width_percents = settings.general.get_int("window-width")
         halignment = settings.general.get_int("window-halignment")
         valignment = settings.general.get_int("window-valignment")
-        vdisplacement = settings.general.get_int("window-vertical-displacement")
-        hdisplacement = settings.general.get_int("window-horizontal-displacement")
+        vdisplacement = settings.general.get_int(
+            "window-vertical-displacement")
+        hdisplacement = settings.general.get_int(
+            "window-horizontal-displacement")
 
         # logger.debug("%s set_final_window_rect", _fl_two_())
         # logger.debug("%s   height_percents = %s", _fl_two_(), height_percents)
@@ -248,18 +250,24 @@ class RectCalculator:
 
         if halignment == ALIGN_CENTER:
             logger.debug("%s aligning to center!", _fl_two_())
-            window_rect.width = int(float(total_width) * float(width_percents) / 100.0)
+            window_rect.width = int(
+                float(total_width) * float(width_percents) / 100.0)
             window_rect.x += (total_width - window_rect.width) / 2
         elif halignment == ALIGN_LEFT:
             logger.debug("%s aligning to left!", _fl_two_())
-            window_rect.width = int(float(total_width - hdisplacement) * float(width_percents) / 100.0)
+            window_rect.width = int(
+                float(total_width - hdisplacement) * float(width_percents) /
+                100.0)
             window_rect.x += hdisplacement
         elif halignment == ALIGN_RIGHT:
             logger.debug("%s aligning to right!", _fl_two_())
-            window_rect.width = int(float(total_width - hdisplacement) * float(width_percents) / 100.0)
+            window_rect.width = int(
+                float(total_width - hdisplacement) * float(width_percents) /
+                100.0)
             window_rect.x += total_width - window_rect.width - hdisplacement
 
-        window_rect.height = int(float(total_height) * float(height_percents) / 100.0)
+        window_rect.height = int(
+            float(total_height) * float(height_percents) / 100.0)
         if valignment == ALIGN_TOP:
             window_rect.y += vdisplacement
         elif valignment == ALIGN_BOTTOM:
@@ -323,7 +331,10 @@ class ImageLayoutMode(enum.IntEnum):
 
 
 class BackgroundImageManager:
-    def __init__(self, window, filename=None, layout_mode=ImageLayoutMode.SCALE):
+    def __init__(self,
+                 window,
+                 filename=None,
+                 layout_mode=ImageLayoutMode.SCALE):
         self.window = window
         self.filename = ""
         self.bg_surface = self.load_from_file(filename) if filename else None
@@ -361,7 +372,8 @@ class BackgroundImageManager:
         self.filename = filename
         img = Gtk.Image.new_from_file(filename)
         pixbuf = img.get_pixbuf()
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, pixbuf.get_width(), pixbuf.get_height())
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, pixbuf.get_width(),
+                                     pixbuf.get_height())
         cr = cairo.Context(surface)
         Gdk.cairo_set_source_pixbuf(cr, pixbuf, 0, 0)
         cr.set_operator(cairo.OPERATOR_SOURCE)
@@ -372,7 +384,11 @@ class BackgroundImageManager:
         self.window.queue_draw()
         return surface
 
-    def render_target(self, width, height, mode, scale_mode=cairo.FILTER_BILINEAR):
+    def render_target(self,
+                      width,
+                      height,
+                      mode,
+                      scale_mode=cairo.FILTER_BILINEAR):
         """Paint background image to the specific size target surface with different layout mode"""
         if not self.bg_surface:
             return None
@@ -420,7 +436,9 @@ class BackgroundImageManager:
 
         # Step 1. Get target surface
         #         (paint background image into widget size surface by layout mode)
-        surface = self.render_target(widget.get_allocated_width(), widget.get_allocated_height(), self.layout_mode)
+        surface = self.render_target(widget.get_allocated_width(),
+                                     widget.get_allocated_height(),
+                                     self.layout_mode)
 
         cr.save()
         # Step 2. Paint target surface to context (in our case, the RootTerminalBox)
@@ -438,8 +456,8 @@ class BackgroundImageManager:
         #
         child = widget.get_child()
         child_surface = cr.get_target().create_similar(
-            cairo.CONTENT_COLOR_ALPHA, child.get_allocated_width(), child.get_allocated_height()
-        )
+            cairo.CONTENT_COLOR_ALPHA, child.get_allocated_width(),
+            child.get_allocated_height())
         child_cr = cairo.Context(child_surface)
 
         # Re-paint child draw into child context (which using child_surface as target)
