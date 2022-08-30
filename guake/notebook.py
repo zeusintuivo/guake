@@ -527,10 +527,11 @@ class NotebookManager(GObject.Object):
                                 self.__workspace_changed_cb)
 
     def __workspace_changed_cb(self, screen, previous_workspace):
-        if hasattr(self.screen, 'get_active_workspace') and hasattr(self.screen.get_active_workspace(), 'get_number'):
-          self.set_workspace(self.screen.get_active_workspace().get_number())
+        if hasattr(self.screen, 'get_active_workspace') and hasattr(
+                self.screen.get_active_workspace(), 'get_number'):
+            self.set_workspace(self.screen.get_active_workspace().get_number())
         else:
-          self.set_workspace(self.current_notebook)
+            self.set_workspace(self.current_notebook)
 
     # def __workspace_changed_cb(self, screen, previous_workspace):
     #    self.set_workspace(self.screen.get_active_workspace().get_number())
