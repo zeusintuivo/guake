@@ -309,7 +309,7 @@ class TerminalNotebook(Gtk.Notebook):
             if kill:
                 terminal.kill()
             # terminal.destroy()
-            if terminal and hasattr(terminal,"destroy"):
+            if terminal and hasattr(terminal, "destroy"):
                 terminal.destroy()
 
         if self.get_nth_page(page_num) is page:

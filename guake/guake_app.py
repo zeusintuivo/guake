@@ -330,7 +330,9 @@ class Guake(SimpleGladeApp):
         paletteList = []
         for color in self.settings.styleFont.get_string("palette").split(":"):
             colorRGBA.parse(color)
-            if paletteList and hasattr(paletteList,"append") and colorRGBA and hasattr(colorRGBA,"copy") and colorRGBA.copy():
+            if paletteList and hasattr(
+                    paletteList, "append") and colorRGBA and hasattr(
+                        colorRGBA, "copy") and colorRGBA.copy():
                 paletteList.append(colorRGBA.copy())
         return paletteList
 
