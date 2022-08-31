@@ -330,7 +330,8 @@ class Guake(SimpleGladeApp):
         paletteList = []
         for color in self.settings.styleFont.get_string("palette").split(":"):
             colorRGBA.parse(color)
-            paletteList.append(colorRGBA.copy())
+            if paletteList and hasattr(paletteList,"append") and colorRGBA and hasattr(colorRGBA,"copy") and colorRGBA.copy():
+                paletteList.append(colorRGBA.copy())
         return paletteList
 
     def _get_background_color(self, palette_list):
