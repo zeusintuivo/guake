@@ -330,9 +330,8 @@ class Guake(SimpleGladeApp):
         paletteList = []
         for color in self.settings.styleFont.get_string("palette").split(":"):
             colorRGBA.parse(color)
-            if paletteList and hasattr(
-                    paletteList, "append") and colorRGBA and hasattr(
-                        colorRGBA, "copy") and colorRGBA.copy():
+            # paletteList.append(colorRGBA.copy())
+            if paletteList and hasattr(paletteList,"append") and colorRGBA and hasattr(colorRGBA,"copy") and colorRGBA.copy():
                 paletteList.append(colorRGBA.copy())
         return paletteList
 
@@ -1350,6 +1349,53 @@ class Guake(SimpleGladeApp):
         # Yep, just used for save tabs when changed
         pass
 
+    def check_file_writable(self, fnm):
+        if os.path.exists(fnm):
+            logger.info("%s os.path.exist ", _fl_two_())
+            # path exists
+            if os.path.isfile(fnm): # is it a file or a dir?
+                # also works when file is a link and the target is writable
+                logger.info("%s os.path.isfile ", _fl_two_())
+                # also works when file is a link and the target is readable
+                if os.access(fnm, os.W_OK):
+                    logger.info("%s os.access ", _fl_two_())
+                else:
+                    logger.info("%s not os.access ", _fl_two_())
+                return os.access(fnm, os.W_OK)
+            else:
+                logger.info("%s not os.path.isfile ", _fl_two_())
+                return False # path is a dir, so cannot write as a file
+        # target does not exist, check perms on parent dir
+        pdir = os.path.dirname(fnm)
+        if not pdir: pdir = '.'
+        # target is creatable if parent dir is writable
+        logger.info("%s os.path.isfile ", _fl_two_())
+        # also works when file is a link and the target is readable
+        if os.access(pdir, os.W_OK):
+             logger.info("%s os.access dir ", _fl_two_())
+        else:
+             logger.info("%s not os.access dir ", _fl_two_())
+        return os.access(pdir, os.W_OK)
+
+    def check_file_readable(self, fnm):
+        if os.path.exists(fnm):
+            logger.info("%s os.path.exist ", _fl_two_())
+            # path exists
+            if os.path.isfile(fnm): # is it a file or a dir?
+                logger.info("%s os.path.isfile ", _fl_two_())
+                # also works when file is a link and the target is readable
+                if os.access(fnm, os.R_OK):
+                    logger.info("%s os.access ", _fl_two_())
+                else:
+                    logger.info("%s not os.access ", _fl_two_())
+                return os.access(fnm, os.R_OK)
+            else:
+                logger.info("%s not os.path.isfile ", _fl_two_())
+                return False # path is a dir, so cannot read as a file
+        logger.info("%s not os.path.exist	", _fl_two_())
+        # target does not exist, check perms on parent dir
+        return False
+
     def get_xdg_config_directory(self):
         xdg_config_home = os.environ.get("XDG_CONFIG_HOME", "~/.config")
         return Path(xdg_config_home, "guake").expanduser()
@@ -1387,12 +1433,23 @@ class Guake(SimpleGladeApp):
         if not self.get_xdg_config_directory().exists():
             self.get_xdg_config_directory().mkdir(parents=True)
         session_file = self.get_xdg_config_directory() / filename
+        logger.info("%s Attempting to write %s", _fl_two_(), session_file)
+        if not self.check_file_writable(session_file):
+            # return False # path is a dir, so cannot write as a file
+            logger.error("%s Broken path: %s . It exists as directory. so cannot write as a file ", _fl_two_(), session_file)
+            return
         with session_file.open("w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=4)
         logger.info("%s Guake tabs saved to %s", _fl_two_(), session_file)
 
     def restore_tabs(self, filename="session.json", suppress_notify=False):
         session_file = self.get_xdg_config_directory() / filename
+        logger.info("%s Attempting to read %s", _fl_two_(), session_file)
+        if not self.check_file_readable(session_file):
+            # return False # path is a dir, so cannot write as a file
+            logger.error("%s Not found path: %s . so cannot read as a file ", _fl_two_(), session_file)
+            return
+
         if not session_file.exists():
             logger.info("%s Cannot find session.json file", _fl_two_())
             return
