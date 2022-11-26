@@ -341,7 +341,7 @@ class GuakeTerminal(Vte.Terminal):
             logger.debug("%s No file found matching: %r", _fl_two_(), text)
             cwd = self.get_current_directory()
             pt = Path(cwd) / pt
-            logger.debug("%s checking file existance: %r", _fl_two_(), pt)
+            logger.debug("%s checking file existance: %r", _fl_two_(), pt.realpath())
             if pt.exists():
                 lineno = find_lineno(text, pt, lineno, py_func)
                 logger.info("%s File exists: %r, line=%r", _fl_two_(),
@@ -415,8 +415,8 @@ class GuakeTerminal(Vte.Terminal):
         value, tag = matched_string
         found_matcher = False
         project_cwd = self.get_current_directory()
-        logger.debug("%s project_cwd: %s", _fl_two_(), project_cwd)
-        logger.debug("%s matched string: %s", _fl_two_(), matched_string)
+        logger.debug("%s _on_ctrl_click_matcher() project_cwd: %s", _fl_two_(), project_cwd)
+        logger.debug("%s _on_ctrl_click_matcher() matched string: %s", _fl_two_(), matched_string)
         # First searching in additional matchers
         use_quick_open = self.guake.settings.general.get_boolean(
             "quick-open-enable")
@@ -436,13 +436,8 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = g.group(2)
                 else:
                     line_number = None
-                logger.info("%s Quick action executed filename=%s, line=%s",
+                logger.info("%s _find_quick_matcher() Quick action executed filename=%s, line=%s",
                             _fl_two_(), filename, line_number)
-                if not self.check_file_readable(filename):
-                    logger.error("%s Not found path: %s . so cannot read as a file ",
-                    _fl_two_(), filename)
-                    return False
-
                 (filepath, ln, _) = self.is_file_on_local_server(filename)
                 if ln:
                     line_number = ln
@@ -450,8 +445,9 @@ class GuakeTerminal(Vte.Terminal):
                     continue
                 if line_number is None:
                     line_number = "1"
-                self._execute_quick_open(filepath, line_number, project_cwd)
-                return True
+
+                return self._execute_quick_open(filepath, line_number, project_cwd)
+                # return True
         return False
 
     def check_file_writable(self, fnm):
@@ -504,7 +500,26 @@ class GuakeTerminal(Vte.Terminal):
 
     def _execute_quick_open(self, filepath, line_number, project_cwd):
         if not filepath:
-            return
+            return False
+        pt = Path(filepath)
+        log.debug("_execute_quick_open checking file existance: %r", pt)
+        try:
+            file_path_exists = pt.exists()
+        except:
+            file_path_exists = False
+        if not file_path_exists:
+            # self.browse_link_under_cursor()
+            return False
+        file_pathpathpath = pt.absolute().as_posix()
+        if not file_pathpathpath:
+            return False
+        log.info("_execute_quick_open File exists: %r, line=%r", file_pathpathpath, line_number)
+        logging.debug("_find_quick_matcher() Current working directory %s ", projectcwd)
+        logging.debug("_find_quick_matcher() Opening filepath:%s file_pathpathpath:%s at line %s",filepath, file_pathpathpath, line_number)
+        if not self.check_file_readable(file_pathpathpath):
+            logger.error("%s _find_quick_matcher() Not found path: %s . so cannot read as a file ", _fl_two_(), file_pathpathpath)
+            return False
+
         cmdline = self.guake.settings.general.get_string(
             "quick-open-command-line")
         if not line_number:
@@ -512,20 +527,21 @@ class GuakeTerminal(Vte.Terminal):
         else:
             line_number = str(line_number)
 
-        logger.debug("%s Opening file %s at line %s", _fl_two_(), filepath,
-                     line_number)
+        logger.debug("%s  _execute_quick_open() Opening file %s at line %s", _fl_two_(), filepath, line_number)
         resolved_cmdline = cmdline % {
             "file_path": filepath,
             "line_number": line_number
         }
-        logger.debug("%s Command line: %s", _fl_two_(), resolved_cmdline)
+        logger.debug("%s _execute_quick_open() Command line resolved_cmdline: %s", _fl_two_(), resolved_cmdline)
         quick_open_in_current_terminal = self.guake.settings.general.get_boolean(
             "quick-open-in-current-terminal")
+        # Execute open file both
         if quick_open_in_current_terminal:
             logger.debug("%s Executing it in current tab", _fl_two_())
             if resolved_cmdline[-1] != "\n":
                 resolved_cmdline += "\n"
             self.feed_child(resolved_cmdline)
+            return True
         else:
             logger.debug("%s Executing it independently", _fl_two_())
             resolved_cmdline = "cd  " + project_cwd + " && " + resolved_cmdline + " "
@@ -547,6 +563,8 @@ class GuakeTerminal(Vte.Terminal):
                     stdout=devnull,
                     stderr=devnull):
                 pass
+             return True
+        return False
 
     @staticmethod
     def handle_terminal_match(matched_string):
