@@ -438,6 +438,11 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = None
                 logger.info("%s Quick action executed filename=%s, line=%s",
                             _fl_two_(), filename, line_number)
+                if not self.check_file_readable(filename):
+                    logger.error("%s Not found path: %s . so cannot read as a file ",
+                    _fl_two_(), filename)
+                    return False
+
                 (filepath, ln, _) = self.is_file_on_local_server(filename)
                 if ln:
                     line_number = ln
@@ -447,6 +452,54 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = "1"
                 self._execute_quick_open(filepath, line_number, project_cwd)
                 return True
+        return False
+
+    def check_file_writable(self, fnm):
+        if os.path.exists(fnm):
+            logger.info("%s os.path.exist ", _fl_two_())
+            # path exists
+            if os.path.isfile(fnm):  # is it a file or a dir?
+                # also works when file is a link and the target is writable
+                logger.info("%s os.path.isfile ", _fl_two_())
+                # also works when file is a link and the target is readable
+                if os.access(fnm, os.W_OK):
+                    logger.info("%s os.access ", _fl_two_())
+                else:
+                    logger.info("%s not os.access ", _fl_two_())
+                return os.access(fnm, os.W_OK)
+            else:
+                logger.info("%s not os.path.isfile ", _fl_two_())
+                return False  # path is a dir, so cannot write as a file
+        # target does not exist, check perms on parent dir
+        pdir = os.path.dirname(fnm)
+        if not pdir:
+            pdir = '.'
+        # target is creatable if parent dir is writable
+        logger.info("%s os.path.isfile ", _fl_two_())
+        # also works when file is a link and the target is readable
+        if os.access(pdir, os.W_OK):
+            logger.info("%s os.access dir ", _fl_two_())
+        else:
+            logger.info("%s not os.access dir ", _fl_two_())
+        return os.access(pdir, os.W_OK)
+
+    def check_file_readable(self, fnm):
+        if os.path.exists(fnm):
+            logger.info("%s os.path.exist ", _fl_two_())
+            # path exists
+            if os.path.isfile(fnm):  # is it a file or a dir?
+                logger.info("%s os.path.isfile ", _fl_two_())
+                # also works when file is a link and the target is readable
+                if os.access(fnm, os.R_OK):
+                    logger.info("%s os.access ", _fl_two_())
+                else:
+                    logger.info("%s not os.access ", _fl_two_())
+                return os.access(fnm, os.R_OK)
+            else:
+                logger.info("%s not os.path.isfile ", _fl_two_())
+                return False  # path is a dir, so cannot read as a file
+        logger.info("%s not os.path.exist	", _fl_two_())
+        # target does not exist, check perms on parent dir
         return False
 
     def _execute_quick_open(self, filepath, line_number, project_cwd):
