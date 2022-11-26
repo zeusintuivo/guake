@@ -96,6 +96,7 @@ class DropTargets(IntEnum):
 
 class GuakeTerminal(Vte.Terminal):
     """Just a vte.Terminal with some properties already set."""
+
     def __init__(self, guake):
         super(GuakeTerminal, self).__init__()
         # super().__init__()
@@ -429,7 +430,11 @@ class GuakeTerminal(Vte.Terminal):
 
     def _find_quick_matcher(self, value, project_cwd):
         for _useless, _other_useless, extractor in QUICK_OPEN_MATCHERS:
-            g = re.compile(extractor).match(value)
+            try:
+                g = re.compile(extractor).match(value)
+            except:
+                return False
+
             if g and g.groups():
                 filename = g.group(1).strip()
                 if len(g.groups()) >= 2:
@@ -515,9 +520,11 @@ class GuakeTerminal(Vte.Terminal):
             return False
         log.info("_execute_quick_open File exists: %r, line=%r", file_pathpathpath, line_number)
         logging.debug("_find_quick_matcher() Current working directory %s ", projectcwd)
-        logging.debug("_find_quick_matcher() Opening filepath:%s file_pathpathpath:%s at line %s",filepath, file_pathpathpath, line_number)
+        logging.debug("_find_quick_matcher() Opening filepath:%s file_pathpathpath:%s at line %s",
+                      filepath, file_pathpathpath, line_number)
         if not self.check_file_readable(file_pathpathpath):
-            logger.error("%s _find_quick_matcher() Not found path: %s . so cannot read as a file ", _fl_two_(), file_pathpathpath)
+            logger.error("%s _find_quick_matcher() Not found path: %s . so cannot read as a file ",
+                         _fl_two_(), file_pathpathpath)
             return False
 
         cmdline = self.guake.settings.general.get_string(
