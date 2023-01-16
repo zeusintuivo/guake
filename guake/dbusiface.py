@@ -33,6 +33,7 @@ DBUS_NAME = "org.guake3.RemoteControl"
 
 
 class DbusManager(dbus.service.Object):
+
     def __init__(self, guakeinstance):
         self.guake = guakeinstance
         self.bus = dbus.SessionBus()

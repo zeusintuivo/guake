@@ -103,7 +103,9 @@ GDK_WINDOW_STATE_ABOVE = 32
 
 class Guake(SimpleGladeApp):
     """Guake main class. Handles specialy the main window."""
+
     def __init__(self):
+
         def load_schema():
             logger.info("%s Loading Gnome schema from: %s", _fl_two_(),
                         SCHEMA_DIR)
@@ -1040,6 +1042,7 @@ class Guake(SimpleGladeApp):
 
     def gen_accel_switch_tabN(self, N):
         """Generates callback (which called by accel key) to go to the Nth tab."""
+
         def callback(*args):
             if 0 <= N < self.get_notebook().get_n_pages():
                 self.get_notebook().set_current_page(N)
@@ -1135,6 +1138,7 @@ class Guake(SimpleGladeApp):
         return TabNameUtils.shorten(vte_title, self.settings)
 
     def check_if_terminal_directory_changed(self, term):
+
         @save_tabs_when_changed
         def terminal_directory_changed(self):
             # Yep, just used for save tabs when changed

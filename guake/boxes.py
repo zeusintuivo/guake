@@ -67,6 +67,7 @@ class TerminalHolder:
 
 
 class RootTerminalBox(Gtk.Overlay, TerminalHolder):
+
     def __init__(self, guake, parent_notebook):
         super().__init__()
         self.guake = guake
@@ -397,6 +398,7 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
 
 class TerminalBox(Gtk.Box, TerminalHolder):
     """A box to group the terminal and a scrollbar."""
+
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
         self.terminal = None
@@ -635,6 +637,7 @@ class DualTerminalBox(Gtk.Paned, TerminalHolder):
 
 
 class TabLabelEventBox(Gtk.EventBox):
+
     def __init__(self, notebook, text, settings):
         super().__init__()
         self.notebook = notebook
