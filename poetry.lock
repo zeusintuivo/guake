@@ -4,7 +4,7 @@ version = "2.9.0"
 description = "An abstract syntax tree for Python with inference support."
 category = "main"
 optional = true
-python-versions = "~=3.6"
+python-versions = "~=3.10"
 
 [package.dependencies]
 lazy-object-proxy = ">=1.4.0"

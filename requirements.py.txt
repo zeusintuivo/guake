@@ -23,6 +23,7 @@ mock>=2.0.0
 pathlib2
 pep8
 pew
+poetry
 pipenv-to-requirements
 pyfakefs
 pyflakes

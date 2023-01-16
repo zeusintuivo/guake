@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 120
-target-version = ['py36']
+target-version = ['py310']
 include = '\.pyi?$'
 
 [tool.poetry]
@@ -11,7 +11,7 @@ authors = ["zeusintuivo <zeus@intuivo.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 
 [tool.poetry.dev-dependencies]
 [tool.poetry.dependencies.pylint]
