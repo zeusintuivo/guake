@@ -38,7 +38,6 @@ class CustomCommands:
             }
         ]
     """
-
     def __init__(self, settings, callback):
         self.settings = settings
         self.callback = callback

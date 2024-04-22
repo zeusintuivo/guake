@@ -45,7 +45,6 @@ from guake.logging_decorator import logger
 
 class Keybindings:
     """Handles changes in keyboard shortcuts."""
-
     def __init__(self, guake):
         """Constructor of Keyboard, only receives the guake instance
         to be used in internal methods.

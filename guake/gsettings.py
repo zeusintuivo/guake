@@ -39,7 +39,6 @@ class GSettingHandler:
     """Handles gconf changes, if any gconf variable is changed, a
     different method is called to handle this change.
     """
-
     def __init__(self, guake_inst):
         """Constructor of GConfHandler, just add the guake dir to the
         gconf client and bind the keys to its handler methods.

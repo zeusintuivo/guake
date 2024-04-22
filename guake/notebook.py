@@ -54,7 +54,6 @@ from guake.logging_decorator import logger
 
 
 class TerminalNotebook(Gtk.Notebook):
-
     def __init__(self, *args, **kwargs):
         Gtk.Notebook.__init__(self, *args, **kwargs)
         self.last_terminal_focused = None
@@ -496,7 +495,6 @@ class TerminalNotebook(Gtk.Notebook):
 
 
 class NotebookManager(GObject.Object):
-
     def __init__(
         self,
         window,

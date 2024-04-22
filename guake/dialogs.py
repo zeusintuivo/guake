@@ -5,7 +5,6 @@ from gi.repository import Gtk
 
 
 class RenameDialog(Gtk.Dialog):
-
     def __init__(self, window, current_name):
         super().__init__(
             _("Rename tab"),
@@ -40,7 +39,6 @@ class RenameDialog(Gtk.Dialog):
 
 class PromptQuitDialog(Gtk.MessageDialog):
     """Prompts the user whether to quit/close a tab."""
-
     def __init__(self, parent, procs, tabs, notebooks):
         """Prompts the user whether to quit or not if there are procs running."""
         super().__init__(
@@ -99,7 +97,6 @@ class PromptQuitDialog(Gtk.MessageDialog):
 
 class PromptResetColorsDialog(Gtk.MessageDialog):
     """Prompts the user whether to reset tab colors."""
-
     def __init__(self, parent):
         super().__init__(
             parent,
@@ -124,7 +121,6 @@ class PromptResetColorsDialog(Gtk.MessageDialog):
 
 
 class SaveTerminalDialog(Gtk.FileChooserDialog):
-
     def __init__(self, terminal, window):
         super().__init__(
             _("Save to..."),

@@ -13,7 +13,6 @@ from urllib.parse import quote_plus
 
 
 class TerminalContextMenuCallbacks:
-
     def __init__(self, terminal, window, settings, notebook):
         self.terminal = terminal
         self.window = window
@@ -88,7 +87,6 @@ class TerminalContextMenuCallbacks:
 
 
 class NotebookScrollCallback:
-
     def __init__(self, notebook):
         self.notebook = notebook
 
@@ -104,7 +102,6 @@ class NotebookScrollCallback:
 
 
 class MenuHideCallback:
-
     def __init__(self, window):
         self.window = window
 
