@@ -570,7 +570,7 @@ class GuakeTerminal(Vte.Terminal):
                     stdout=devnull,
                     stderr=devnull):
                 pass
-             return True
+            return True
         return False
 
     @staticmethod
