@@ -425,8 +425,8 @@ class GuakeTerminal(Vte.Terminal):
                     line_number = g.group(2)
                 else:
                     line_number = None
-                log.info("Quick action executed filename=%s, line=%s", filename, line_number)
-                (filepath, ln, _) = self.is_file_on_local_server(filename)
+                log.info("Quick action executed filename=%s, line=%s", projectcwd + "/" + filename, line_number)
+                (filepath, ln, _) = self.is_file_on_local_server(projectcwd + "/" + filename)
                 if ln:
                     line_number = ln
                 if not filepath:
