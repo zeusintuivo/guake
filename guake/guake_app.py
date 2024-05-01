@@ -55,6 +55,8 @@ from guake.common import pixmapfile
 from guake.dialogs import PromptQuitDialog
 from guake.globals import MAX_TRANSPARENCY
 from guake.globals import NAME
+from guake.globals import PROMPT_ALWAYS
+from guake.globals import PROMPT_PROCESSES
 from guake.globals import TABS_SESSION_SCHEMA_VERSION
 from guake.gsettings import GSettingHandler
 from guake.keybindings import Keybindings
@@ -70,6 +72,7 @@ from guake.simplegladeapp import SimpleGladeApp
 from guake.theme import patch_gtk_theme
 from guake.theme import select_gtk_theme
 from guake.utils import BackgroundImageManager
+from guake.utils import FileManager
 from guake.utils import FullscreenManager
 from guake.utils import HidePrevention
 from guake.utils import RectCalculator
@@ -173,6 +176,8 @@ class Guake(SimpleGladeApp):
             menu.prepend(show)
             self.tray_icon.set_menu(menu)
 
+        self.display_tab_names = 0
+
         # important widgets
         self.window = self.get_widget("window-root")
         self.window.set_name("guake-terminal")
@@ -190,6 +195,9 @@ class Guake(SimpleGladeApp):
 
         # FullscreenManager
         self.fullscreen_manager = FullscreenManager(self.settings, self.window, self)
+
+        # Start the file manager (only used by guake.yml so far).
+        self.fm = FileManager()
 
         # Workspace tracking
         self.notebook_manager = NotebookManager(
@@ -221,8 +229,6 @@ class Guake(SimpleGladeApp):
 
         # store the default window title to reset it when update is not wanted
         self.default_window_title = self.window.get_title()
-
-        self.display_tab_names = 0
 
         self.window.connect("focus-out-event", self.on_window_losefocus)
         self.window.connect("focus-in-event", self.on_window_takefocus)
@@ -507,7 +513,6 @@ class Guake(SimpleGladeApp):
             if visible and value:
                 log.info("Hiding on focus lose")
                 self.hide()
-            return False
 
         def losefocus_callback(sleep_time):
             sleep(sleep_time)
@@ -598,6 +603,10 @@ class Guake(SimpleGladeApp):
         else:
             log.info("Hiding the terminal")
             self.hide()
+    def get_visibility(self):
+        if self.hidden:
+            return 0
+        return 1
 
     def show_focus(self, *args):
         self.win_prepare()
@@ -932,14 +941,20 @@ class Guake(SimpleGladeApp):
 
     def accel_zoom_in(self, *args):
         """Callback to zoom in."""
+        font = " ".join(self.settings.styleFont.get_string("style").split(" ")[:-1])
+        new_size = int(self.settings.styleFont.get_string("style").split(" ")[-1]) + 1
+        self.settings.styleFont.set_string("style", f"{font} {new_size}")
         for term in self.get_notebook().iter_terminals():
-            term.increase_font_size()
+            term.set_font_scale(new_size / (new_size - 1))
         return True
 
     def accel_zoom_out(self, *args):
         """Callback to zoom out."""
+        font = " ".join(self.settings.styleFont.get_string("style").split(" ")[:-1])
+        new_size = int(self.settings.styleFont.get_string("style").split(" ")[-1]) - 1
+        self.settings.styleFont.set_string("style", f"{font} {new_size}")
         for term in self.get_notebook().iter_terminals():
-            term.decrease_font_size()
+            term.set_font_scale((new_size - 1) / new_size)
         return True
 
     def accel_increase_height(self, *args):
@@ -984,6 +999,11 @@ class Guake(SimpleGladeApp):
     def accel_add_home(self, *args):
         """Callback to add a new tab in home directory. Called by the accel key."""
         self.add_tab(os.environ["HOME"])
+        return True
+
+    def accel_add_cwd(self, *args):
+        """Callback to add a new tab in current directory. Called by the accel key."""
+        self.add_tab(open_tab_cwd=True)
         return True
 
     def accel_prev(self, *args):
@@ -1064,6 +1084,10 @@ class Guake(SimpleGladeApp):
         self.get_notebook().get_current_terminal().paste_clipboard()
         return True
 
+    def accel_select_all(self, *args):
+        self.get_notebook().get_current_terminal().select_all()
+        return True
+
     def accel_toggle_hide_on_lose_focus(self, *args):
         """Callback toggle whether the window should hide when it loses
         focus. Called by the accel key.
@@ -1100,8 +1124,32 @@ class Guake(SimpleGladeApp):
             page_num = self.get_notebook().page_num(terminal.get_parent())
             self.get_notebook().rename_page(page_num, self.compute_tab_title(terminal), False)
 
+    def load_cwd_guake_yaml(self, vte) -> dict:
+        # Read the content of .guake.yml in cwd
+        if not self.settings.general.get_boolean("load-guake-yml"):
+            return {}
+
+        cwd = Path(vte.get_current_directory())
+        filename = str(cwd.joinpath(".guake.yml"))
+
+        try:
+            content = self.fm.read_yaml(filename)
+        except Exception:
+            log.debug("Unexpected error reading %s.", filename, exc_info=True)
+            content = {}
+
+        if not isinstance(content, dict):
+            content = {}
+        return content
+
     def compute_tab_title(self, vte):
         """Compute the tab title"""
+
+        guake_yml = self.load_cwd_guake_yaml(vte)
+
+        if "title" in guake_yml:
+            return guake_yml["title"]
+
         vte_title = vte.get_window_title() or _("Terminal")
         try:
             current_directory = vte.get_current_directory()
@@ -1184,6 +1232,13 @@ class Guake(SimpleGladeApp):
         )
         self.get_notebook().rename_page(page_index, new_text, user_set)
 
+    def get_index_from_uuid(self, term_uuid):
+        term_uuid = uuid.UUID(term_uuid)
+        for index, t in enumerate(self.get_notebook().iter_terminals()):
+            if t.get_uuid() == term_uuid:
+                return index
+        return -1
+
     def rename_current_tab(self, new_text, user_set=False):
         page_num = self.get_notebook().get_current_page()
         self.get_notebook().rename_page(page_num, new_text, user_set)
@@ -1198,12 +1253,14 @@ class Guake(SimpleGladeApp):
         terminal.directory = terminal.get_current_directory()
 
     @save_tabs_when_changed
-    def add_tab(self, directory=None):
+    def add_tab(self, directory=None, open_tab_cwd=False):
         """Adds a new tab to the terminal notebook."""
         position = None
         if self.settings.general.get_boolean("new-tab-after"):
             position = 1 + self.get_notebook().get_current_page()
-        self.get_notebook().new_page_with_focus(directory, position=position)
+        self.get_notebook().new_page_with_focus(
+            directory, position=position, open_tab_cwd=open_tab_cwd
+        )
 
     def find_tab(self, directory=None):
         log.debug("find")
@@ -1282,6 +1339,13 @@ class Guake(SimpleGladeApp):
         page_num = self.get_notebook().get_current_page()
         terminals = self.get_notebook().get_terminals_for_page(page_num)
         return str(terminals[0].get_uuid())
+
+    def open_link_under_terminal_cursor(self, *args):
+        current_term = self.get_notebook().get_current_terminal()
+        if current_term is None:
+            return
+        url = current_term.get_link_under_terminal_cursor()
+        current_term.browse_link_under_cursor(url)
 
     def search_on_web(self, *args):
         """Search for the selected text on the web"""

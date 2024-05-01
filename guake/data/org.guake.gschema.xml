@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schemalist>
-    <schema id="guake" path="/apps/guake/">
+    <schema id="guake" path="/org/guake/">
         <child name="general" schema="guake.general"/>
         <child name="style" schema="guake.style"/>
         <child name="keybindings" schema="guake.keybindings"/>
     </schema>
-    <schema id="guake.general" path="/apps/guake/general/">
+    <schema id="guake.general" path="/org/guake/general/">
         <key name="schema-version" type="s">
             <default>''</default>
             <summary>Last used schema version</summary>
@@ -46,6 +46,11 @@
 		    <summary>Automatically save tabs session when changed</summary>
 		    <description>If true, when tabs has changed (add / delete ...etc.), it will automatically saved the tabs session</description>
 		</key>
+		<key name="load-guake-yml" type="b">
+		    <default>true</default>
+		    <summary>Load settings from guake.yml</summary>
+		    <description>If true, when a change in the cwd is detected settings are changed based on the content of the file `cwd`/.guake.yml</description>
+		</key>
         <key name="use-login-shell" type="b">
             <default>false</default>
             <summary>Login shell</summary>
@@ -76,6 +81,16 @@
             <summary>Prompt when closing tabs.</summary>
             <description>0: Never 1: If process is running 2: Always.  Also prompts on quit.</description>
         </key>
+        <key name="search-engine" type="i">
+            <default>0</default>
+            <summary>Search engine to use when using web search</summary>
+            <description>Search engine to use</description>
+        </key>
+        <key name="custom-search-engine" type="s">
+            <default>''</default>
+            <summary>Search engine to use when using web search</summary>
+            <description>Custom search engine url to use</description>
+        </key>
         <key name="window-ontop" type="b">
             <default>true</default>
             <summary>Stay on top.</summary>
@@ -89,7 +104,7 @@
         <key name="tab-ontop" type="b">
             <default>false</default>
             <summary>Tab on top.</summary>
-            <description>Makes tab bar on top of the Guake window. Per default, tabs appears bellow the terminal. Setting this to True will move the tab on top of the terminal. Requires a restart.</description>
+            <description>Makes tab bar on top of the Guake window. Per default, tabs appear below the terminal. Setting this to True will move the tab on top of the terminal. Requires a restart.</description>
         </key>
         <key name="new-tab-after" type="b">
             <default>false</default>
@@ -117,7 +132,7 @@
 		  <description>When true, the tab bar will hide when is in fullscreen</description>
 		</key>
 		<key name="hide-tabs-if-one-tab" type="b">
-		  <default>true</default>
+		  <default>false</default>
 		  <summary>Hide tab bar if there is only one tab</summary>
 		  <description>When true, the tab bar will hide when there is only one tab</description>
 		</key>
@@ -239,7 +254,7 @@
         <key name="compat-backspace" type="s">
             <default>'ascii-delete'</default>
             <summary>Backspace Compatibility</summary>
-            <description>Defines the behavior of backscape key.</description>
+            <description>Defines the behavior of backspace key.</description>
         </key>
         <key name="compat-delete" type="s">
             <default>'delete-sequence'</default>
@@ -264,7 +279,7 @@
         <key name="custom-command-file" type="s">
             <default>'~/.config/guake/custom_command.json'</default>
             <summary>Path to the default custom command json file.</summary>
-            <description>Path to the default custom command json file. If is blank or the json file is not in a proper format the terminal context menu will be built without custom commands. If the file is a valid json with recognized structure theterminak context menu will be buit with the commands read inside.</description>
+            <description>Path to the default custom command json file. If is blank or the json file is not in a proper format the terminal context menu will be built without custom commands. If the file is a valid json with recognized structure theterminak context menu will be built with the commands read inside.</description>
         </key>
         <key name="open-tab-cwd" type="b">
             <default>true</default>
@@ -307,7 +322,7 @@
             <description>Copy the selected text.</description>
         </key>
     </schema>
-    <schema id="guake.style" path="/apps/guake/style/">
+    <schema id="guake.style" path="/org/guake/style/">
         <key name="cursor-blink-mode" type="i">
             <default>0</default>
             <summary>Cursor blink mode of the terminal</summary>
@@ -321,7 +336,7 @@
         <child name="font" schema="guake.style.font"/>
         <child name="background" schema="guake.style.background"/>
     </schema>
-    <schema id="guake.style.font" path="/apps/guake/style/font/">
+    <schema id="guake.style.font" path="/org/guake/style/font/">
         <key name="style" type="s">
             <default>'Monospace 10'</default>
             <summary>Font style.</summary>
@@ -358,7 +373,7 @@
             <description>This can be used to increase the letter spacing. (The font's width is not affected.) Valid values go from 1.0 (default) to 2.0 ("double spacing").</description>
         </key>
     </schema>
-    <schema id="guake.style.background" path="/apps/guake/style/background/">
+    <schema id="guake.style.background" path="/org/guake/style/background/">
         <key name="transparency" type="i">
             <default>90</default>
             <range min="0" max="100"/>
@@ -366,11 +381,11 @@
             <description>Alpha that will be applied to the terminal background.</description>
         </key>
     </schema>
-    <schema id="guake.keybindings" path="/apps/guake/keybindings/">
+    <schema id="guake.keybindings" path="/org/guake/keybindings/">
         <child name="global" schema="guake.keybindings.global"/>
         <child name="local" schema="guake.keybindings.local"/>
     </schema>
-    <schema id="guake.keybindings.global" path="/apps/guake/keybindings/global/">
+    <schema id="guake.keybindings.global" path="/org/guake/keybindings/global/">
         <key name="show-hide" type="s">
             <default>'F12'</default>
             <summary>Keybinding to show/hide guake.</summary>
@@ -382,7 +397,7 @@
             <description>Global keybinding to allow user call guake from each place after it's opened without clicks.</description>
         </key>
     </schema>
-    <schema id="guake.keybindings.local" path="/apps/guake/keybindings/local/">
+    <schema id="guake.keybindings.local" path="/org/guake/keybindings/local/">
         <key name="search-terminal" type="s">
             <default>'&lt;Control&gt;&lt;Shift&gt;f'</default>
             <summary>Search terminal</summary>
@@ -397,11 +412,16 @@
             <default>'&lt;Control&gt;&lt;Shift&gt;t'</default>
             <summary>Add a new tab.</summary>
             <description>Calls the function to add a new tab in guake window.</description>
-	</key>
+        </key>
         <key name="new-tab-home" type="s">
             <default>'&lt;Control&gt;&lt;Shift&gt;h'</default>
             <summary>Add a new tab in home directory.</summary>
             <description>Calls the function to add a new home directory tab in guake window.</description>
+        </key>
+        <key name="new-tab-cwd" type="s">
+            <default>'&lt;Super&gt;t'</default>
+            <summary>Add a new tab in current directory.</summary>
+            <description>Calls the function to add a new tab in guake window, in the same directory as the current tab.</description>
         </key>
         <key name="close-tab" type="s">
             <default>'&lt;Control&gt;&lt;Shift&gt;w'</default>
@@ -412,6 +432,11 @@
             <default>'&lt;Control&gt;&lt;Shift&gt;l'</default>
             <summary>Search current selected text on the web</summary>
             <description>Accelerator to active function that search on the web the current selected text on the terminal.</description>
+        </key>
+        <key name="open-link-under-terminal-cursor" type="s">
+            <default>'&lt;Control&gt;&lt;Shift&gt;o'</default>
+            <summary>Open link under terminal cursor</summary>
+            <description>Accelerator to active function that opens the link (URL) under the current terminal cursor.</description>
         </key>
         <key name="move-tab-left" type="s">
             <default>'&lt;Control&gt;&lt;Shift&gt;Page_Up'</default>
@@ -524,12 +549,12 @@
             <description>Decrease the screen height.</description>
         </key>
         <key name="increase-transparency" type="s">
-            <default>'&lt;Control&gt;&lt;Shift&gt;Up'</default>
+            <default>'&lt;Control&gt;&lt;Shift&gt;b'</default>
             <summary>Increase transparency.</summary>
             <description>Increase the terminal transparency.</description>
         </key>
         <key name="decrease-transparency" type="s">
-            <default>'&lt;Control&gt;&lt;Shift&gt;Down'</default>
+            <default>'&lt;Control&gt;&lt;Shift&gt;n'</default>
             <summary>Decrease transparency.</summary>
             <description>Decrease the terminal transparency.</description>
         </key>
@@ -543,13 +568,18 @@
             <summary>Paste clipboard.</summary>
             <description>Paste the clipboard content.</description>
         </key>
+        <key name="select-all" type="s">
+            <default>'&lt;Control&gt;&lt;Shift&gt;a'</default>
+            <summary>Select all.</summary>
+            <description>Select all contents of the currently active terminal.</description>
+        </key>
         <key name="toggle-fullscreen" type="s">
             <default>'F11'</default>
             <summary>Toggle Fullscreen.</summary>
             <description>Toggle main guake window fullscreen.</description>
         </key>
         <key name="toggle-hide-on-lose-focus" type="s">
-            <default>'&lt;Control&gt;F1'</default>
+            <default>'&lt;Control&gt;&lt;Shift&gt;F1'</default>
             <summary>Toggle hide on lose focus.</summary>
             <description>Toggle whether guake will hide when it loses focus.</description>
         </key>
@@ -624,7 +654,7 @@
             <description>Move the terminal split handle right.</description>
         </key>
     </schema>
-    <schema id="guake.hooks" path="/apps/guake/hooks/">
+    <schema id="guake.hooks" path="/org/guake/hooks/">
         <key name="show" type="s">
             <default>''</default>
             <summary>On show.</summary>

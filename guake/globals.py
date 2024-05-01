@@ -70,6 +70,7 @@ NAME = "guake"
 ALIGN_CENTER, ALIGN_LEFT, ALIGN_RIGHT = range(3)
 ALIGN_TOP, ALIGN_BOTTOM = range(2)
 ALWAYS_ON_PRIMARY = -1
+PROMPT_NEVER, PROMPT_PROCESSES, PROMPT_ALWAYS = range(3)
 
 # TODO this is not as fancy as as it could be
 # pylint: disable=anomalous-backslash-in-string
@@ -208,3 +209,13 @@ TABS_SESSION_SCHEMA_VERSION = 2
 # Constants for vte regex matching are documented in the pcre2 api:
 #   https://www.pcre.org/current/doc/html/pcre2api.html
 PCRE2_MULTILINE = 0x00000400
+
+# the urls of the search engine options for the search on web feature.
+# Additional engines should be added
+ENGINES = {
+    0: "www.google.com/search?safe=off&q=",
+    1: "www.duckduckgo.com/",
+    2: "www.bing.com/search?q=",
+    3: "www.yandex.com/search?text=",
+    4: "neeva.com/search?q=",
+}
