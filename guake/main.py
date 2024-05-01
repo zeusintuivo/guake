@@ -38,12 +38,15 @@ from locale import gettext
 builtins.__dict__["_"] = gettext
 
 from optparse import OptionParser
+from argparse import ArgumentParser
 
 log = logging.getLogger(__name__)
 
 # Force use X11 backend under wayland before any import of GDK through dependencies - This makes it floating and hides the icon but fixes other settings in the GUI
 os.environ["GDK_BACKEND"] = "x11"
 os.environ["TERM"] = "xterm-256color"
+if "GUAKE_ENABLE_WAYLAND" in os.environ:
+    os.environ["GDK_BACKEND"] = "wayland"
 
 from guake.globals import NAME
 from guake.globals import bindtextdomain
@@ -71,6 +74,7 @@ def main():
     """
     # Force to xterm-256 colors for compatibility with some old command line programs
     # os.environ["TERM"] = "xterm-256color"
+    os.environ["TERM_PROGRAM"] = "guake"
 
     # Force use X11 backend underwayland
     # os.environ["GDK_BACKEND"] = "x11"
@@ -518,7 +522,7 @@ def main():
         remote_object.show_prefs()
         only_show_hide = options.show
 
-    if options.new_tab:
+    if options.new_tab and not options.command:
         remote_object.add_tab(options.new_tab)
         only_show_hide = options.show
 
@@ -551,11 +555,21 @@ def main():
         only_show_hide = options.show
 
     if options.split_vertical:
-        remote_object.v_split_current_terminal()
+        if options.command:
+            remote_object.v_split_current_terminal_with_command(
+                options.command, options.split_vertical
+            )
+        else:
+            remote_object.v_split_current_terminal(options.split_vertical)
         only_show_hide = options.show
 
     if options.split_horizontal:
-        remote_object.h_split_current_terminal()
+        if options.command:
+            remote_object.h_split_current_terminal_with_command(
+                options.command, options.split_horizontal
+            )
+        else:
+            remote_object.h_split_current_terminal(options.split_horizontal)
         only_show_hide = options.show
 
     if options.selected_terminal:
@@ -572,7 +586,7 @@ def main():
             sys.stderr.write("invalid index: %d\n" % selected)
         only_show_hide = options.show
 
-    if options.command:
+    if options.command and not (options.split_vertical or options.split_horizontal):
         remote_object.execute_command(options.command)
         only_show_hide = options.show
 
@@ -636,15 +650,15 @@ def main():
             startup_script = instance.settings.general.get_string("startup-script")
             if startup_script:
                 log.info("Calling startup script: %s", startup_script)
-                with subprocess.Popen(
+                pid = subprocess.Popen(  # pylint: disable=consider-using-with
                     [startup_script],
-                    shell=True,
+                    shell=False,
                     stdin=None,
                     stdout=None,
                     stderr=None,
                     close_fds=True,
-                ) as pid:
-                    log.info("Startup script started with pid: %s", pid)
+                )
+                log.info("Startup script started with pid: %s", pid)
                 # Please ensure this is the last line !!!!
     else:
         log.info("--no-startup-script argument defined, so don't execute the startup script")

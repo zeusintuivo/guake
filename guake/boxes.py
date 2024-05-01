@@ -262,9 +262,9 @@ class RootTerminalBox(Gtk.Overlay, TerminalHolder):
                     Gtk.main_iteration()
 
             if cur["type"].endswith("v"):
-                box = box.split_v()
+                box = box.split_v_no_save()
             else:
-                box = box.split_h()
+                box = box.split_h_no_save()
             self.restore_box_layout(box.get_child1(), panes)
             self.restore_box_layout(box.get_child2(), panes)
         else:
@@ -395,7 +395,6 @@ class TerminalBox(Gtk.Box, TerminalHolder):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
         self.terminal = None
-        self.scroll = None
 
     def set_terminal(self, terminal):
         """Packs the terminal widget."""
@@ -418,7 +417,7 @@ class TerminalBox(Gtk.Box, TerminalHolder):
     def add_scroll_bar(self):
         """Packs the scrollbar."""
         adj = self.terminal.get_vadjustment()
-        self.scroll = Gtk.VScrollbar(adjustment=adj)
+        self.scroll = Gtk.Scrollbar.new(Gtk.Orientation.VERTICAL, adj)
         self.scroll.show()
         self.pack_start(self.scroll, False, False, 0)
 
@@ -462,20 +461,30 @@ class TerminalBox(Gtk.Box, TerminalHolder):
     def unset_terminal(self, *args):
         self.terminal = None
 
-    def split_h(self):
-        return self.split(DualTerminalBox.ORIENT_V)
+    def split_h(self, split_percentage: int = 50):
+        return self.split(DualTerminalBox.ORIENT_V, split_percentage)
 
-    def split_v(self):
-        return self.split(DualTerminalBox.ORIENT_H)
+    def split_v(self, split_percentage: int = 50):
+        return self.split(DualTerminalBox.ORIENT_H, split_percentage)
 
-    def split(self, orientation):
+    def split_h_no_save(self, split_percentage: int = 50):
+        return self.split_no_save(DualTerminalBox.ORIENT_V, split_percentage)
+
+    def split_v_no_save(self, split_percentage: int = 50):
+        return self.split_no_save(DualTerminalBox.ORIENT_H, split_percentage)
+
+    @save_tabs_when_changed
+    def split(self, orientation, split_percentage: int = 50):
+        self.split_no_save(orientation, split_percentage)
+
+    def split_no_save(self, orientation, split_percentage: int = 50):
         notebook = self.get_notebook()
         parent = self.get_parent()  # RootTerminalBox
 
         if orientation == DualTerminalBox.ORIENT_H:
-            position = self.get_allocation().width / 2
+            position = self.get_allocation().width * ((100 - split_percentage) / 100)
         else:
-            position = self.get_allocation().height / 2
+            position = self.get_allocation().height * ((100 - split_percentage) / 100)
 
         terminal_box = TerminalBox()
         terminal = notebook.terminal_spawn()
@@ -487,6 +496,10 @@ class TerminalBox(Gtk.Box, TerminalHolder):
         dual_terminal_box.set_child_second(terminal_box)
         terminal_box.show()
         dual_terminal_box.show()
+        if self.terminal is not None:
+            # preserve font and font_scale in the new terminal
+            terminal.set_font(self.terminal.font)
+            terminal.font_scale = self.terminal.font_scale
         notebook.terminal_attached(terminal)
 
         return dual_terminal_box
@@ -619,6 +632,7 @@ class DualTerminalBox(Gtk.Paned, TerminalHolder):
         else:
             box.get_terminal().grab_focus()
 
+    @save_tabs_when_changed
     def remove_dead_child(self, child):
         if self.get_child1() is child:
             living_child = self.get_child2()

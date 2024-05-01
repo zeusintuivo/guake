@@ -25,9 +25,13 @@ from guake.boxes import TerminalBox
 from guake.callbacks import MenuHideCallback
 from guake.callbacks import NotebookScrollCallback
 from guake.dialogs import PromptQuitDialog
+from guake.globals import PROMPT_ALWAYS
+from guake.globals import PROMPT_PROCESSES
 from guake.menus import mk_notebook_context_menu
 from guake.prefs import PrefsDialog
+from guake.utils import HidePrevention
 from guake.utils import gdk_is_x11_display
+from guake.utils import get_process_name
 from guake.utils import save_tabs_when_changed
 
 import gi
@@ -88,6 +92,11 @@ class TerminalNotebook(Gtk.Notebook):
         )
 
         # Action box
+        self.pin_button = Gtk.ToggleButton(
+            image=Gtk.Image.new_from_icon_name("view-pin-symbolic", Gtk.IconSize.MENU),
+            visible=False,
+        )
+        self.pin_button.connect("clicked", self.on_pin_clicked)
         self.new_page_button = Gtk.Button(
             image=Gtk.Image.new_from_icon_name("tab-new-symbolic", Gtk.IconSize.MENU),
             visible=True,
@@ -122,6 +131,16 @@ class TerminalNotebook(Gtk.Notebook):
                 menu.popup(None, None, None, None, event.button, event.time)
 
         return False
+
+    def on_pin_clicked(self, user_data=None):
+        hide_prevention = HidePrevention(self.guake.window)
+        if self.pin_button.get_active():
+            hide_prevention.prevent()
+        else:
+            hide_prevention.allow()
+
+    def on_lose_focus_toggled(self, settings, key, user_data=None):
+        self.pin_button.set_visible(settings.get_boolean(key))
 
     @save_tabs_when_changed
     def on_new_tab(self, user_data):
@@ -333,10 +352,13 @@ class TerminalNotebook(Gtk.Notebook):
     def delete_page_current(self, kill=True, prompt=0):
         self.delete_page(self.get_current_page(), kill, prompt)
 
-    def new_page(self, directory=None, position=None):
-        terminal = self.terminal_spawn(directory)
+    def new_page(self, directory=None, position=None, empty=False, open_tab_cwd=False):
         terminal_box = TerminalBox()
-        terminal_box.set_terminal(terminal)
+        if empty:
+            terminal = None
+        else:
+            terminal = self.terminal_spawn(directory, open_tab_cwd)
+            terminal_box.set_terminal(terminal)
         root_terminal_box = RootTerminalBox(self.guake, self)
         root_terminal_box.set_child(terminal_box)
         page_num = self.insert_page(
@@ -351,7 +373,8 @@ class TerminalNotebook(Gtk.Notebook):
         )
         # this is needed to initially set the last_terminal_focused,
         # one could also call terminal.get_parent().on_terminal_focus()
-        self.terminal_attached(terminal)
+        if not empty:
+            self.terminal_attached(terminal)
         self.hide_tabbar_if_one_tab()
 
         if self.guake:
@@ -368,7 +391,7 @@ class TerminalNotebook(Gtk.Notebook):
             else:
                 self.set_property("show-tabs", True)
 
-    def terminal_spawn(self, directory=None):
+    def terminal_spawn(self, directory=None, open_tab_cwd=False):
         terminal = GuakeTerminal(self.guake)
         terminal.grab_focus()
         terminal.connect(
@@ -378,7 +401,7 @@ class TerminalNotebook(Gtk.Notebook):
         if not isinstance(directory, str):
             directory = os.environ["HOME"]
             try:
-                if self.guake.settings.general.get_boolean("open-tab-cwd"):
+                if self.guake.settings.general.get_boolean("open-tab-cwd") or open_tab_cwd:
                     # Do last focused terminal still alive?
                     active_terminal = self.get_current_terminal()
                     if not active_terminal:
@@ -398,14 +421,25 @@ class TerminalNotebook(Gtk.Notebook):
         terminal.emit("focus", Gtk.DirectionType.TAB_FORWARD)
         self.emit("terminal-spawned", terminal, terminal.pid)
 
-    def new_page_with_focus(self, directory=None, label=None, user_set=False, position=None):
-        box, page_num, terminal = self.new_page(directory, position=position)
+    def new_page_with_focus(
+        self,
+        directory=None,
+        label=None,
+        user_set=False,
+        position=None,
+        empty=False,
+        open_tab_cwd=False,
+    ):
+        box, page_num, terminal = self.new_page(
+            directory, position=position, empty=empty, open_tab_cwd=open_tab_cwd
+        )
         self.set_current_page(page_num)
         if not label:
-            self.rename_page(page_num, _("Terminal"), False)
+            self.rename_page(page_num, self.guake.compute_tab_title(terminal), False)
         else:
             self.rename_page(page_num, label, user_set)
-        terminal.grab_focus()
+        if terminal is not None:
+            terminal.grab_focus()
         return box, page_num, terminal
 
     def rename_page(self, page_index, new_text, user_set=False):
@@ -595,8 +629,8 @@ class NotebookManager(GObject.Object):
     def get_n_notebooks(self):
         return len(self.notebooks.keys())
 
-    def get_running_fg_processes_count(self):
-        r_fg_c = 0
+    def get_running_fg_processes(self):
+        processes = []
         for k in self.notebooks:
-            r_fg_c += self.notebooks[k].get_running_fg_processes_count()
-        return r_fg_c
+            processes += self.notebooks[k].get_running_fg_processes()
+        return processes
