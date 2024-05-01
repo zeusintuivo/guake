@@ -61,6 +61,10 @@ class DbusManager(dbus.service.Object):
     def hide_from_remote(self):
         self.guake.hide_from_remote()
 
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_visibility(self):
+        return self.guake.get_visibility()
+
     @dbus.service.method(DBUS_NAME)
     def fullscreen(self):
         self.guake.fullscreen()
@@ -91,10 +95,6 @@ class DbusManager(dbus.service.Object):
             self.guake.get_notebook().get_current_page()
         )
 
-    @dbus.service.method(DBUS_NAME, out_signature="i")
-    def get_tab_count(self):
-        return len(self.guake.notebook_manager.get_terminals())
-
     @dbus.service.method(DBUS_NAME, in_signature="i")
     def select_terminal(self, term_index=0):
         notebook = self.guake.get_notebook()
@@ -113,10 +113,64 @@ class DbusManager(dbus.service.Object):
         return -1
 
     @dbus.service.method(DBUS_NAME, out_signature="i")
-    def get_term_count(self):
+    def get_tab_count_get_terminals(self):
+        return len(self.guake.notebook_manager.get_terminals())
+
+    # @dbus.service.method(DBUS_NAME, out_signature="i")
+    # def get_tab_count(self):
+    #    bus = dbus.SessionBus()
+    #    remote_object = bus.get_object(DBUS_NAME, DBUS_PATH)
+    #    tab_count = int(remote_object.get_tab_count())
+    #    return tab_count
+
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_pages_count(self):
+         notebook = self.guake.get_notebook()
+         pages = notebook.get_n_pages()
+         return pages
+
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_notebooks(self):
+        notebook = self.guake.get_notebook()
+        notebooks = notebook.get_notebooks()
+        return notebooks
+
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_notebooks_count(self):
+        notebook = self.guake.get_notebook()
+        notebooks = notebook.get_n_notebooks()
+        return notebooks
+
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_term_count_for_current_page(self):
         notebook = self.guake.get_notebook()
         current_page_index = notebook.get_current_page()
         terminals = notebook.get_terminals_for_page(current_page_index)
+        return len(terminals)
+
+    # @dbus.service.method(DBUS_NAME, out_signature="i")
+    # def get_term_count(self):
+    #    bus = dbus.SessionBus()
+    #    remote_object = bus.get_object(DBUS_NAME, DBUS_PATH)
+    #    term_count = int(remote_object.get_term_count())
+    #    return term_count
+
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_processes(self):
+        notebook = self.guake.get_notebook()
+        terminals = notebook.get_running_fg_processes_count()
+        return terminals
+
+    @dbus.service.method(DBUS_NAME, out_signature="s")
+    def get_terminals(self):
+        notebook = self.guake.get_notebook()
+        terminals = notebook.get_terminals()
+        return terminals
+
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_terminals_count(self):
+        notebook = self.guake.get_notebook()
+        terminals = notebook.get_terminals()
         return len(terminals)
 
     @dbus.service.method(DBUS_NAME, in_signature="s")
@@ -204,3 +258,27 @@ class DbusManager(dbus.service.Object):
     @dbus.service.method(DBUS_NAME, in_signature="s")
     def execute_command_current_termbox(self, command):
         self.guake.get_notebook().get_current_terminal().execute_command(command)
+
+    @dbus.service.method(DBUS_NAME, in_signature="i")
+    def v_split_current_terminal(self, split_percentage: int):
+        self.guake.get_notebook().get_current_terminal().get_parent().split_v(split_percentage)
+
+    @dbus.service.method(DBUS_NAME, in_signature="i")
+    def h_split_current_terminal(self, split_percentage: int):
+        self.guake.get_notebook().get_current_terminal().get_parent().split_h(split_percentage)
+
+    @dbus.service.method(DBUS_NAME, in_signature="si")
+    def v_split_current_terminal_with_command(self, command, split_percentage: int):
+        self.guake.get_notebook().get_current_terminal().get_parent().split_v(split_percentage)
+        self.guake.execute_command(command)
+
+    @dbus.service.method(DBUS_NAME, in_signature="si")
+    def h_split_current_terminal_with_command(self, command, split_percentage: int):
+        self.guake.get_notebook().get_current_terminal().get_parent().split_h(split_percentage)
+        self.guake.execute_command(command)
+
+    @dbus.service.method(DBUS_NAME, in_signature="s", out_signature="i")
+    def get_index_from_uuid(self, tab_uuid):
+        return self.guake.get_index_from_uuid(tab_uuid)
+
+

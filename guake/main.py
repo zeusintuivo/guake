@@ -78,6 +78,12 @@ def main():
     # do not use version keywords here, pbr might be slow to find the version of Guake module
     parser = OptionParser()
     parser.add_option(
+        "--path",
+        nargs="?",
+        help="Add a new tab at designated path when a path is provided and no other options",
+    )
+
+    parser.add_option(
         "-V",
         "--version",
         dest="version",
@@ -119,6 +125,14 @@ def main():
         action="store_true",
         default=False,
         help=_("Toggles the visibility of the terminal window"),
+    )
+
+    parser.add_option(
+        "--is-visible",
+        dest="is_visible",
+        action="store_true",
+        default=False,
+        help=_("Return 1 if Guake is visible, 0 otherwise"),
     )
 
     parser.add_option(
@@ -180,6 +194,15 @@ def main():
         action="store_true",
         default=False,
         help=_("Return the selected tab index."),
+    )
+
+    parser.add_option(
+        "-x",
+        "--uuid-index",
+        dest="uuid_index",
+        action="store",
+        default="",
+        help=_("Return the index of the tab with the given terminal UUID, -1 if not found"),
     )
 
     parser.add_option(
@@ -486,12 +509,21 @@ def main():
     if options.hide:
         remote_object.hide_from_remote()
 
+    if options.is_visible:
+        visibility = remote_object.get_visibility()
+        sys.stdout.write(f"{visibility}\n")
+        only_show_hide = options.show
+
     if options.show_preferences:
         remote_object.show_prefs()
         only_show_hide = options.show
 
     if options.new_tab:
         remote_object.add_tab(options.new_tab)
+        only_show_hide = options.show
+
+    if options.path and len(sys.argv) == 2:
+        remote_object.add_tab(os.path.abspath(options.path))
         only_show_hide = options.show
 
     if options.select_tab:
@@ -511,6 +543,11 @@ def main():
     if options.selected_tablabel:
         selectedlabel = remote_object.get_selected_tablabel()
         sys.stdout.write("%s\n" % selectedlabel)
+        only_show_hide = options.show
+
+    if options.uuid_index:
+        selectedIndex = remote_object.get_index_from_uuid(options.uuid_index)
+        sys.stdout.write(f"{selectedIndex}\n")
         only_show_hide = options.show
 
     if options.split_vertical:
