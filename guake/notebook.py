@@ -251,7 +251,10 @@ class TerminalNotebook(Gtk.Notebook):
 
     def get_terminals_for_page(self, index):
         page = self.get_nth_page(index)
-        return page.get_terminals()
+        if page:
+            return page.get_terminals()
+        else:
+            0
 
     def get_terminals(self):
         terminals = []
@@ -449,7 +452,10 @@ class TerminalNotebook(Gtk.Notebook):
         """
         page = self.get_nth_page(page_index)
         if not getattr(page, "custom_label_set", False) or user_set:
-            old_label = self.get_tab_label(page)
+            if page:
+                old_label = self.get_tab_label(page)
+            else:
+                old_label = ''
             if isinstance(old_label, TabLabelEventBox):
                 old_label.set_text(new_text)
             else:
@@ -457,9 +463,11 @@ class TerminalNotebook(Gtk.Notebook):
                 label.add_events(Gdk.EventMask.SCROLL_MASK)
                 label.connect("scroll-event", self.scroll_callback.on_scroll)
 
-                self.set_tab_label(page, label)
+                if page:
+                    self.set_tab_label(page, label)
             if user_set:
-                setattr(page, "custom_label_set", new_text != "-")
+                if page:
+                    setattr(page, "custom_label_set", new_text != "-")
 
     def find_tab_index_by_label(self, eventbox):
         for index, tab_eventbox in enumerate(self.iter_tabs()):

@@ -496,8 +496,9 @@ class Guake(SimpleGladeApp):
             pass
         else:
             terminals = self.get_notebook().get_terminals_for_page(page_index)
-            for current_vte in terminals:
-                current_vte.feed_child(command)
+            if terminals:
+                for current_vte in terminals:
+                    current_vte.feed_child(command)
 
     def on_window_losefocus(self, window, event):
         """Hides terminal main window when it loses the focus and if
@@ -1224,12 +1225,13 @@ class Guake(SimpleGladeApp):
 
     def rename_tab_uuid(self, term_uuid, new_text, user_set=True):
         """Rename an already added tab by its UUID"""
-        term_uuid = uuid.UUID(term_uuid)
-        (page_index,) = (
-            index
-            for index, t in enumerate(self.get_notebook().iter_terminals())
-            if t.get_uuid() == term_uuid
-        )
+        #term_uuid = uuid.UUID(term_uuid)
+        #(page_index,) = (
+        #    index
+        #    for index, t in enumerate(self.get_notebook().iter_terminals())
+        #    if t.get_uuid() == term_uuid
+        #)
+        page_index = self.get_index_from_uuid(term_uuid)
         self.get_notebook().rename_page(page_index, new_text, user_set)
 
     def get_index_from_uuid(self, term_uuid):
