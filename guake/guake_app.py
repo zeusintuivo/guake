@@ -28,8 +28,8 @@ import traceback
 import uuid
 
 from pathlib import Path
-from time import sleep
 from threading import Thread
+from time import sleep
 from urllib.parse import quote_plus
 from xml.sax.saxutils import escape as xml_escape
 
@@ -39,7 +39,6 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 gi.require_version("Keybinder", "3.0")
 from gi.repository import GLib
-from gi.repository import GObject
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import Gtk
@@ -154,8 +153,17 @@ class Guake(SimpleGladeApp):
         # trayicon!
         img = pixmapfile("guake-tray.png")
         try:
-            import appindicator  # pylint: disable=import-outside-toplevel
-        except ImportError:
+            try:
+                gi.require_version("AyatanaAppIndicator3", "0.1")
+                from gi.repository import (  # pylint: disable=import-outside-toplevel
+                    AyatanaAppIndicator3 as appindicator,
+                )
+            except (ValueError, ImportError):
+                gi.require_version("AppIndicator3", "0.1")
+                from gi.repository import (  # pylint: disable=import-outside-toplevel
+                    AppIndicator3 as appindicator,
+                )
+        except (ValueError, ImportError):
             self.tray_icon = Gtk.StatusIcon()
             self.tray_icon.set_from_file(img)
             self.tray_icon.set_tooltip_text(_("Guake Terminal"))
@@ -163,11 +171,11 @@ class Guake(SimpleGladeApp):
             self.tray_icon.connect("activate", self.show_hide)
         else:
             # TODO PORT test this on a system with app indicator
-            self.tray_icon = appindicator.Indicator(
-                _("guake-indicator"), _("guake-tray"), appindicator.CATEGORY_OTHER
+            self.tray_icon = appindicator.Indicator.new(
+                "guake-indicator", "guake-tray", appindicator.IndicatorCategory.APPLICATION_STATUS
             )
-            self.tray_icon.set_icon(img)
-            self.tray_icon.set_status(appindicator.STATUS_ACTIVE)
+            self.tray_icon.set_icon_full("guake-tray", _("Guake Terminal"))
+            self.tray_icon.set_status(appindicator.IndicatorStatus.ACTIVE)
             menu = self.get_widget("tray-menu")
             show = Gtk.MenuItem(_("Show"))
             show.set_sensitive(True)
@@ -424,7 +432,7 @@ class Guake(SimpleGladeApp):
             c.parse("#" + bgcolor)
             bgcolor = c
         if not isinstance(bgcolor, Gdk.RGBA):
-            raise TypeError("color should be Gdk.RGBA, is: {!r}".format(bgcolor))
+            raise TypeError(f"color should be Gdk.RGBA, is: {bgcolor}")
         bgcolor = self._apply_transparency_to_color(bgcolor)
         log.debug("setting background color to: %r", bgcolor)
 
@@ -442,7 +450,7 @@ class Guake(SimpleGladeApp):
             c.parse("#" + fgcolor)
             fgcolor = c
         if not isinstance(fgcolor, Gdk.RGBA):
-            raise TypeError("color should be Gdk.RGBA, is: {!r}".format(fgcolor))
+            raise TypeError(f"color should be Gdk.RGBA, is: {fgcolor}")
         log.debug("setting background color to: %r", fgcolor)
 
         if current_terminal_only:
@@ -591,7 +599,8 @@ class Guake(SimpleGladeApp):
         if not self.window.get_property("visible"):
             log.debug("Showing the terminal")
             self.show()
-            self.window.get_window().focus(0)
+            server_time = get_server_time(self.window)
+            self.window.get_window().focus(server_time)
             self.set_terminal_focus()
             return
 
@@ -599,7 +608,8 @@ class Guake(SimpleGladeApp):
         has_focus = self.window.get_window().get_state() & Gdk.WindowState.FOCUSED
         if should_refocus and not has_focus:
             log.info("Refocusing the terminal")
-            self.window.get_window().focus(0)
+            server_time = get_server_time(self.window)
+            self.window.get_window().focus(server_time)
             self.set_terminal_focus()
         else:
             log.info("Hiding the terminal")
@@ -622,22 +632,29 @@ class Guake(SimpleGladeApp):
             and self.window.get_property("visible")
         ):
             pass
-        elif not self.settings.general.get_boolean("window-losefocus"):
-            if self.losefocus_time and self.losefocus_time < event_time:
-                if (
-                    self.window.get_window()
-                    and self.window.get_property("visible")
-                    and not self.window.get_window().get_state() & Gdk.WindowState.FOCUSED
-                ):
-                    log.debug("DBG: Restoring the focus to the terminal")
-                    self.window.get_window().focus(event_time)
-                    self.set_terminal_focus()
-                    self.losefocus_time = 0
-                    return False
-        elif self.losefocus_time and self.settings.general.get_boolean("window-losefocus"):
-            if self.losefocus_time >= event_time and (self.losefocus_time - event_time) < 10:
+        elif (
+            self.losefocus_time
+            and not self.settings.general.get_boolean("window-losefocus")
+            and self.losefocus_time < event_time
+        ):
+            if (
+                self.window.get_window()
+                and self.window.get_property("visible")
+                and not self.window.get_window().get_state() & Gdk.WindowState.FOCUSED
+            ):
+                log.debug("DBG: Restoring the focus to the terminal")
+                self.window.get_window().focus(event_time)
+                self.set_terminal_focus()
                 self.losefocus_time = 0
                 return False
+        elif (
+            self.losefocus_time
+            and self.settings.general.get_boolean("window-losefocus")
+            and self.losefocus_time >= event_time
+            and (self.losefocus_time - event_time) < 10
+        ):
+            self.losefocus_time = 0
+            return False
 
         # limit rate at which the visibility can be toggled.
         if self.prev_showhide_time and event_time and (event_time - self.prev_showhide_time) < 65:
@@ -1521,6 +1538,13 @@ class Guake(SimpleGladeApp):
                             # if directory:
                             #     continue
                             box.restore_box_layout(box.child, tab["panes"])
+                        else:
+                            directory = (
+                                tab["panes"][0]["directory"]
+                                if len(tab.get("panes", [])) == 1
+                                else tab.get("directory", None)
+                            )
+                            nb.new_page_with_focus(directory, tab["label"], tab["custom_label_set"])
 
                     # Remove original pages in notebook
                     for i in range(current_pages):

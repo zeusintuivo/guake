@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Guake 0.4.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-06-22 14:32+0200\n"
-"PO-Revision-Date: 2020-02-20 23:32+0000\n"
+"PO-Revision-Date: 2022-01-20 16:52+0000\n"
 "Last-Translator: Morgan Antonsson <morgan.antonsson@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/guake/guake/sv/>"
 "\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: guake/prefs.py:78
 msgid "<user shell>"
@@ -268,7 +268,7 @@ msgstr "Guake Terminal"
 
 #: guake/guake_app.py:207
 msgid "guake-indicator"
-msgstr "guake-indicator"
+msgstr "guake-indikator"
 
 #: guake/guake_app.py:207
 msgid "guake-tray"
@@ -932,7 +932,7 @@ msgstr "guake"
 
 #: data/guake-prefs.desktop:13 data/guake-prefs.template.desktop:13
 msgid "Terminal;Utility;"
-msgstr "Terminal;Utility;"
+msgstr "Terminal;Verktyg;"
 
 #: data/guake.template.desktop:4 data/guake.desktop:4
 #: data/autostart-guake.desktop:31
@@ -1265,51 +1265,51 @@ msgstr "Nya flikar visas efter den aktuella fliken"
 
 #: guake/prefs.py:186
 msgid "Search selected text on web"
-msgstr ""
+msgstr "Sök markerad text på webben"
 
 #: guake/menus.py:80
 msgid "Copy URL"
-msgstr ""
+msgstr "Kopiera URL"
 
 #: guake/main.py:362
 msgid "Show support information"
-msgstr ""
+msgstr "Visa supportinformation"
 
 #: guake/data/prefs.glade:19
 msgid "Scale"
-msgstr ""
+msgstr "Skala"
 
 #: guake/data/prefs.glade:23
 msgid "Tile"
-msgstr ""
+msgstr "Sida vid sida"
 
 #: guake/data/prefs.glade:31
 msgid "Stretch"
-msgstr ""
+msgstr "Sträck ut"
 
 #: guake/data/prefs.glade:472
 msgid "Copy on select"
-msgstr ""
+msgstr "Kopiera automatiskt vald text"
 
 #: guake/data/prefs.glade:517
 msgid "Use system default theme"
-msgstr ""
+msgstr "Använd systemets standardtema"
 
 #: guake/data/prefs.glade:547
 msgid "GTK Theme:"
-msgstr ""
+msgstr "GTK -tema:"
 
 #: guake/data/prefs.glade:612
 msgid "Please select a JSON file"
-msgstr ""
+msgstr "Välj en JSON -fil"
 
 #: guake/data/prefs.glade:938
 msgid "Hide tab bar if there is only one tab"
-msgstr ""
+msgstr "Dölj flikfältet om det bara finns en flik"
 
 #: guake/data/prefs.glade:1929
 msgid "Background image: "
-msgstr ""
+msgstr "Bakgrundsbild: "
 
 #: guake/data/prefs.glade:2730
 msgid ""
@@ -1322,12 +1322,22 @@ msgid ""
 "Text.\n"
 "</i></small>"
 msgstr ""
+"<small><i>Följande element kan användas i kommandoraden för att öppna en "
+"redigerare:\n"
+"- <b>%(file_path)s</b>: sökväg till filen som har klickats\n"
+"- <b>%(line_number)s</b>: om redigeraren stödjer det kan du direkt öppna "
+"filen till ett givet radnummer om det visas på skärmen.\n"
+"\n"
+"Exempel för Sublime Text: <b>subl %(file_path)s:%(line_number)s</b>\n"
+"</i></small>"
 
 #: guake/data/prefs.glade:2879
 msgid ""
 "<small>In this dialog you can attach your own command or script to various "
 "Guake events</small>"
 msgstr ""
+"<small> I denna dialog kan du lägga till ett kommando eller skript för olika "
+"Guake -händelser </small>"
 
 #: guake/data/prefs.glade:3008
 msgid ""
@@ -1336,3 +1346,35 @@ msgid ""
 "applications and operating systems that expect different terminal behavior.</"
 "i></small>"
 msgstr ""
+"<small> <i> <b> Obs! </b> Dessa alternativ kan orsaka att vissa "
+"applikationer beter sig felaktigt. De är bara här för att göra det möjligt "
+"att kringgå vissa applikationer och operativsystem som förväntar sig olika "
+"terminalbeteende. </i> </small>"
+
+#: guake/prefs.py:144
+msgid "Go to previous tab (alternative)"
+msgstr "Gå till föregående flik (alternativ)"
+
+#: guake/prefs.py:146
+msgid "Go to next tab (alternative)"
+msgstr "Gå till nästa flik (alternativ)"
+
+#: guake/menus.py:97
+msgid "Split |"
+msgstr "Dela |"
+
+#: guake/main.py:130
+msgid "Return 1 if Guake is visible, 0 otherwise"
+msgstr "Returnera 1 om Guake är synlig, 0 annars"
+
+#: guake/data/prefs.glade:1003
+msgid "Lazy hide on lose focus"
+msgstr "Lat-göm när fokus förloras"
+
+#: guake/data/prefs.glade:2135
+msgid "Line Height Scale (VTE >= 0.52)"
+msgstr "Linjehöjdskala (VTE >= 0,52)"
+
+#: guake/data/prefs.glade:2172
+msgid "Line Width Scale (VTE >= 0.52)"
+msgstr "Linjebreddskala (VTE >= 0,52)"

@@ -5,12 +5,34 @@ Installing Guake
 System-wide installation
 ========================
 
-Always prefere using your package manager to install guake.
+On wayland systems, you will need to set the hotkey for opening Guake from your window manager's global settings.
+
+For GNOME:
+
+1. Open Gnome Settings
+2. Go to Devices -> Keyboard
+3. Scroll in the list of the keyboard shorcuts all way down to Custom Shortcuts
+4. Press + to add a custom shortcut
+5. In the Add Custom Shortcut dialog type guake-toggle for command
+6. Enter the name and specify a shortcut, then press Add
+
+Always prefer using your package manager to install guake.
 
 Debian / Ubuntu
 ---------------
 
 Ubuntu and Debian users will use ``sudo apt install guake``.
+
+
+Guake also has a PPA. You can add the Guake PPA to your system by entering:
+
+.. code-block:: bash
+
+   $ sudo add-apt-repository ppa:linuxuprising/guake
+   $ sudo apt-get update
+
+After which you will be able to install and update to the latest version of Guake on the PPA.
+
 
 Fedora
 ------
@@ -92,7 +114,6 @@ You need to ensure the following points are met in your configuration:
    - ``python3-cairo``
    - ``python3-dbus``
    - ``python3-gi``
-   - ``python3-pbr``
    - ``python3-pip``
    - ``python3``
 

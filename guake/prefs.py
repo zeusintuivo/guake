@@ -45,6 +45,7 @@ from guake.globals import ALIGN_LEFT
 from guake.globals import ALIGN_RIGHT
 from guake.globals import ALIGN_TOP
 from guake.globals import ALWAYS_ON_PRIMARY
+from guake.globals import ENGINES
 from guake.globals import MAX_TRANSPARENCY
 from guake.globals import NAME
 from guake.globals import QUICK_OPEN_MATCHERS
@@ -103,6 +104,7 @@ HOTKEYS = [
         "keys": [
             {"key": "new-tab", "label": _("New tab")},
             {"key": "new-tab-home", "label": _("New tab in home directory")},
+            {"key": "new-tab-cwd", "label": _("New tab in current directory")},
             {"key": "close-tab", "label": _("Close tab")},
             {"key": "rename-current-tab", "label": _("Rename current tab")},
         ],
@@ -179,6 +181,7 @@ HOTKEYS = [
         "keys": [
             {"key": "clipboard-copy", "label": _("Copy text to clipboard")},
             {"key": "clipboard-paste", "label": _("Paste text from clipboard")},
+            {"key": "select-all", "label": _("Select all")},
         ],
     },
     {
@@ -186,6 +189,10 @@ HOTKEYS = [
         "key": "extra",
         "keys": [
             {"key": "search-on-web", "label": _("Search selected text on web")},
+            {
+                "key": "open-link-under-terminal-cursor",
+                "label": _("Open URL under terminal cursor"),
+            },
         ],
     },
 ]
@@ -247,6 +254,10 @@ class PrefsCallbacks:
         """Changes the activity of save-tabs-when-changed in dconf"""
         self.settings.general.set_boolean("save-tabs-when-changed", chk.get_active())
 
+    def on_load_guake_yml_toggled(self, chk):
+        """Changes the activity of load-guake-yml"""
+        self.settings.general.set_boolean("load-guake-yml", chk.get_active())
+
     def on_default_shell_changed(self, combo):
         """Changes the activity of default_shell in dconf"""
         citer = combo.get_active_iter()
@@ -287,6 +298,24 @@ class PrefsCallbacks:
     def on_prompt_on_close_tab_changed(self, combo):
         """Set the `prompt_on_close_tab' property in dconf"""
         self.settings.general.set_int("prompt-on-close-tab", combo.get_active())
+
+    def on_search_engine_changed(self, combo):
+        """
+        Sets the 'search-engine' value in dnonf.
+        Also controls the editability of 'custom_search' input
+        """
+        custom_search = self.prefDlg.get_widget("custom_search")
+        # if 'Custom' is selected make the search engine input editable
+        if combo.get_active() not in ENGINES:
+            custom_search.set_sensitive(True)
+        else:
+            # make read-only
+            custom_search.set_sensitive(False)
+        self.settings.general.set_int("search-engine", combo.get_active())
+
+    def on_custom_search_changed(self, edt):
+        """Sets the 'custom-search-engine' property in dconf"""
+        self.settings.general.set_string("custom-search-engine", edt.get_text())
 
     def on_gtk_theme_name_changed(self, combo):
         """Set the `gtk_theme_name' property in dconf"""
@@ -508,7 +537,10 @@ class PrefsCallbacks:
 
     def on_background_image_file_chooser_file_changed(self, fc):
         self.settings.general.set_string(
-            "background-image-file", fc.get_filename() if fc.get_filename() else ""
+            "background-image-file",
+            fc.get_filename()
+            if fc.get_filename() and fc.get_filename().endswith(allowed_extensions)
+            else "",
         )
 
     def on_background_image_file_remove_clicked(self, btn):
@@ -854,7 +886,7 @@ class PrefsDialog(SimpleGladeApp):
 
         palette = []
         for i in range(18):
-            palette.append(hexify_color(self.get_widget("palette_{}".format(i)).get_color()))
+            palette.append(hexify_color(self.get_widget(f"palette_{i}").get_color()))
         palette = ":".join(palette)
         self.settings.styleFont.set_string("palette", palette)
         self.settings.styleFont.set_string("palette-name", _("Custom"))
@@ -924,7 +956,7 @@ class PrefsDialog(SimpleGladeApp):
         palette = palette.split(":")
         for i, pal in enumerate(palette):
             x, color = Gdk.Color.parse(pal)
-            self.get_widget("palette_{}".format(i)).set_color(color)
+            self.get_widget(f"palette_{i}").set_color(color)
 
     def reload_erase_combos(self, btn=None):
         """Read from dconf the value of compat_{backspace,delete} vars
@@ -1008,6 +1040,10 @@ class PrefsDialog(SimpleGladeApp):
         value = self.settings.general.get_boolean("save-tabs-when-changed")
         self.get_widget("save-tabs-when-changed").set_active(value)
 
+        # save tabs when changed
+        value = self.settings.general.get_boolean("load-guake-yml")
+        self.get_widget("load-guake-yml").set_active(value)
+
         # login shell
         value = self.settings.general.get_boolean("use-login-shell")
         self.get_widget("use_login_shell").set_active(value)
@@ -1032,6 +1068,18 @@ class PrefsDialog(SimpleGladeApp):
         value = self.settings.general.get_int("prompt-on-close-tab")
         self.get_widget("prompt_on_close_tab").set_active(value)
         self.get_widget("prompt_on_quit").set_sensitive(value != 2)
+
+        # search engine
+        value = self.settings.general.get_int("search-engine")
+        custom_search = self.get_widget("custom_search")
+        custom_search.set_text(self.settings.general.get_string("custom-search-engine"))
+        self.get_widget("search_engine_select").set_active(value)
+        # if 'Custom' is selected make the search engine input editable
+        if value not in ENGINES:
+            # make read-only
+            custom_search.set_sensitive(True)
+        else:
+            custom_search.set_sensitive(False)
 
         # use system theme
         value = self.settings.general.get_boolean("gtk-use-system-default-theme")
@@ -1146,7 +1194,7 @@ class PrefsDialog(SimpleGladeApp):
         text = Gtk.TextBuffer()
         text = self.get_widget("quick_open_supported_patterns").get_buffer()
         for title, matcher, _useless in QUICK_OPEN_MATCHERS:
-            text.insert_at_cursor("%s: %s\n" % (title, matcher))
+            text.insert_at_cursor(f"{title}: {matcher}\n")
         self.get_widget("quick_open_supported_patterns").set_buffer(text)
 
         value = self.settings.general.get_string("quick-open-command-line")
@@ -1435,7 +1483,7 @@ class KeyEntry:
         self.mask = mask
 
     def __repr__(self):
-        return "KeyEntry(%d, %d)" % (self.keycode, self.mask)
+        return f"KeyEntry({self.keycode}, {self.mask})"
 
     def __eq__(self, rval):
         return self.keycode == rval.keycode and self.mask == rval.mask

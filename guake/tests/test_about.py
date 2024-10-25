@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=redefined-outer-name
 
-import os
 import pytest
 
 from guake import guake_version
@@ -9,15 +8,10 @@ from guake.about import AboutDialog
 
 
 @pytest.fixture
-def dialog(mocker):
+def dialog(mocker, monkeypatch):
     mocker.patch("guake.simplegladeapp.Gtk.Widget.show_all")
-    try:
-        old_os_environ = os.environ
-        os.environ["LANGUAGE"] = "en_US.UTF-8"
-        ad = AboutDialog()
-        yield ad
-    finally:
-        os.environ = old_os_environ
+    monkeypatch.setenv("LANGUAGE", "en_US.UTF-8")
+    yield AboutDialog()
 
 
 def test_version_test(dialog):

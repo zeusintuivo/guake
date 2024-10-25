@@ -378,7 +378,7 @@ class GSettingHandler:
             terminals = self.guake.notebook_manager.iter_terminals()
 
         if self.settings.general.get_boolean("use-default-font"):
-            gio_settings = Gio.Settings("org.gnome.desktop.interface")
+            gio_settings = Gio.Settings(schema="org.gnome.desktop.interface")
             font_name = gio_settings.get_string("monospace-font-name")
         else:
             font_name = settings.get_string(key)

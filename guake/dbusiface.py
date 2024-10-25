@@ -95,6 +95,10 @@ class DbusManager(dbus.service.Object):
             self.guake.get_notebook().get_current_page()
         )
 
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_tab_count(self):
+        return len(self.guake.notebook_manager.get_terminals())
+
     @dbus.service.method(DBUS_NAME, in_signature="i")
     def select_terminal(self, term_index=0):
         notebook = self.guake.get_notebook()
@@ -111,6 +115,13 @@ class DbusManager(dbus.service.Object):
             if term.is_focus():
                 return i
         return -1
+
+    @dbus.service.method(DBUS_NAME, out_signature="i")
+    def get_term_count(self):
+        notebook = self.guake.get_notebook()
+        current_page_index = notebook.get_current_page()
+        terminals = notebook.get_terminals_for_page(current_page_index)
+        return len(terminals)
 
     @dbus.service.method(DBUS_NAME, out_signature="i")
     def get_tab_count_get_terminals(self):
@@ -205,6 +216,7 @@ class DbusManager(dbus.service.Object):
 
     @dbus.service.method(DBUS_NAME, in_signature="s")
     def execute_command(self, command):
+        self.guake.add_tab()
         self.guake.execute_command(command)
 
     @dbus.service.method(DBUS_NAME, in_signature="i", out_signature="s")

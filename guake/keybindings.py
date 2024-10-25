@@ -24,6 +24,7 @@ from collections import defaultdict
 import gi
 
 gi.require_version("Gtk", "3.0")
+from gi.repository import Gdk
 from gi.repository import Gtk
 
 from guake import notifier
@@ -46,6 +47,7 @@ class Keybindings:
         self.accel_group = None  # see reload_accelerators
         self._lookup = None
         self._masks = None
+        self.keymap = Gdk.Keymap.get_for_display(Gdk.Display.get_default())
 
         # Setup global keys
         self.globalhotkeys = {}
@@ -65,6 +67,7 @@ class Keybindings:
             ("toggle-fullscreen", self.guake.accel_toggle_fullscreen),
             ("new-tab", self.guake.accel_add),
             ("new-tab-home", self.guake.accel_add_home),
+            ("new-tab-cwd", self.guake.accel_add_cwd),
             ("close-tab", x),
             ("rename-current-tab", self.guake.accel_rename_current_tab),
             ("previous-tab", self.guake.accel_prev),
@@ -73,6 +76,7 @@ class Keybindings:
             ("next-tab-alt", self.guake.accel_next),
             ("clipboard-copy", self.guake.accel_copy_clipboard),
             ("clipboard-paste", self.guake.accel_paste_clipboard),
+            ("select-all", self.guake.accel_select_all),
             ("quit", self.guake.accel_quit),
             ("zoom-in", self.guake.accel_zoom_in),
             ("zoom-in-alt", self.guake.accel_zoom_in),
@@ -83,6 +87,7 @@ class Keybindings:
             ("decrease-transparency", self.guake.accel_decrease_transparency),
             ("toggle-transparency", self.guake.accel_toggle_transparency),
             ("search-on-web", self.guake.search_on_web),
+            ("open-link-under-terminal-cursor", self.guake.open_link_under_terminal_cursor),
             ("move-tab-left", self.guake.accel_move_tab_left),
             ("move-tab-right", self.guake.accel_move_tab_right),
             ("switch-tab1", self.guake.gen_accel_switch_tabN(0)),
@@ -194,7 +199,7 @@ class Keybindings:
         ]
         for key, _ in self.keys:
             guake.settings.keybindingsLocal.onChangedValue(key, self.reload_accelerators)
-            self.reload_accelerators()
+        self.reload_accelerators()
 
     def reload_global(self, settings, key, user_data):
         value = settings.get_string(key)
@@ -223,16 +228,33 @@ class Keybindings:
                     % label,
                     filename,
                 )
-        elif key == "show-focus":
-            if not self.guake.hotkeys.bind(value, self.guake.show_focus):
-                log.warning("can't bind show-focus key")
-                return
+        elif key == "show-focus" and not self.guake.hotkeys.bind(value, self.guake.show_focus):
+            log.warning("can't bind show-focus key")
 
     def activate(self, window, event):
         """If keystroke matches a key binding, activate keybinding. Otherwise, allow
         keystroke to pass through."""
-        key = event.hardware_keycode
+        key = event.keyval
         mod = event.state
+
+        # Set keyval to the first available English keyboard value if character is non-latin
+        # and a english keyval is found
+        if event.keyval > 126:
+            for i in self.keymap.get_entries_for_keycode(event.hardware_keycode)[2]:
+                if 0 < i <= 126:
+                    key = i
+                    break
+
+        if mod & Gdk.ModifierType.SHIFT_MASK:
+            if key == Gdk.KEY_ISO_Left_Tab:
+                key = Gdk.KEY_Tab
+            else:
+                key = Gdk.keyval_to_lower(key)
+        else:
+            keys = Gdk.keyval_convert_case(key)
+            if key != keys[1]:
+                key = keys[0]
+                mod &= ~Gdk.ModifierType.SHIFT_MASK
 
         mask = mod & self._masks
 
@@ -254,9 +276,10 @@ class Keybindings:
         self.guake.accel_group = self
 
     def load_accelerators(self):
-        """Reads all gconf paths under /apps/guake/keybindings/local
+        """Reads all gconf paths under /org/guake/keybindings/local
         and adds to the _lookup.
         """
+
         for binding, action in self.keys:
             key, keycodes, mask = Gtk.accelerator_parse_with_keycode(
                 self.guake.settings.keybindingsLocal.get_string(binding)

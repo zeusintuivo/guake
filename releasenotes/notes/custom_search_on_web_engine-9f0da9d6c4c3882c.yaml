@@ -1,0 +1,7 @@
+release_summary: >
+  Added input on general in preferences to add a custom url to search with.
+
+features:
+  - |
+      - search engine can be set to custom url and search parameter
+      - Follow up to #2088 and #2133

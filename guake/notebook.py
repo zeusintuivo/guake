@@ -72,14 +72,14 @@ class TerminalNotebook(Gtk.Notebook):
             GObject.signal_new(
                 "terminal-spawned",
                 TerminalNotebook,
-                GObject.SIGNAL_RUN_LAST,
+                GObject.SignalFlags.RUN_LAST,
                 GObject.TYPE_NONE,
                 (GObject.TYPE_PYOBJECT, GObject.TYPE_INT),
             )
             GObject.signal_new(
                 "page-deleted",
                 TerminalNotebook,
-                GObject.SIGNAL_RUN_LAST,
+                GObject.SignalFlags.RUN_LAST,
                 GObject.TYPE_NONE,
                 (),
             )
@@ -112,12 +112,16 @@ class TerminalNotebook(Gtk.Notebook):
         self.tab_selection_button.connect("clicked", self.on_tab_selection)
 
         self.action_box = Gtk.Box(visible=True)
+        self.action_box.pack_start(self.pin_button, 0, 0, 0)
         self.action_box.pack_start(self.new_page_button, 0, 0, 0)
-        self.action_box.pack_end(self.tab_selection_button, 0, 0, 0)
+        self.action_box.pack_start(self.tab_selection_button, 0, 0, 0)
         self.set_action_widget(self.action_box, Gtk.PackType.END)
 
     def attach_guake(self, guake):
         self.guake = guake
+
+        self.guake.settings.general.onChangedValue("window-losefocus", self.on_lose_focus_toggled)
+        self.pin_button.set_visible(self.guake.settings.general.get_boolean("window-losefocus"))
 
     def on_button_press(self, target, event, user_data):
         if event.button == 3:
@@ -129,6 +133,13 @@ class TerminalNotebook(Gtk.Notebook):
             except AttributeError:
                 # Gtk 3.18 fallback ("'Menu' object has no attribute 'popup_at_pointer'")
                 menu.popup(None, None, None, None, event.button, event.time)
+        elif (
+            event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS
+            and event.button == 1
+            and event.window.get_height() < 60
+        ):
+            # event.window.get_height() reports the height of the clicked frame
+            self.new_page_with_focus()
 
         return False
 
@@ -194,7 +205,7 @@ class TerminalNotebook(Gtk.Notebook):
             row = Gtk.ListBoxRow()
             box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
             box.set_size_request(200, BOX_HEIGHT)
-            label = Gtk.Label(label=self.get_tab_text_index(i))
+            label = Gtk.Label(self.get_tab_text_index(i))
             label.set_xalign(0.0)
             box.pack_start(label, 0, 0, 5)
             row.add(box)
@@ -262,6 +273,32 @@ class TerminalNotebook(Gtk.Notebook):
             terminals += page.get_terminals()
         return terminals
 
+    def get_running_fg_processes(self):
+        processes = []
+        for page in self.iter_pages():
+            processes += self.get_running_fg_processes_page(page)
+        return processes
+
+    def get_running_fg_processes_page(self, page):
+        processes = []
+        for terminal in page.get_terminals():
+            pty = terminal.get_pty()
+            if not pty:
+                continue
+            fdpty = pty.get_fd()
+            term_pid = terminal.pid
+            try:
+                fgpid = posix.tcgetpgrp(fdpty)
+                log.debug("found running pid: %s", fgpid)
+                if fgpid not in (-1, term_pid):
+                    processes.append((fgpid, get_process_name(fgpid)))
+            except OSError:
+                log.debug(
+                    "Cannot retrieve any pid from terminal %s, looks like it is already dead",
+                    terminal,
+                )
+        return processes
+
     def get_running_fg_processes_count(self):
         fg_proc_count = 0
         for page in self.iter_pages():
@@ -311,16 +348,17 @@ class TerminalNotebook(Gtk.Notebook):
         if page_num >= self.get_n_pages() or page_num < 0:
             log.error("Can not delete page %s no such index", page_num)
             return
-        # TODO NOTEBOOK it would be nice if none of the "ui" stuff
-        # (PromptQuitDialog) would be in here
-        procs = self.get_running_fg_processes_count_page(page_num)
-        if prompt == 2 or (prompt == 1 and procs > 0):
-            # TODO NOTEBOOK remove call to guake
-            if not PromptQuitDialog(self.guake.window, procs, -1, notebooks="").close_tab():
-                return
 
         page = self.get_nth_page(page_num)
-        for terminal in self.get_terminals_for_page(page_num):
+        # TODO NOTEBOOK it would be nice if none of the "ui" stuff
+        # (PromptQuitDialog) would be in here
+        procs = self.get_running_fg_processes_page(page)
+        if prompt == PROMPT_ALWAYS or (prompt == PROMPT_PROCESSES and procs):
+            # TODO NOTEBOOK remove call to guake
+            if not PromptQuitDialog(self.guake.window, procs, -1, None).close_tab():
+                return
+
+        for terminal in page.get_terminals():
             if kill:
                 terminal.kill()
             terminal.destroy()
@@ -539,7 +577,7 @@ class NotebookManager(GObject.Object):
             GObject.signal_new(
                 "notebook-created",
                 self,
-                GObject.SIGNAL_RUN_LAST,
+                GObject.SignalFlags.RUN_LAST,
                 GObject.TYPE_NONE,
                 (GObject.TYPE_PYOBJECT, GObject.TYPE_INT),
             )

@@ -68,22 +68,27 @@ class PromptQuitDialog(Gtk.MessageDialog):
             else:
                 notebooks_str = ""
 
-        if procs == 0:
+        if not procs:
             proc_str = _("There are no processes running")
-        elif procs == 1:
+        elif len(procs) == 1:
             proc_str = _("There is a process still running")
         else:
-            proc_str = _("There are {0} processes still running").format(procs)
+            proc_str = _("There are {0} processes still running").format(len(procs))
+
+        if procs:
+            proc_list = "\n\n" + "\n".join(f"{name} ({pid})" for pid, name in procs)
+        else:
+            proc_list = ""
 
         self.set_markup(primary_msg)
-        self.format_secondary_markup("<b>{0}{1}{2}.</b>".format(proc_str, tab_str, notebooks_str))
+        self.format_secondary_markup(f"<b>{proc_str}{tab_str}{notebooks_str}.</b>{proc_list}")
 
     def quit(self):
         """Run the "are you sure" dialog for quitting Guake"""
         # Stop an open "close tab" dialog from obstructing a quit
         response = self.run() == Gtk.ResponseType.YES
         self.destroy()
-        # Keep Guake focused after dismissing tab-close prompt
+        # Keep Guake focussed after dismissing tab-close prompt
         # if tab == -1:
         #     self.window.present()
         return response
@@ -91,7 +96,7 @@ class PromptQuitDialog(Gtk.MessageDialog):
     def close_tab(self):
         response = self.run() == Gtk.ResponseType.YES
         self.destroy()
-        # Keep Guake focused after dismissing tab-close prompt
+        # Keep Guake focussed after dismissing tab-close prompt
         # if tab == -1:
         #     self.window.present()
         return response
@@ -118,7 +123,7 @@ class PromptResetColorsDialog(Gtk.MessageDialog):
         # Stop an open "close tab" dialog from obstructing a quit
         response = self.run() == Gtk.ResponseType.YES
         self.destroy()
-        # Keep Guake focused after dismissing tab-close prompt
+        # Keep Guake focussed after dismissing tab-close prompt
         # if tab == -1:
         #     self.window.present()
         return response

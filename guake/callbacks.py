@@ -5,6 +5,7 @@ from gi.repository import Gdk
 from gi.repository import Gtk
 from guake.about import AboutDialog
 from guake.dialogs import SaveTerminalDialog
+from guake.globals import ENGINES
 from guake.prefs import PrefsDialog
 from guake.utils import FullscreenManager
 from guake.utils import HidePrevention
@@ -41,7 +42,7 @@ class TerminalContextMenuCallbacks:
         self.terminal.reset(True, True)
 
     def on_find(self):
-        # this is not implemented jet
+        # this is not implemented yet
         pass
 
     def on_open_link(self, *args):
@@ -53,9 +54,20 @@ class TerminalContextMenuCallbacks:
             clipboard = Gtk.Clipboard.get_default(self.window.get_display())
             query = clipboard.wait_for_text()
             query = quote_plus(query)
-            if query:
-                search_url = "https://www.google.com/search?q={!s}&safe=off".format(query)
-                Gtk.show_uri(self.window.get_screen(), search_url, get_server_time(self.window))
+
+            # nothing selected
+            if not query:
+                return
+
+            selected = self.settings.general.get_int("search-engine")
+            # if custom search is selected, get the engine from the 'custom-search-engine' setting
+            if selected not in ENGINES:
+                engine = self.settings.general.get_string("custom-search-engine")
+            else:
+                engine = ENGINES[selected]
+            # put the query at the end of the url
+            search_url = "https://" + engine + query
+            Gtk.show_uri(self.window.get_screen(), search_url, get_server_time(self.window))
 
     def on_quick_open(self, *args):
         if self.terminal.get_has_selection():
@@ -76,10 +88,10 @@ class TerminalContextMenuCallbacks:
         self.notebook.guake.accel_quit()
 
     def on_split_vertical(self, *args):
-        self.terminal.get_parent().split_v()
+        self.terminal.get_parent().split_v(50)
 
     def on_split_horizontal(self, *args):
-        self.terminal.get_parent().split_h()
+        self.terminal.get_parent().split_h(50)
 
     def on_close_terminal(self, *args):
         self.terminal.kill()

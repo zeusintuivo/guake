@@ -38,14 +38,14 @@ default: prepare-install
 prepare-install: generate-desktop generate-paths generate-mo compile-glib-schemas-dev
 
 reset:
-	dconf reset -f /apps/guake/
+	dconf reset -f /org/guake/
 
 
 all: clean dev style checks dists test docs
 
 dev: clean-ln-venv ensure-pip pipenv-install-dev requirements ln-venv setup-githook \
 	 prepare-install install-dev-locale
-dev-actions: ensure-pip-system pipenv-install-dev requirements setup-githook prepare-install
+dev-actions: ensure-pip-system pipenv-install-dev prepare-install
 
 ensure-pip:
 	./scripts/bootstrap-dev-pip.sh
@@ -68,7 +68,7 @@ ln-venv:
 clean-ln-venv:
 	@rm -f .venv
 
-install-system: install-schemas compile-shemas install-locale install-guake
+install-system: install-schemas install-locale install-guake
 
 install-guake:
 	# you probably want to execute this target with sudo:
@@ -81,6 +81,8 @@ install-guake:
 	@echo "#############################################################"
 	@if [ "$(DESTDIR)" = "" ]; then $(PYTHON_INTERPRETER) -m pip install -r requirements.txt; fi
 
+	@if [ `python -c "import sys; print(sys.version_info[0])"` -eq 2 ]; then SETUPTOOLS_SCM_PRETEND_VERSION=3.9.0; fi
+
 	@rm -f guake/paths.py.dev
 	@if [ -f guake/paths.py ]; then mv guake/paths.py guake/paths.py.dev; fi
 	@cp -f guake/paths.py.in guake/paths.py
@@ -92,7 +94,7 @@ install-guake:
 	@sed -i -e 's|{{ LOGIN_DESTOP_PATH }}|"$(LOGIN_DESTOP_PATH)"|g' guake/paths.py
 	@sed -i -e 's|{{ AUTOSTART_FOLDER }}|"$(AUTOSTART_FOLDER)"|g' guake/paths.py
 
-	@$(PYTHON_INTERPRETER) setup.py install --root "$(DESTDIR)" --prefix="$(PREFIX)" --optimize=1
+	@$(PYTHON_INTERPRETER) -m pip install . --root "$(DESTDIR)" --prefix="/usr" || echo -e "\033[31;1msetup.py install failed, you may need to run \"sudo git config --global --add safe.directory '*'\"\033[0m"
 
 	@rm -f guake/paths.py
 	@if [ -f guake/paths.py.dev ]; then mv guake/paths.py.dev guake/paths.py; fi
@@ -140,9 +142,7 @@ install-schemas:
 	install -Dm644 "$(DEV_DATA_DIR)"/*.glade "$(DESTDIR)$(GLADE_DIR)/"
 	install -dm755                                         "$(DESTDIR)$(SCHEMA_DIR)"
 	install -Dm644 "$(DEV_DATA_DIR)/org.guake.gschema.xml" "$(DESTDIR)$(SCHEMA_DIR)/"
-
-compile-shemas:
-	if [ $(COMPILE_SCHEMA) = 1 ]; then glib-compile-schemas $(DESTDIR)$(gsettingsschemadir); fi
+	if [ $(COMPILE_SCHEMA) = 1 ]; then glib-compile-schemas $(DESTDIR)$(SCHEMA_DIR); fi
 
 uninstall-system: uninstall-schemas uninstall-locale
 	$(SHELL) -c $(PYTHON_SITEDIRS_FOR_PREFIX) \
@@ -179,7 +179,8 @@ compile-glib-schemas-dev: clean-schemas
 clean-schemas:
 	rm -f $(DEV_DATA_DIR)/gschemas.compiled
 
-style: black
+style:
+	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run pre-commit run --all-files
 
 black:
 	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run black $(MODULE)
@@ -188,7 +189,7 @@ black:
 checks: black-check flake8 pylint reno-lint
 
 black-check:
-	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run black --check $(MODULE)
+	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run black --check $(MODULE) --extend-exclude $(MODULE)/_version.py
 
 flake8:
 	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run flake8 guake
@@ -310,15 +311,12 @@ freeze:
 	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run pip freeze
 
 
-githook:
-	bash git-hooks/post-commit
-
 setup-githook:
 	rm -f .git/hooks/post-commit
-	cp -fv git-hooks/* .git/hooks/
+	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run pre-commit install
 
 
-push: githook
+push:
 	git push origin --tags
 
 
@@ -404,17 +402,7 @@ reno:
 reno-lint:
 	PIPENV_IGNORE_VIRTUALENVS=1 pipenv run reno -q lint
 
-release-note: reno-lint release-note-news release-note-github
-
-release-note-news: reno-lint
-	@echo "Generating release note for NEWS file"
-	@rm -f guake/releasenotes/notes/reno.cache
-	@pipenv run python setup.py build_reno --output-file NEWS.rst.in
-	@grep -v -R "^\.\.\ " NEWS.rst.in | cat -s > NEWS.rst
-	@cat releasenotes/archive/NEWS.pre-3.0 >> NEWS.rst
-	@rm -fv NEWS.rst.in
-	@echo "Updated NEWS.rst"
-
+release-note: release-note-github
 
 release-note-github: reno-lint
 	@echo
@@ -423,8 +411,8 @@ release-note-github: reno-lint
 	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	@echo "-------- copy / paste from here --------"
 	@# markdown_github to be avoided => gfm output comes in pandoc 2.0.4 release dec 2017
-	@pipenv run reno report 2>/dev/null | \
-		pandoc -f rst -t markdown --atx-headers --wrap=none --tab-stop 2 | \
+	@pipenv run reno report --earliest-version 3.8.3 --no-show-source --collapse-pre-releases 2>/dev/null | \
+		pandoc -f rst -t markdown --markdown-headings=atx --wrap=none --tab-stop 2 | \
 		tr '\n' '\r' | \
 			sed 's/\r<!-- -->\r//g' | \
 			sed 's/\r\-\ \r\r\ /\r-/g' | \
@@ -434,35 +422,6 @@ release-note-github: reno-lint
 			sed 's/\r\ \ >\ \-\ /\r  - /g' | \
 			sed 's/\\\#/\#/g' | \
 		tr '\r' '\n'
-
-release:
-	git checkout -f master
-	git pull --rebase upstream master
-	@{ \
-		set -e ;\
-		export VERSION=$$(PIPENV_IGNORE_VIRTUALENVS=1 pipenv run python setup.py --version | cut -d. -f1,2,3); \
-		echo "I: Computed new version: $$VERSION"; \
-		echo "I: presse ENTER to accept or type new version number:"; \
-		read VERSION_OVERRIDE; \
-		VERSION=$${VERSION_OVERRIDE:-$$VERSION}; \
-		PROJECTNAME=$$(PIPENV_IGNORE_VIRTUALENVS=1 pipenv run python setup.py --name); \
-		echo "I: Tagging $$PROJECTNAME in version $$VERSION with tag: $$VERSION" ; \
-		echo "I: Pushing tag $$VERSION, press ENTER to continue, C-c to interrupt"; \
-		git commit --all -m "Release $$VERSION" --allow-empty --no-edit ; \
-		git tag $$VERSION -m "$$PROJECTNAME $$VERSION"; \
-		make release-note-news rm-dists update-po dists ; \
-		git commit --all --amend --no-edit; \
-		git tag -f "$${VERSION}"; \
-		make release-note-github; \
-		echo ""; \
-		echo "Please check your git history and push when ready with:"; \
-		echo "  git push upstream master"; \
-		echo "  git push upstream $$VERSION"; \
-		echo ""; \
-		echo "Revert with:"; \
-		echo "  git tag -d $$VERSION"; \
-	}
-
 
 # aliases to gracefully handle typos on poor dev's terminal
 check: checks

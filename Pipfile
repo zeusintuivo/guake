@@ -34,9 +34,10 @@ pew = "*"
 black = "==21.8b0"
 flakehell = "*"
 toml = "*"
-dataclasses = "*"
+pre-commit = "==2.17.0"
 
 [packages]
 pbr = "*"
 wheel = "*"
 typing = {markers = "python_version > '3.5'"}
+pyyaml = "*"

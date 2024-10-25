@@ -101,7 +101,10 @@ class GuakeTerminal(Vte.Terminal):
         super().__init__()
         self.guake = guake
         self.configure_terminal()
-        self.add_matches()
+
+        if self.guake.settings.general.get_boolean("quick-open-enable"):
+            self.add_matches()
+
         self.handler_ids = []
         self.handler_ids.append(self.connect("button-press-event", self.button_press))
         self.connect("child-exited", self.on_child_exited)  # Call on_child_exited, don't remove it
@@ -351,13 +354,15 @@ class GuakeTerminal(Vte.Terminal):
         handle the matched resource uri.
         """
         self.matched_value = ""
-        if (Vte.MAJOR_VERSION, Vte.MINOR_VERSION) >= (0, 46):
-            matched_string = self.match_check_event(event)
-        else:
-            matched_string = self.match_check(
-                int(event.x / self.get_char_width()),
-                int(event.y / self.get_char_height()),
-            )
+
+        if self.guake.settings.general.get_boolean("quick-open-enable"):
+            if (Vte.MAJOR_VERSION, Vte.MINOR_VERSION) >= (0, 46):
+                matched_string = self.match_check_event(event)
+            else:
+                matched_string = self.match_check(
+                    int(event.x / self.get_char_width()),
+                    int(event.y / self.get_char_height()),
+                )
 
         self.found_link = None
 
@@ -486,21 +491,29 @@ class GuakeTerminal(Vte.Terminal):
         if value:
             return value
 
+    def get_link_under_terminal_cursor(self):
+        cursor_position = self.get_cursor_position()
+        matched_string = self.match_check(cursor_position.column, cursor_position.row)
+        link = self.handleTerminalMatch(matched_string)
+        if link:
+            return link
+
     def get_link_under_cursor(self):
         return self.found_link
 
-    def browse_link_under_cursor(self):
+    def browse_link_under_cursor(self, url=None):
         # TODO move the call to xdg-open to guake.utils
-        if not self.found_link:
+        if not self.found_link and url is None:
             return
-        log.debug("Opening link: %s", self.found_link)
-        cmd = ["xdg-open", self.found_link]
+        url = url if url is not None else self.found_link
+        log.debug("Opening link: %s", url)
+        cmd = ["xdg-open", url]
         with subprocess.Popen(cmd, shell=False):
             pass
 
     def set_font(self, font):
         self.font = font
-        self.set_font_scale_index(0)
+        self.set_font_scale_index(self.font_scale)
 
     def set_font_scale_index(self, scale_index):
         self.font_scale_index = clamp(scale_index, -6, 12)
