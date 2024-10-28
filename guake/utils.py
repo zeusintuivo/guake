@@ -2,7 +2,7 @@
 """
 Copyright (C) 2018 Mario Aichinger <aichingm@gmail.com>
 Copyright (C) 2007-2012 Lincoln de Sousa <lincoln@minaslivre.org>
-Copyright (C) 2007 Gabriel Falcão <gabrielteratos@gmail.com>
+Copyright (C) 2017 Zeus Intuivo <zeus@intuivo.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as

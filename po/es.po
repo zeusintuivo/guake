@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the Guake package.
 #
 # Translators:
-# Gabriel Falcão <gabriel@guake-terminal.org>, 2007
+# Zeus Intuivo <zeus@intuivo.com>, 2007
 # Diego Martinez <dmartinezc@gmail.com>, 2009
 # Ricardo Hermosilla <ra.hermosillac@gmail.com>, 2012
 msgid ""

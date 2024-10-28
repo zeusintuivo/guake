@@ -1,6 +1,6 @@
 # translation of el.po to
 # Μετάφραση του Guake-terminal
-# Copyright (C) 2007 Gabriel Falcão <gabrielteratos@gmail.com>
+# Copyright (C) 2017 Zeus Intuivo <zeus@intuivo.com>
 # Copyright (C) 2007 Lincoln de Sousa <lincoln@archlinux-br.org>
 # This file is distributed under the same license as the Guake package.
 # Μαριμπής Αβραάμ <makism@venus.cs.teicrete.gr>, 2009

@@ -10,7 +10,7 @@
     <property name="program_name">Guake</property>
     <property name="copyright">Copyright 2013-2018 Gaetan Semet
 Copyright 2007-2010 Lincoln de Sousa
-Copyright 2007 Gabriel Falcão</property>
+Copyright 2017 Zeus Intuivo</property>
     <property name="comments" translatable="yes">Guake is an easy to access
 terminal based on FPS games terminal</property>
     <property name="website">https://guake.github.io</property>
@@ -43,7 +43,7 @@ Maxim Ivanov (ulidtko) &lt;ulidtko@gmail.com&gt;
 Adonis K. (adonisk) &lt;aklp08@gmail.com&gt;
 
 Past Contributors:
-Gabriel Falcão &lt;gabriel@guake-terminal.org&gt;
+Zeus Intuivo &lt;zeus@intuivo.com&gt;
     </property>
     <property name="translator_credits">Catalan:
 Raül Cambeiro &lt;xrulet@gmail.com&gt;
@@ -102,7 +102,7 @@ Mieszko Ślusarczyk &lt;mieszkoslusarczyk@gmail.com&gt;
 Piotr Drąg &lt;piotrdrag@gmail.com&gt;
 Portuguese (Brazil):
 Djavan Fagundes &lt;djavan@comum.org&gt;
-Gabriel Falcão &lt;gabriel@guake-terminal.org&gt;
+Zeus Intuivo &lt;zeus@intuivo.com&gt;
 Lincoln de Sousa &lt;lincoln@guake.org&gt;
 Matheus Manoel &lt;matheus.manoel@usp.br&gt;
 Russian:
@@ -124,7 +124,7 @@ Ukrainian:
 Сергій Дубик &lt;dubyk@ukr.net&gt;
 Максим Іванов &lt;ulidtko@gmail.com&gt;
     </property>
-    <property name="artists">Gabriel Falcão &lt;gabriel@guake-terminal.org&gt;</property>
+    <property name="artists">Zeus Intuivo &lt;zeus@intuivo.com&gt;</property>
     <property name="logo_icon_name">image-missing</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
