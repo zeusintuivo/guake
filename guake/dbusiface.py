@@ -125,9 +125,9 @@ class DbusManager(dbus.service.Object):
 
     @dbus.service.method(DBUS_NAME, out_signature="i")
     def get_pages_count(self):
-         notebook = self.guake.get_notebook()
-         pages = notebook.get_n_pages()
-         return pages
+        notebook = self.guake.get_notebook()
+        pages = notebook.get_n_pages()
+        return pages
 
     @dbus.service.method(DBUS_NAME, out_signature="i")
     def get_notebooks(self):
@@ -280,5 +280,3 @@ class DbusManager(dbus.service.Object):
     @dbus.service.method(DBUS_NAME, in_signature="s", out_signature="i")
     def get_index_from_uuid(self, tab_uuid):
         return self.guake.get_index_from_uuid(tab_uuid)
-
-
